@@ -1,0 +1,158 @@
+{
+  "boilerplatemobile": {
+    "common_appName": {
+      "full": "React Native",
+      "initials": "RNC"
+    },
+    "common_labels": {
+      "continue": "Continue",
+      "email": "Email",
+      "password": "Password",
+      "forgetPassword": "Forget Password?",
+      "login": "Login",
+      "registerNow": "Register Now",
+      "resend": "Resend",
+      "in": "In:",
+      "sec": "sec",
+      "createPassword": "Create Password",
+      "confirmPassword": "Confirm Password",
+      "passwordRequirement": "password must 8 characters, an uppercase letter, a lowercase letter, a number, & special character (e.g., !@#)",
+      "google": "Google",
+      "facebook": "Facebook",
+      "apple": "Apple",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "reTypePassword": "Re-Type Password",
+      "location": "Location",
+      "referralCode": "Referral Code",
+
+      "cancel": "Cancel",
+      "uploadVideo": "Upload Video",
+      "chooseFromLibrary": "Choose from Library",
+      "videoLength": "Video length should be less than or equal to 5 minutes",
+      "unableToUpload": "Unable to upload picture try again later",
+      "videoCamera": "Video Camera",
+      "permissionRequired": "Permission required",
+      "takePhoto": "Take Photo",
+      "uploadProfile": "Upload profile Image",
+      "camera": "Camera",
+      "gallery": "Gallery"
+    },
+
+    "common_error": "Oops! Something went wrong.",
+
+    "screen_example": {
+      "hello_user": "Hi, my name is {{name}}",
+      "title": "Welcome on The $t(common_appName.full)",
+      "description": "Do you want to discover some features? Just click on one of the three buttons at the bottom of the screen. The first allows you to call a REST API. The second lets you change the theme color. And the third allows you to change the language.",
+      "welcome": "Welcome back! Glad to see you, Again!",
+      "loginHeading": "Welcome to Cre8tormate",
+      "loginDes": "Connect, create, and grow with Cre8tormate.",
+      "loginToCont": "Login To Continue",
+      "contWithGoogle": "Continue with Google",
+      "contWithApple": "Continue with Apple",
+      "contWithFacebook": "Continue with Facebook",
+      "dontHaveAcc": "Don’t have an account? "
+    },
+
+    "screen_login": {
+      "loginHeading": "Welcome to Cre8tormate",
+      "loginDes": "Connect, create, and grow with Cre8tormate.",
+      "welcomeBack": "Welcome back! Glad to see you, Again!",
+      "contWithGoogle": "Continue with Google",
+      "contWithApple": "Continue with Apple",
+      "contWithFacebook": "Continue with Facebook",
+      "dontHaveAcc": "Don’t have an account? ",
+      "orContWith": "Or Continue with"
+    },
+
+    "screen_signUp": {
+      "signup": "Signup",
+      "orSignUpWith": "or Signup with",
+      "alreadyHaveAnAcc": "Already have an account?",
+      "loginNow": "Login Now"
+    },
+
+    "screen_forgot": {
+      "forgotDes": "Please enter your email for us to send confirmation regarding your password change.",
+      "forgotHeading": "Verify & create new \n password",
+      "sendaCode": "We have sent a 6 digit code to your email",
+      "checkEmail": "Check Your Email",
+      "verifyCode": "Verify Code",
+      "didNotGetCode": "Didn't get code?",
+      "verify&resetPass": "Verify & Reset Password",
+      "forgotPassword": "Forgot your password?",
+      "getAVerificationCode": "Enter your email to get a verification code",
+      "enterPhoneNum": "Enter your phone number",
+      "getAPhoneVerificationCode": "Enter your phone number to get verification code",
+      "getCode": "Get Code"
+    },
+
+    "screen_AdditionalInfo": {
+      "additionalInfo": "Additional Info",
+      "uploadAProfile": "Upload a profile picture",
+      "selectIdType": "Select ID Type",
+      "identityCard": "Identity card",
+      "passport": "Passport",
+      "uploadId": "Upload ID",
+      "uploadPass": "Upload Passport",
+      "uploadDrivingLic": "Upload Driving License",
+      "imgRequirement": "‘JPEG, Png (max 5mb)’",
+      "uploadBack": "Upload Back",
+      "uploadFront": "Upload Front",
+      "skipForNow": "Skip for now",
+      "uploadDoc": "Upload Documents",
+      "idNumber": "Id number",
+      "change": "Change",
+      "profileCompleted": "Profile Completed!",
+      "profileCompleteMsg": "Your profile is complete, and your documents are under review. We'll notify you once it's finalized. Enjoy exploring the app!",
+      "letsStart": "Let’s Start"
+    },
+
+    "placeholder": {
+      "email": "Enter your email",
+      "password": "Enter your password",
+      "confirmPassword": "Confirm password",
+      "newPass": "New password",
+      "confirmPass": "Confirm new password",
+      "phone": "+234 -------------",
+      "selectIdType": "Select id Type",
+      "writeHere": "Write here"
+    },
+
+    "error_boundary": {
+      "title": "Oops! Something went wrong.",
+      "description": "We are sorry for the inconvenience. Please try again later.",
+      "cta": "Reload the screen"
+    },
+    "errors": {
+      "emailReq": "Email is required",
+      "invalidEmail": "Please enter a valid email address",
+      "passReq": "Password is Required",
+      "confirmPassReq": "Confirm password is Required",
+      "passwordLong": "Password must be 256 characters or less",
+      "passwordInc": "Password must be at least 8 characters long and include uppercase, lowercase, digit, and special character",
+      "confrimPasswordNotMatch": "Password and confirm password does not match",
+      "enterOtp": "Please enter the OTP",
+      "invalidOtp": "Invalid OTP. Please try again",
+      "otp6Digits": "OTP Must Be 6 Digits",
+      "unableToVerifyOtp": "Unable to verify OTP. Please try again later",
+      "phoneNumReq": "Phone number is required",
+      "invalidPhoneNum": "Invalid Phone number",
+      "firstNameReq": "First name is required",
+      "lastNameReq": "Last name is required",
+      "locationReq": "Location is required",
+      "nameMin": "Minimum 2 characters are required",
+      "nameMax": "Maximum 25 characters are allowed",
+      "firstNameValid": "First name can contain only alphabets and spaces",
+      "lastNameValid": "Last name can contain only alphabets, spaces and dot",
+      "profilePicReq": "Profile picture is required",
+      "selectIdType": "Select ID type",
+      "idNumReq": "ID number is required",
+      "uploadIdCard": "Please upload front and back of ID card",
+      "uploadPassport": "Please upload passport image",
+      "uploadLicense": "Upload front and back of driving license",
+      "imageSizeLimit": "Image must be less than or equal to 5MB."
+    }
+  }
+}
