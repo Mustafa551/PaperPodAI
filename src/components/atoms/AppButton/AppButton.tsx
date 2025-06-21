@@ -24,7 +24,7 @@ const AppButton: React.FC<IAppButtonProps> = memo((props) => {
     disabled = false,
     extraStyle,
     fontVariant = 'h4-quicksand-semi',
-    height = platformiOS(isIphoneX() ? 50 : 55, 60),
+    height = platformiOS(isIphoneX() ? 50 : 55, 47),
     loading = false,
     onPress,
     outlinedColor = colors.greenPrimary,
@@ -79,10 +79,11 @@ const AppButton: React.FC<IAppButtonProps> = memo((props) => {
             color={variant === 'outlined' ? outlinedColor : colors.white}
             extraStyle={[layout.mH(5), extraStyle?.title]}
             onPress={!disabled ? onPress : () => {}}
-            fontSize={15}
-            fontFamily="bold"
+            fontSize={14}
+            // fontFamily="bold"
             title={title}
             variant={fontVariant}
+            fontWeight={800}
           />
         )}
         <View

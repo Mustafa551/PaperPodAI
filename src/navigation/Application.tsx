@@ -4,44 +4,61 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { useTheme } from '@/theme';
 import { Paths } from '@/navigation/paths';
+import { useTheme } from '@/theme';
 
 import {
-  AdditionalInfoScreen,
-  Example,
   ForgotPasswordScreen,
+  HomeScreen,
   LoginScreen,
-  SignUpScreen,
-  Startup,
+  Onboarding,
+  Onboarding2,
+  SignUpScreen
 } from '@/screens';
 import ChangePasswordScreen from '@/screens/ChangePasswordScreen/ChangePasswordScreen';
+import Onboarding3 from '@/screens/Onboarding3/Onboarding3';
+import BottomTabs from './BottomNavigation/BottomNavigation';
+import { navigationRef } from './navigationRef';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
+const AuthStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen component={Onboarding} name={Paths.Onboarding} />
+      <Stack.Screen component={Onboarding2} name={Paths.Onboarding2} />
+      <Stack.Screen component={Onboarding3} name={Paths.Onboarding3} />
+      <Stack.Screen name={Paths.LoginScreen} component={LoginScreen} />
+      <Stack.Screen name={Paths.SignUpScreen} component={SignUpScreen} />
+      <Stack.Screen
+        name={Paths.ForgotPasswordScreen}
+        component={ForgotPasswordScreen}
+      />
+      <Stack.Screen
+        name={Paths.ChangePasswordScreen}
+        component={ChangePasswordScreen}
+      />
+    </Stack.Navigator>
+  );
+};
+
+const HomeStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen component={BottomTabs} name={Paths.BottomTabs} />
+    </Stack.Navigator>
+  );
+};
+
 function ApplicationNavigator() {
-  const { navigationTheme, variant } = useTheme();
+  const { navigationTheme, variant, fonts } = useTheme();
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer theme={navigationTheme}>
-        <Stack.Navigator key={variant} screenOptions={{ headerShown: false }}>
-          <Stack.Screen component={LoginScreen} name={Paths.LoginScreen} />
-          <Stack.Screen component={SignUpScreen} name={Paths.SignUpScreen} />
-          <Stack.Screen
-            component={AdditionalInfoScreen}
-            name={Paths.AdditionalInfoScreen}
-          />
-          <Stack.Screen component={Example} name={Paths.Example} />
-          <Stack.Screen component={Startup} name={Paths.Startup} />
-          <Stack.Screen
-            component={ForgotPasswordScreen}
-            name={Paths.ForgotPasswordScreen}
-          />
-          <Stack.Screen
-            component={ChangePasswordScreen}
-            name={Paths.ChangePasswordScreen}
-          />
+      <NavigationContainer ref={navigationRef} theme={navigationTheme}>
+        <Stack.Navigator key={variant} initialRouteName={Paths.HomeStack} screenOptions={{ headerShown: false }}>
+          <Stack.Screen name={Paths.AuthStack} component={AuthStack} />
+          <Stack.Screen name={Paths.HomeStack} component={HomeStack} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

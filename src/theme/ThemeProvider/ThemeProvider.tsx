@@ -79,7 +79,7 @@ function ThemeProvider({ children = false, storage }: Props) {
       ...staticFontStyles,
     };
   }, [fullConfig]);
-
+console.log('first', fonts)
   const backgrounds = useMemo(() => {
     return {
       ...generateBackgrounds(fullConfig),

@@ -44,6 +44,8 @@ const colorsLight = {
   redError: '#ED1F24',
   greenSuccess: '#25632D',
   lightGreenIconBg: '#D3E0D5',
+  primary: '#8A2BE1',
+  grey: '#666C74',
 
   // primary50: '#e9efea',
   // primary75: '#a6bfa9',
@@ -171,7 +173,8 @@ const colorsDark = {
   redError: '#ED1F24',
   greenSuccess: '#25632D',
   lightGreenIconBg: '#D3E0D5',
-
+  primary: '#8A2BE1',
+  grey: '#666C74',
   // primary50: '#e9efea',
   // primary75: '#a6bfa9',
   // primary100: '#81a585',
@@ -275,6 +278,14 @@ export const config = {
   fonts: {
     colors: colorsLight,
     sizes,
+    bold: {
+      fontWeight: '700',
+      fontFamily: 'Poppins-Bold',
+    },
+    medium: {
+      fontWeight: '500',
+      fontFamily: 'Poppins-medium',
+    },
   },
   gutters: sizes,
   navigationColors: {
@@ -291,6 +302,14 @@ export const config = {
       colors: colorsDark,
       fonts: {
         colors: colorsDark,
+        bold: {
+          fontWeight: '700',
+          fontFamily: 'Poppins-Bold',
+        },
+        medium: {
+          fontWeight: '500',
+          fontFamily: 'Poppins-medium',
+        },
       },
       navigationColors: {
         ...DarkTheme.colors,

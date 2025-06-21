@@ -1878,6 +1878,14 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
+"@react-navigation/bottom-tabs@^7.1.1":
+  version "7.3.17"
+  resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-7.3.17.tgz#a1d9044e9459cbbf78e2b4cba378b0deea581196"
+  integrity sha512-ck6mVExSjuKH1PfFREINaX3jtmd9tzeSjzGzYwYOuSM1KQDpqmDJEzEU5C+Zl5VTD/GC5N0+5uGF02wg4kYMIQ==
+  dependencies:
+    "@react-navigation/elements" "^2.4.6"
+    color "^4.2.3"
+
 "@react-navigation/core@^7.10.0":
   version "7.10.0"
   resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-7.10.0.tgz#8205ea6b84ce34b2fc2c196701b4cd9b434211b9"
@@ -1897,6 +1905,15 @@
   integrity sha512-psoNmnZ0DQIt9nxxPITVLtYW04PGCAfnmd/Pcd3yhiBs93aj+HYKH+SDZDpUnXMf3BN7Wvo4+jPI+/Xjqb+m9w==
   dependencies:
     color "^4.2.3"
+
+"@react-navigation/elements@^2.4.6":
+  version "2.4.6"
+  resolved "https://registry.yarnpkg.com/@react-navigation/elements/-/elements-2.4.6.tgz#2ca302b524909d24cd1f8b6a9813a49e54ff87a7"
+  integrity sha512-G9J9BjR3YNrPbWtjLKBY2pxN9rNYM6Xxyr/LTWK+Ke6UIk2UA4pWFw52WhenWyZw+zFk2wyj1G+VS7UNO40NKQ==
+  dependencies:
+    color "^4.2.3"
+    use-latest-callback "^0.2.4"
+    use-sync-external-store "^1.5.0"
 
 "@react-navigation/native@^7.1.1":
   version "7.1.10"
@@ -7880,6 +7897,11 @@ use-latest-callback@^0.2.3:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/use-latest-callback/-/use-latest-callback-0.2.3.tgz#2d644d3063040b9bc2d4c55bb525a13ae3de9e16"
   integrity sha512-7vI3fBuyRcP91pazVboc4qu+6ZqM8izPWX9k7cRnT8hbD5svslcknsh3S9BUhaK11OmgTV4oWZZVSeQAiV53SQ==
+
+use-latest-callback@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/use-latest-callback/-/use-latest-callback-0.2.4.tgz#35c0f028f85a3f4cf025b06011110e87cc18f57e"
+  integrity sha512-LS2s2n1usUUnDq4oVh1ca6JFX9uSqUncTfAm44WMg0v6TxL7POUTk1B044NH8TeLkFbNajIsgDHcgNpNzZucdg==
 
 use-sync-external-store@^1.5.0:
   version "1.5.0"

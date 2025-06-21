@@ -14,6 +14,7 @@ import { normalizeHeight, pixelSizeY } from '@/utils/sizes';
 import AppText from '../AppText/AppText';
 import Icon from '../Icon/Icon';
 import { useStyles } from './styles';
+import Space from '../Space/Space';
 
 const AppInput: React.FC<IAppInputProps> = memo((props) => {
   const { colors, layout } = useTheme();
@@ -44,7 +45,7 @@ const AppInput: React.FC<IAppInputProps> = memo((props) => {
     onPressCont = () => {},
     onPressIcon = () => {},
     placeholder = '',
-    placeholderColor = colors.placeHolderText,
+    placeholderColor = colors.white,
     rightIconActive = false,
     secureTextEntry = false,
     SVGLeft = null,
@@ -109,12 +110,14 @@ const AppInput: React.FC<IAppInputProps> = memo((props) => {
       {label && (
         <AppText
           title={label}
-          fontSize={14}
-          fontFamily="regular"
-          color={colors.textSecondary}
-          extraStyle={[extraStyle.label, layout.mB(10)]}
+        fontSize={16}
+        fontWeight={500}
+        color={colors.white}
+        // paddingHorizontal={19.5}
+         
         />
       )}
+      <Space mT={7} />
       <View
         // animate={!isOpacity ? {opacity: isFocused ? 1 : 0.5} : undefined}
         // from={{opacity: isOpacity ? 1 : 0.5}}

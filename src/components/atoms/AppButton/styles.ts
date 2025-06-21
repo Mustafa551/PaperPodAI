@@ -15,10 +15,13 @@ export const useStyles = () => {
       alignItems: 'center',
       alignSelf: 'center',
       borderColor: colors.greenPrimary,
-      borderRadius: 8,
+      borderRadius: 100,
       borderWidth: 1,
       flexDirection: 'row',
       justifyContent: 'center',
+      
+      // paddingVertical: 10,
     },
+    
   });
 };

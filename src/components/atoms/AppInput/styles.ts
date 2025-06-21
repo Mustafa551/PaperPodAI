@@ -34,25 +34,29 @@ export const useStyles = () => {
     },
 
     textInput: {
-      color: colors.black,
+      color:'#F5F5F5',
       flex: 1,
-      padding: 0,
+      // paddingHorizontal: 16,
+      // paddingVertical: 12,
       width: '100%',
       // ...TYPOGRAPHY['h1-openSans-regular'],
       height: '100%',
       zIndex: 999,
       ...FONTS_FAMILY.medium,
       // backgroundColor: 'red',
+
     },
 
     textInputCont: {
-      backgroundColor: colors.inputFields,
-      // borderColor: colors.lightStroke,
+      // backgroundColor: colors.inputFields,
+            borderColor:'#F5F5F5',
+      borderWidth: 1,
       borderRadius: 8,
-      // borderWidth: 1,
-      paddingHorizontal: pixelSizeX(20),
+      paddingHorizontal: pixelSizeX(10),
       // paddingVertical: 13,
-      width: '100%',
+      // marginHorizontal: pixelSizeX(16),
+   
+      // width: '95%',
     },
   });
 };

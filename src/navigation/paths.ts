@@ -6,4 +6,10 @@ export const enum Paths {
   ChangePasswordScreen = 'changePasswordScreen',
   SignUpScreen = 'SignUpScreen',
   AdditionalInfoScreen = 'AdditionalInfoScreen',
+  Onboarding = 'Onboarding',
+  Onboarding2 = 'Onboarding2',
+  Onboarding3 = 'Onboarding3',
+  AuthStack = 'AuthStack',
+  HomeStack = 'HomeStack',
+  BottomTabs = 'BottomTabs',
 }

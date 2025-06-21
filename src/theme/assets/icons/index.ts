@@ -95,6 +95,8 @@ export const SVG = {
   BackArrow: require('./BackArrow.svg').default,
   DownArrow: require('./DownArrow.svg').default,
   Document: require('./Document.svg').default,
+  Upload: require('./Upload.svg').default,
+  Library: require('./library.svg').default,
 };
 
 export const SVG_PATH = {

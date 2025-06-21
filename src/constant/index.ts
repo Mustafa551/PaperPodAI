@@ -1,3 +1,5 @@
+import { HomeScreen } from '@/screens';
+import { SVG } from '@/theme/assets/icons';
 import i18next from 'i18next';
 import { CountryCode } from 'libphonenumber-js';
 
@@ -7,6 +9,40 @@ export interface CountryCodeData {
   dialCode: string;
   flag: string;
 }
+
+
+export const BOTTOM_TABS = [
+  {
+    name: 'HomeScreen',
+    component: HomeScreen,
+    svg: SVG.HomeActive,
+    initialParams: {},
+    title: 'Home',
+  },
+  {
+    name: 'FavoriteScreen',
+    component: HomeScreen,
+    svg: SVG.Library,
+    initialParams: {},
+    title: 'Library',
+  },
+  {
+    name: 'BookingScreen',
+    component: HomeScreen,
+    svg: SVG.Upload,
+    initialParams: {},
+    title: 'Upload',
+  },
+  {
+    name: 'HostingScreen',
+    component: HomeScreen,
+    svg: SVG.ProfileActive,
+    initialParams: {},
+    title: 'Profile',
+  },
+
+];
+
 // Sample subset of country codes with emoji flags
 export const countryCodes: CountryCodeData[] = [
   {

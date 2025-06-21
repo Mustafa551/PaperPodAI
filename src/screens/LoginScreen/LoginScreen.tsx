@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { View } from 'react-native';
+import { Image, View } from 'react-native';
 
 import { Paths } from '@/navigation/paths';
 import { RootScreenProps } from '@/navigation/types';
@@ -22,11 +22,15 @@ import { AppScreen } from '@/components/templates';
 
 import { signInSchema } from '@/utils/schemas';
 import { SignInForm } from '@/utils/schemasTypes';
-import { normalizeHeight, normalizeWidth } from '@/utils/sizes';
+import { normalizeHeight, normalizeWidth, pixelSizeX } from '@/utils/sizes';
 
 import useStyles from './style';
 import { useModal } from '@/context/ModalProvider';
 import { useTranslation } from 'react-i18next';
+import LinearGradient from 'react-native-linear-gradient';
+
+
+
 
 const LoginScreen: React.FC<RootScreenProps<Paths.LoginScreen>> = ({
   navigation,
@@ -50,209 +54,71 @@ const LoginScreen: React.FC<RootScreenProps<Paths.LoginScreen>> = ({
     <AppScreen
       ScrollViewProps={{ showsVerticalScrollIndicator: false }}
       preset="scroll"
-      pH
+backgroundColor={colors.black}
+      style={layout.pH(pixelSizeX(10))}
     >
-      {/* <Space mB={20} /> */}
-
-      <View style={layout.alignSelf('center')}>
-        <AssetByVariant
-          resizeMode="contain"
-          path={'logo'}
-          width={normalizeWidth(150)}
-          height={normalizeHeight(150)}
-        />
-      </View>
-      <Space mB={40} />
-
-      <AppText
-        title={t('screen_login.welcomeBack')}
-        // alignSelf="center"
-        fontSize={30}
-        fontFamily="bold"
-        color={colors.textMain}
-      />
-      <Space mB={30} />
-
-      <AppInput
-        control={control}
-        error={errors.email?.message}
-        keyboardType="email-address"
-        name="email"
-        // SVGLeft={
-        //   <SVG.Email width={normalizeWidth(19)} height={normalizeHeight(19)} />
-        // }
-        placeholder={t('placeholder.email')}
-        // label={t('common_labels.email')}
-      />
-      <Space mB={20} />
-
-      <AppInput
-        control={control}
-        error={errors.password?.message}
-        keyboardType="default"
-        name="password"
-        placeholder={t('placeholder.password')}
-        secureTextEntry
-        // SVGLeft={
-        //   <SVG.Lock width={normalizeWidth(19)} height={normalizeHeight(19)} />
-        // }
-        // label={t('common_labels.password')}
-      />
-      <Space mB={5} />
-
-      <AppText
-        onPress={() =>
-          openModal('otpConfirm', {
-            email: 'user@example.com',
-            type: 'passwordReset',
-          })
-        }
-        title={t('common_labels.forgetPassword')}
-        alignSelf="flex-end"
-        fontSize={15}
-        fontFamily="semibold"
-        color={colors.textSecondary}
-      />
-      <Space mB={30} />
-
-      <AppButton
-        bgColor={colors.greenPrimary}
-        // onPress={handleSubmit(onSignin)}
-        onPress={() =>
-          // openModal('forgotPassword', {
-          //   email: 'user@example.com',
-          //   type: 'phoneNum',
-          // })
-          navigation.navigate(Paths.AdditionalInfoScreen)
-        }
-        title={t('common_labels.login')}
-        variant="gradient"
-        shadow={false}
-      />
-
-      <View style={styles.continueWithCont}>
-        <Divider
-          color={colors.darkStroke}
-          height={1}
-          width="10%"
-          alignSelf="center"
-        />
-
-        <AppText
-          title={t('screen_login.orContWith')}
-          variant="body3-openSans-light"
-          alignSelf="center"
-          color={colors.textSecondary}
-          fontSize={12}
-          extraStyle={layout.pH(10)}
-        />
-
-        <Divider
-          color={colors.darkStroke}
-          height={1}
-          width="10%"
-          alignSelf="center"
-        />
-      </View>
-
-      <View style={[layout.rowCenter, layout.justifyBetween]}>
-        <View style={layout.flex(0.35)}>
-          <AppButton
-            // onPress={openHelpCenter}
-            bgColor={colors.white}
-            onPress={handleSubmit(onSignin)}
-            title={t('common_labels.google')}
-            variant="outlined"
-            SVGLeft={
-              <SVG.Google
-                width={normalizeWidth(20)}
-                height={normalizeHeight(20)}
-              />
-            }
-            shadow={false}
-            width={'90%'}
-            outlinedColor={colors.lightStroke}
-            extraStyle={{
-              title: [layout.color(colors.black), FONTS_FAMILY.regular as any],
-            }}
+  
+    
+          <View style={layout.alignSelf('center')}>
+            <AssetByVariant
+              resizeMode="contain"
+              path={'signupbg'}
+              width={normalizeWidth(267)}
+              height={normalizeHeight(247)}
+            />
+          </View>
+          <Space mB={50} />
+    
+          <AppText
+            title={'Welcome Back'}
+            fontSize={24}
+            fontWeight={500}
+            color={"#FFFFFF"}
+            // paddingHorizontal={19.5}
           />
-        </View>
-
-        <View style={layout.flex(0.35)}>
-          <AppButton
-            width={'90%'}
-            // onPress={openHelpCenter}
-            onPress={handleSubmit(onSignin)}
-            bgColor={colors.white}
-            SVGLeft={
-              <SVG.Apple
-                width={normalizeHeight(20)}
-                height={normalizeHeight(20)}
-              />
-            }
-            title={t('common_labels.apple')}
-            outlinedColor={colors.lightStroke}
-            variant="outlined"
-            shadow={false}
-            extraStyle={{
-              title: [layout.color(colors.black), FONTS_FAMILY.regular as any],
-            }}
+          <Space mB={40} />
+     
+          
+          <AppInput
+            control={control}
+            error={errors.email?.message}
+            keyboardType="email-address"
+            name="email"
+            placeholder={'Enter your email'}
+            label='Email'
           />
-        </View>
-
-        <View style={layout.flex(0.35)}>
-          <AppButton
-            width={'90%'}
-            // onPress={openHelpCenter}
-            onPress={handleSubmit(onSignin)}
-            bgColor={colors.white}
-            SVGLeft={
-              <SVG.Facebook
-                width={normalizeHeight(20)}
-                height={normalizeHeight(20)}
-              />
-            }
-            title={t('common_labels.facebook')}
-            outlinedColor={colors.lightStroke}
-            variant="outlined"
-            shadow={false}
-            extraStyle={{
-              title: [layout.color(colors.black), FONTS_FAMILY.regular as any],
-            }}
+    
+          <Space mB={16} />
+    
+          <AppInput
+            control={control}
+            error={errors.password?.message}
+            keyboardType="default"
+            name="password"
+            placeholder={'Enter your password'}
+            secureTextEntry
+            label='Password'
           />
-        </View>
-      </View>
-      <Space mB={60} />
+          <Space mB={5} />
 
-      <AppText
-        title={t('screen_login.dontHaveAcc')}
-        color={colors.textMain}
-        alignSelf="center"
-        fontSize={15}
-        fontFamily="medium"
-      >
-        <AppText
-          title={t('common_labels.registerNow')}
-          onPress={() => navigation.navigate(Paths.SignUpScreen)}
-          color={colors.yellowSecondary}
-          extraStyle={layout.textDecorationLine('underline')}
-          fontSize={15}
-          fontFamily="bold"
-        />
-      </AppText>
-      <Space mB={20} />
+           <AppText
+                  title={t('common_labels.forgetPassword')}
+                  color={colors.white}
+                  alignSelf="flex-end"
+                  fontSize={15}
+                  fontFamily="medium"
+                />
+          <Space mB={16} />
+    
+<AppButton
+         bgColor={"#8A2BE1"}  
+         onPress={handleSubmit(onSignin)}
+         title={'Login'}
+         variant="gradient"
+         shadow={false}
+       />
 
-      <AppModalCentered
-        btn1Title="Got it"
-        btn2Title="Submit Request"
-        description="Congratulations! You have successfully accepted the job invitation. The client will be notified, and you can now start working on the project."
-        // icon={
-        // <SVG.Fire height={normalizeHeight(50)} width={normalizeWidth(50)} />
-        // }
-        onClose={() => {}}
-        title="Job Accepted!"
-        visible={false}
-      />
+    
 
       {/* openModal('responseMessage', {
             // btn1Title: 'Got it',
@@ -310,3 +176,4 @@ const LoginScreen: React.FC<RootScreenProps<Paths.LoginScreen>> = ({
 };
 
 export default LoginScreen;
+

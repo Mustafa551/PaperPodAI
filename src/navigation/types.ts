@@ -11,6 +11,14 @@ export type RootStackParamList = {
   [Paths.ChangePasswordScreen]: undefined;
   [Paths.SignUpScreen]: undefined;
   [Paths.AdditionalInfoScreen]: undefined;
+  [Paths.Onboarding]: undefined;
+  [Paths.Onboarding2]: undefined;
+  [Paths.Onboarding3]: undefined;
+  [Paths.AuthStack]: undefined;
+  [Paths.HomeStack]: undefined;
+  [Paths.BottomTabs]: undefined;
+
+
 };
 
 export type RootScreenProps<
