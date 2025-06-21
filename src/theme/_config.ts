@@ -278,14 +278,6 @@ export const config = {
   fonts: {
     colors: colorsLight,
     sizes,
-    bold: {
-      fontWeight: '700',
-      fontFamily: 'Poppins-Bold',
-    },
-    medium: {
-      fontWeight: '500',
-      fontFamily: 'Poppins-medium',
-    },
   },
   gutters: sizes,
   navigationColors: {
@@ -302,14 +294,6 @@ export const config = {
       colors: colorsDark,
       fonts: {
         colors: colorsDark,
-        bold: {
-          fontWeight: '700',
-          fontFamily: 'Poppins-Bold',
-        },
-        medium: {
-          fontWeight: '500',
-          fontFamily: 'Poppins-medium',
-        },
       },
       navigationColors: {
         ...DarkTheme.colors,
