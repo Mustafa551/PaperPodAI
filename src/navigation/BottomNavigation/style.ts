@@ -9,8 +9,8 @@ export const useStyle = () =>{
  return(   StyleSheet.create({
         tabStyle: {
             backgroundColor: colors.white,
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
+            // borderTopLeftRadius: 20,
+            // borderTopRightRadius: 20,
             height: normalizeHeight(100),
             ...layout.shadow,
             marginTop: pixelSizeY(-20),
