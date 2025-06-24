@@ -42,8 +42,6 @@ export const signUpSchema = (t: TFunction) =>
         .string()
         .min(1, t('errors.emailReq'))
         .email(t('errors.invalidEmail')),
-      location: z.string().min(1, t('errors.locationReq')),
-      referralCode: z.string().optional(),
       password: z
         .string()
         .trim()
@@ -204,3 +202,11 @@ export const AdditionalInfoSchema = (t: TFunction) =>
         });
       }
     });
+
+
+    export const homeSearchSchema = (t: TFunction) =>
+  z.object({
+    search: z
+      .string()
+      .optional(),
+  });

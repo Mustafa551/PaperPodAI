@@ -27,7 +27,7 @@ const AppButton: React.FC<IAppButtonProps> = memo((props) => {
     height = platformiOS(isIphoneX() ? 50 : 55, 47),
     loading = false,
     onPress,
-    outlinedColor = colors.greenPrimary,
+    outlinedColor = colors.primary,
     shadow = true,
     SVGLeft = null,
     SVGRight = null,
@@ -39,7 +39,7 @@ const AppButton: React.FC<IAppButtonProps> = memo((props) => {
   const styles = useStyles();
 
   const color = useMemo(() => {
-    let colorArr = [colors.greenPrimary, colors.greenPrimary];
+    let colorArr = [colors.primary2, colors.primary];
     if (variant === 'outlined') {
       colorArr = [colors.background1, colors.background1] as any;
     }
@@ -60,8 +60,9 @@ const AppButton: React.FC<IAppButtonProps> = memo((props) => {
       <LinearGradient
         {...props}
         colors={bgColor ? [bgColor, bgColor] : color}
-        end={{ x: 1, y: 1 }}
-        start={{ x: 0.1, y: 0.1 }}
+          start={{ x: 0.5, y: 1 }}
+      end={{ x: 0.5, y: 0 }}
+      locations={[0.0001, 1]}
         style={[
           styles.button,
           layout.height(normalizeHeight(height as number)),
