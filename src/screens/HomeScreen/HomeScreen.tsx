@@ -1,32 +1,54 @@
-import { View, Text, Image } from 'react-native';
-import React from 'react';
-import { AppScreen } from '@/components/templates';
-import { useTheme } from '@/theme';
-import { pixelSizeX, pixelSizeY, WIDTH } from '@/utils/sizes';
 import {
   AppButton,
   AppInput,
   AppText,
-  AssetByVariant,
-  Space,
+  Space
 } from '@/components/atoms';
-import { IMAGES } from '@/theme/assets/images';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { homeSearchSchema } from '@/utils/schemas';
-import { useTranslation } from 'react-i18next';
+import { AppScreen } from '@/components/templates';
+import { useTheme } from '@/theme';
 import { SVG } from '@/theme/assets/icons';
-// import { SwiperFlatList } from 'react-native-swiper-flatlist';
+import { IMAGES } from '@/theme/assets/images';
+import { onlyOtpSchema } from '@/utils/schemas';
+import { otpPasswordForm } from '@/utils/schemasTypes';
+import { pixelSizeX, pixelSizeY } from '@/utils/sizes';
+import { zodResolver } from '@hookform/resolvers/zod';
+import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { Image, Text, View } from 'react-native';
+import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field';
+import useStyles from './style';
+
 
 const HomeScreen = () => {
   const { layout, colors } = useTheme();
   const { t } = useTranslation();
+  const styles = useStyles()
 
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-  } = useForm({ resolver: zodResolver(homeSearchSchema(t)) });
+// for otp, start
+    const [value, setValue] = useState('');
+    const ref = useBlurOnFulfill({ value, cellCount: 6 });
+    const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+      value,
+      setValue,
+    });
+  
+    const {
+      control,
+      handleSubmit,
+      formState: { errors },
+      watch,
+    } = useForm<otpPasswordForm>({
+      resolver: zodResolver(onlyOtpSchema(t)),
+    });
+
+    // for otp, end
+
+  // const {
+  //   control,
+  //   formState: { errors },
+  //   handleSubmit,
+  // } = useForm({ resolver: zodResolver(homeSearchSchema(t)) });
 
   return (
     <AppScreen
@@ -96,17 +118,31 @@ const HomeScreen = () => {
       autoplay
       autoplayDelay={2}
       autoplayLoop
+      autoplayLoopKeepAnimation
       index={2}
       showPagination
-      data={[{image: IMAGES.homeBanner,},{image: IMAGES.homeBanner,},{image: IMAGES.homeBanner,}]}
-      renderItem={({ item }) => (
+      paginationStyle={{backgroundColor:'red',height: 50,width: 50}}
+      paginationStyleItem={{width: 20, height:20,backgroundColor:'white'}}
+      paginationDefaultColor='white'
+      pagingEnabled
+      paginationActiveColor='blue'
+      data={[ IMAGES.homeBanner, IMAGES.homeBanner, IMAGES.homeBanner]}
+      renderItem={({ item }) => {
+        console.log('first',item)
+        
+        return(
+          <View style={{width: WIDTH * 0.9,height: 200, marginHorizontal: 10}}>
+
         <Image
-        source={item.image}
-        style={{ width: '100%' }}
+        source={{uri: 'https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg'}}
+        style={{ width: '100%',height: '100%',borderRadius:10 }}
         resizeMode="cover"
-      />
-      )}
+        />
+        </View>
+
+      )}}
     /> */}
+ 
 
       <View style={{width: '100%', backgroundColor: colors.darkShade, paddingVertical: pixelSizeY(20)}}>
         <AppText
@@ -128,6 +164,50 @@ const HomeScreen = () => {
           shadow={false}
         />
       </View>
+
+
+      {/* OTP Input Placeholder, start */}
+      <Controller
+        control={control}
+        name="otp"
+        render={({ field }) => (
+          <CodeField
+            {...props}
+            ref={ref}
+            value={value}
+            onChangeText={(value) => {
+              setValue(value);
+              field.onChange(value);
+            }}
+            cellCount={4}
+            rootStyle={styles.codeFieldRoot}
+            keyboardType="number-pad"
+            textContentType="oneTimeCode"
+            renderCell={({ index, symbol, isFocused }) => (
+              <Text
+                key={index}
+                style={[styles.cell, isFocused && styles.focusCell]}
+                onLayout={getCellOnLayoutHandler(index)}
+              >
+                {symbol || (isFocused ? <Cursor /> : null)}
+              </Text>
+            )}
+          />
+        )}
+      />
+      <Space mB={10} />
+
+      {errors.otp?.message && (
+        <>
+          <AppText
+            title={errors.otp?.message}
+            color={colors.redError}
+            fontSize={12}
+          />
+        </>
+      )}
+      {/* OTP Input Placeholder, end */}
+
     </AppScreen>
   );
 };

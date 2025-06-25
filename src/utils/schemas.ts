@@ -127,6 +127,19 @@ export const otpSchema = (screen: string, t: TFunction) =>
       path: ['confirmPassword'],
     });
 
+
+    export const onlyOtpSchema = ( t: TFunction) =>
+  z
+    .object({
+      otp: z
+        .string()
+        .min(1, { message: t('errors.enterOtp') })
+        .length(4, { message: t('errors.otp6Digits') }),
+
+      
+    })
+   
+
 export const forgotEmailSchema = (t: TFunction, type: string) =>
   z.object({
     email:
