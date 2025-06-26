@@ -1,54 +1,65 @@
-import {
-  AppButton,
-  AppInput,
-  AppText,
-  Space
-} from '@/components/atoms';
+import { AppButton, AppInput, AppText, Space } from '@/components/atoms';
 import { AppScreen } from '@/components/templates';
 import { useTheme } from '@/theme';
 import { SVG } from '@/theme/assets/icons';
 import { IMAGES } from '@/theme/assets/images';
-import { onlyOtpSchema } from '@/utils/schemas';
-import { otpPasswordForm } from '@/utils/schemasTypes';
-import { pixelSizeX, pixelSizeY } from '@/utils/sizes';
+import { homeSearchSchema } from '@/utils/schemas';
+import { pixelSizeX, pixelSizeY, WIDTH } from '@/utils/sizes';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Image, Text, View } from 'react-native';
-import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field';
+import { Image, View } from 'react-native';
+import { useSharedValue } from 'react-native-reanimated';
+import Carousel, { Pagination } from 'react-native-reanimated-carousel';
 import useStyles from './style';
+import { AppCard, SubscriptionBanner } from '@/components/molecules';
 
+const data = [
+{
+          title: 'AI in Healthcare: Breakthroughs in 2025',
+          institute: 'Stanford University',
+          date: 'May 3, 2025',
+          description:
+            'This paper explores cutting-edge applications of artificial intelligence in diagnostics, predictive care...',
+          prof: 'Dr. Emily Rao',
+          image:
+            'https://img.freepik.com/free-photo/top-view-hand-writing-love-letter_23-2150716552.jpg',
+        },
+        {
+          title: 'AI in Healthcare: Breakthroughs in 2025',
+          institute: 'Stanford University',
+          date: 'May 3, 2025',
+          description:
+            'This paper explores cutting-edge applications of artificial intelligence in diagnostics, predictive care...',
+          prof: 'Dr. Emily Rao',
+          image:
+            'https://img.freepik.com/free-photo/top-view-hand-writing-love-letter_23-2150716552.jpg',
+        },
+        {
+          title: 'AI in Healthcare: Breakthroughs in 2025',
+          institute: 'Stanford University',
+          date: 'May 3, 2025',
+          description:
+            'This paper explores cutting-edge applications of artificial intelligence in diagnostics, predictive care...',
+          prof: 'Dr. Emily Rao',
+          image:
+            'https://img.freepik.com/free-photo/top-view-hand-writing-love-letter_23-2150716552.jpg',
+        }
+]
 
 const HomeScreen = () => {
   const { layout, colors } = useTheme();
   const { t } = useTranslation();
-  const styles = useStyles()
+  const styles = useStyles();
+  const scrollOffsetValue = useSharedValue<number>(0);
+  const progress = useSharedValue<number>(0);
 
-// for otp, start
-    const [value, setValue] = useState('');
-    const ref = useBlurOnFulfill({ value, cellCount: 6 });
-    const [props, getCellOnLayoutHandler] = useClearByFocusCell({
-      value,
-      setValue,
-    });
-  
-    const {
-      control,
-      handleSubmit,
-      formState: { errors },
-      watch,
-    } = useForm<otpPasswordForm>({
-      resolver: zodResolver(onlyOtpSchema(t)),
-    });
-
-    // for otp, end
-
-  // const {
-  //   control,
-  //   formState: { errors },
-  //   handleSubmit,
-  // } = useForm({ resolver: zodResolver(homeSearchSchema(t)) });
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+  } = useForm({ resolver: zodResolver(homeSearchSchema(t)) });
 
   return (
     <AppScreen
@@ -113,101 +124,86 @@ const HomeScreen = () => {
 
         <SVG.PlusPrimary />
       </View>
-
-       {/* <SwiperFlatList
-      autoplay
-      autoplayDelay={2}
-      autoplayLoop
-      autoplayLoopKeepAnimation
-      index={2}
-      showPagination
-      paginationStyle={{backgroundColor:'red',height: 50,width: 50}}
-      paginationStyleItem={{width: 20, height:20,backgroundColor:'white'}}
-      paginationDefaultColor='white'
-      pagingEnabled
-      paginationActiveColor='blue'
-      data={[ IMAGES.homeBanner, IMAGES.homeBanner, IMAGES.homeBanner]}
-      renderItem={({ item }) => {
-        console.log('first',item)
-        
-        return(
-          <View style={{width: WIDTH * 0.9,height: 200, marginHorizontal: 10}}>
-
-        <Image
-        source={{uri: 'https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg'}}
-        style={{ width: '100%',height: '100%',borderRadius:10 }}
-        resizeMode="cover"
-        />
-        </View>
-
-      )}}
-    /> */}
- 
-
-      <View style={{width: '100%', backgroundColor: colors.darkShade, paddingVertical: pixelSizeY(20)}}>
-        <AppText
-          title={'Want to listen to your own research as a podcast?'}
-          fontSize={16}
-          textAlign="center"
-          width="60%"
-          alignSelf="center"
-          fontWeight={500}
-          color={colors.white}
-          fontFamily="medium"
-        />
       <Space mB={20} />
 
-        <AppButton
-          onPress={() => {}}
-          title={'Upgrade to Upload Your Own Papers'}
-          variant="gradient"
-          shadow={false}
+      {data.map((val) => (
+
+        
+        <AppCard
+        data={val}
+        />
+      ))}
+      <Space mB={20} />
+
+      <View style={layout.relative}>
+        <Carousel
+          testID={'xxx'}
+          loop={true}
+          width={WIDTH * 0.95}
+          autoPlay
+          height={200}
+          snapEnabled={true}
+          pagingEnabled={true}
+          autoPlayInterval={2000}
+          data={[
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1zwhySGCEBxRRFYIcQgvOLOpRGqrT3d7Qng&s',
+            'https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1zwhySGCEBxRRFYIcQgvOLOpRGqrT3d7Qng&s',
+            'https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1zwhySGCEBxRRFYIcQgvOLOpRGqrT3d7Qng&s',
+            'https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg',
+          ]}
+          defaultScrollOffsetValue={scrollOffsetValue}
+          style={{ width: '100%' }}
+          onScrollStart={() => {
+            console.log('Scroll start');
+          }}
+          onScrollEnd={() => {
+            console.log('Scroll end');
+          }}
+          onConfigurePanGesture={(g: { enabled: (arg0: boolean) => any }) => {
+            'worklet';
+            g.enabled(false);
+          }}
+          onProgressChange={progress}
+          onSnapToItem={(index: number) => console.log('current index:', index)}
+          renderItem={({ item }) => (
+            <Image
+              source={{ uri: item }}
+              style={styles.crouselImage}
+              resizeMode="cover"
+            />
+          )}
+        />
+
+        <Pagination.Basic
+          progress={progress}
+          data={[
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1zwhySGCEBxRRFYIcQgvOLOpRGqrT3d7Qng&s',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUPIfiGgUML8G3ZqsNLHfaCnZK3I5g4tJabQ&s',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1zwhySGCEBxRRFYIcQgvOLOpRGqrT3d7Qng&s',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUPIfiGgUML8G3ZqsNLHfaCnZK3I5g4tJabQ&s',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1zwhySGCEBxRRFYIcQgvOLOpRGqrT3d7Qng&s',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUPIfiGgUML8G3ZqsNLHfaCnZK3I5g4tJabQ&s',
+          ]}
+          dotStyle={{
+            backgroundColor: colors.grey,
+            height: 10,
+            width: 10,
+            borderRadius: 5,
+          }}
+          activeDotStyle={{ backgroundColor: colors.white }}
+          containerStyle={styles.dotContainer}
         />
       </View>
+      <Space mB={40} />
 
-
-      {/* OTP Input Placeholder, start */}
-      <Controller
-        control={control}
-        name="otp"
-        render={({ field }) => (
-          <CodeField
-            {...props}
-            ref={ref}
-            value={value}
-            onChangeText={(value) => {
-              setValue(value);
-              field.onChange(value);
-            }}
-            cellCount={4}
-            rootStyle={styles.codeFieldRoot}
-            keyboardType="number-pad"
-            textContentType="oneTimeCode"
-            renderCell={({ index, symbol, isFocused }) => (
-              <Text
-                key={index}
-                style={[styles.cell, isFocused && styles.focusCell]}
-                onLayout={getCellOnLayoutHandler(index)}
-              >
-                {symbol || (isFocused ? <Cursor /> : null)}
-              </Text>
-            )}
-          />
-        )}
+      <SubscriptionBanner
+        description="Want to listen to your own research as a podcast?"
+        btnTitle="Upgrade to Upload Your Own Papers"
       />
-      <Space mB={10} />
 
-      {errors.otp?.message && (
-        <>
-          <AppText
-            title={errors.otp?.message}
-            color={colors.redError}
-            fontSize={12}
-          />
-        </>
-      )}
-      {/* OTP Input Placeholder, end */}
-
+      <Space mB={20}/>
     </AppScreen>
   );
 };

@@ -1,31 +1,25 @@
 import { StyleSheet } from 'react-native';
 
-import { normalizeFont, normalizeHeight, normalizeWidth, pixelSizeY } from '@/utils/sizes';
 import { useTheme } from '@/theme';
+import { pixelSizeX } from '@/utils/sizes';
 
 const useStyles = () => {
-  const {colors} = useTheme()
+  const { colors } = useTheme();
   return StyleSheet.create({
-   cell: {
-         borderColor: colors.inputFields,
-         backgroundColor: colors.inputFields,
-         borderRadius: pixelSizeY(6),
-         borderWidth: 1,
-         color: 'black',
-         fontSize: normalizeFont(24),
-         fontWeight: '500',
-         height: normalizeHeight(55),
-         paddingTop: pixelSizeY(12),
-         textAlign: 'center',
-         width: normalizeWidth(50),
-       },
-   
-       codeFieldRoot: {},
-   
-       focusCell: {
-         borderColor: colors.lightStroke,
-         borderWidth: 2,
-       },
+    crouselImage: {
+      width: '100%',
+      height: '100%',
+      borderRadius: 10,
+      paddingHorizontal: pixelSizeX(5),
+    },
+
+    dotContainer: {
+      gap: 5,
+      marginBottom: 5,
+      position: 'absolute',
+      bottom: 0,
+      left: pixelSizeX(20),
+    },
   });
 };
 
