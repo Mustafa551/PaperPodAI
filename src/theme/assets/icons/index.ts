@@ -97,6 +97,10 @@ export const SVG = {
   Document: require('./Document.svg').default,
   Upload: require('./Upload.svg').default,
   Library: require('./library.svg').default,
+  Crown: require('./Crown.svg').default,
+  ThreeDots: require('./ThreeDots.svg').default,
+  Download: require('./Download.svg').default,
+  Play: require('./Play.svg').default
 };
 
 export const SVG_PATH = {
