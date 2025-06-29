@@ -1,4 +1,4 @@
-
+ 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
@@ -19,7 +19,6 @@ import {
   AssetByVariant,
   Divider,
   IconByVariant,
-  OtpConfirmModalContent,
   Space,
 } from '@/components/atoms';
 import { AppModalCentered } from '@/components/molecules';
@@ -28,12 +27,11 @@ import { AppScreen } from '@/components/templates';
 import { useModal } from '@/context/ModalProvider';
 import { signUpSchema } from '@/utils/schemas';
 import { SignUpForm } from '@/utils/schemasTypes';
-import { normalizeHeight, normalizeWidth, pixelSizeX } from '@/utils/sizes';
+import { normalizeHeight, normalizeWidth, pixelSizeX, pixelSizeY } from '@/utils/sizes';
 
 import useStyles from './style';
-import OTPConfirmModalContent from '@/components/atoms/OtpConfirmModalContent/OtpConfirmModalContent';
 
-const ChangePasswordScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
+const AccountSetScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
   navigation,
 }) => {
   const { colors, layout } = useTheme();
@@ -58,62 +56,55 @@ const ChangePasswordScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
       style={ layout.pH(pixelSizeX(10))}
     >
       {/* <Space mB={20} /> */}
-      <Space mT={75} />
-
-     <View style={layout.alignSelf('center')}>
-            <AssetByVariant
-              resizeMode="contain"
-              path={'loginbg'}
-              width={normalizeWidth(267)}
-              height={normalizeHeight(247)}
-            />
-          </View>
-
-      <Space mB={80} />
+      <Space mT={80} />
 
       <AppText
-        title={'Create New Password'}
+        title={'Account Settings'}
         fontSize={24}
         fontWeight={500}
         color={"#FFFFFF"}
         // paddingHorizontal={19.5}
       />
-      <Space mB={16} />
+      <Space mB={30} />
+ 
+        <AppInput
+        control={control}
+        error={errors.password?.message}
+        keyboardType="default"
+        name="name"
+        placeholder={'Your Name'}
+        label='Name'
+      />
+      <Space mB={20} />
 
-          <AppText
-              title={"Enter a new password  for your account, your new password must be different form previous password."}
-              fontSize={14}
-              fontWeight={400}
-              color={"#F5F5F5"}
-             
-            />
-      <Space mB={40} />
- 
-   <AppInput
-         control={control}
-         error={errors.password?.message}
-         keyboardType="default"
-         name="password"
-         placeholder={'Enter your password'}
-         secureTextEntry
-         label='New Password'
-       />
-       <Space mB={30} />
- 
-       <AppInput
-         control={control}
-         error={errors.password?.message}
-         keyboardType="default"
-         name="confirmPassword"
-         placeholder={'Confirm your password'}
-         secureTextEntry
-         label='Confirm Password'
-         
- 
-       />
+      <AppInput
+        control={control}
+        error={errors.email?.message}
+        keyboardType="email-address"
+        name="email"
+        placeholder={'user@example.com'}
+        label='Email'
+      />
 
 
-      <Space mB={70} />
+    
+      <Space mB={20} />
+
+          <AppInput
+        control={control}
+        error={errors.password?.message}
+        keyboardType="default"
+        name="name"
+        placeholder={'Upgrade to convert your research papers'}
+        label='Subscription Status'
+        SVGLeft={ <AssetByVariant
+                      resizeMode="contain"
+                      path={'freestat'}
+                      width={normalizeWidth(65)}
+                      height={normalizeHeight(24)}
+                    />}
+      />
+      <Space mB={50} />
 
  <View >
        <AppButton
@@ -126,14 +117,32 @@ const ChangePasswordScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
            // })
            handleSubmit(onSignup)
          }
-         title={'Create New Password'}
+         title={'Logout'}
          variant="gradient"
          shadow={false}
        />
+ 
       </View>
+
+      <Space mB={14} />
+<View style={{ marginHorizontal: -pixelSizeX(10), marginTop: 'auto' }}>
+  <View style={[layout.bgColor('#201E23'), layout.height(pixelSizeY(170)), layout.pH(pixelSizeX(20)), 
+    layout.pV(pixelSizeY(30))]}>
+          <AppText
+                        title={'Want to listen to your own research as a podcast?'}
+                        fontSize={16}
+                        fontWeight={500}
+                        color={'#FFFFFF'}
+                        marginHorizontal={pixelSizeX(70)}
+                        textAlign='center'
+                        extraStyle={{ lineHeight: 22.5 }}
+                      />
+  </View>
+</View>
+
       {/* <Space mB={20} /> */}
     </AppScreen>
   );
 };
 
-export default ChangePasswordScreen;
+export default AccountSetScreen;

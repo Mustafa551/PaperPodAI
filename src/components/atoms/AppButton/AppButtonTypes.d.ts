@@ -18,4 +18,6 @@ export interface IAppButtonProps {
   title: string;
   variant?: ButtonVariant;
   width?: number | string;
+  googleBtn?: boolean;
+ 
 }

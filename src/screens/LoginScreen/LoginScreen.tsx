@@ -57,17 +57,18 @@ const LoginScreen: React.FC<RootScreenProps<Paths.LoginScreen>> = ({
 backgroundColor={colors.black}
       style={layout.pH(pixelSizeX(10))}
     >
+        <Space mT={75} />
   
     
           <View style={layout.alignSelf('center')}>
             <AssetByVariant
               resizeMode="contain"
-              path={'signupbg'}
+              path={'loginbg'}
               width={normalizeWidth(267)}
               height={normalizeHeight(247)}
             />
           </View>
-          <Space mB={50} />
+          <Space mB={35} />
     
           <AppText
             title={'Welcome Back'}
@@ -76,7 +77,7 @@ backgroundColor={colors.black}
             color={"#FFFFFF"}
             // paddingHorizontal={19.5}
           />
-          <Space mB={40} />
+          <Space mB={35} />
      
           
           <AppInput
@@ -102,13 +103,17 @@ backgroundColor={colors.black}
           <Space mB={5} />
 
            <AppText
+               onPress={() =>
+                
+                     navigation.navigate(Paths.ForgotpassScreen)
+                   }
                   title={t('common_labels.forgetPassword')}
                   color={colors.white}
                   alignSelf="flex-end"
                   fontSize={15}
                   fontFamily="medium"
                 />
-          <Space mB={16} />
+          <Space mB={40} />
     
 <AppButton
          bgColor={"#8A2BE1"}  
@@ -118,62 +123,82 @@ backgroundColor={colors.black}
          shadow={false}
        />
 
+       <View style={styles.continueWithCont}>
+        <Divider
+          color={colors.neutrals20}
+          height={1}
+          width="40%"
+          alignSelf="center"
+        />
+
+        <AppText
+          title={'Or'}
+          variant="body3-openSans-light"
+          alignSelf="center"
+          color={colors.neutrals20}
+          fontSize={12}
+          fontFamily="regular"
+          extraStyle={layout.pH(10)}
+        />
+
+        <Divider
+          color={colors.neutrals20}
+          height={1}
+          width="40%"
+          alignSelf="center"
+        />
+      </View>
+
+
+<AppButton
+         bgColor={"transparent"}  
+         onPress={handleSubmit(onSignin)}
+         title={'Continue with Google'}
+         variant="gradient"
+        
+         shadow={false}
+       extraStyle={{
+        button: {
+          borderColor: '#8A2BE1',  
+  },
+  title: {
+          fontWeight: '500',
+        }
+}}
+        SVGLeft={
+            <AssetByVariant
+              resizeMode="contain"
+              path={'google'}
+              width={normalizeWidth(18)}
+              height={normalizeHeight(18)}
+            />
+        }
+       />
+             <Space mB={14} />
+ 
+      <AppText
+           title={"Don't have an account?"}
+           color={colors.white}
+           alignSelf="center"
+           fontSize={15}
+           fontFamily="medium"
+         >
+           <AppText
+             title={'Sign up'}
+             onPress={() => navigation.navigate(Paths.SignUpScreen)}
+             color={colors.white}
+             extraStyle={layout.textDecorationLine('underline')}
+             fontSize={15}
+              fontWeight={500}
+             marginLeft={5}
+           />
+         </AppText>
     
-
-      {/* openModal('responseMessage', {
-            // btn1Title: 'Got it',
-            // btn2Title: 'Submit Request',
-            description: 'Now you can access your account.',
-            icon: (
-              <SVG.TickPrimary
-                height={normalizeHeight(50)}
-                width={normalizeWidth(50)}
-              />
-            ),
-
-            title: 'Email Verified!',
-          }) */}
-
-      {/* <View style={layout.alignSelf('center')}>
-        <ProfileImage />
-      </View> */}
-      {/* <ImageShowcase
-        images={[
-          'https://static.vecteezy.com/system/resources/thumbnails/036/324/708/small/ai-generated-picture-of-a-tiger-walking-in-the-forest-photo.jpg',
-          'https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg',
-          'https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg',
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvS8XRlRIzQ_lvu0EZy88MrE-UkMYfDTPjYQ&s',
-          'https://img-cdn.pixlr.com/image-generator/history/65bb506dcb310754719cf81f/ede935de-1138-4f66-8ed7-44bd16efc709/medium.webp',
-        ]}
-      /> */}
-      {/* <Collapsible
-        title="Job started"
-        date="05th March 2025"
-        leftIcon={<SVG.Fire height={20} width={20} />}
-      >
-        <View>
-          <Text>heie</Text>
-          <Text>heie</Text>
-          <Text>heie</Text>
-          <Text>heie</Text>
-          <Text>heie</Text>
-          <Text>heie</Text>
-          <Text>heie</Text>
-          <Text>heie</Text>
-        </View>
-      </Collapsible> */}
-      {/* <AppImageCrousel
-        images={[
-          'https://static.vecteezy.com/system/resources/thumbnails/036/324/708/small/ai-generated-picture-of-a-tiger-walking-in-the-forest-photo.jpg',
-          'https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg',
-          'https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg',
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvS8XRlRIzQ_lvu0EZy88MrE-UkMYfDTPjYQ&s',
-          'https://img-cdn.pixlr.com/image-generator/history/65bb506dcb310754719cf81f/ede935de-1138-4f66-8ed7-44bd16efc709/medium.webp',
-        ]}
-      /> */}
     </AppScreen>
   );
 };
 
 export default LoginScreen;
+
+
 
