@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Image, View } from 'react-native';
-
 import { Paths } from '@/navigation/paths';
 import { RootScreenProps } from '@/navigation/types';
 import { useTheme } from '@/theme';
@@ -66,9 +65,6 @@ const Onboarding: React.FC<RootScreenProps<Paths.Onboarding>> = ({
   }}
   blurRadius={50}
 />
-
-
-
       <Space mT={144} />
 
       <View style={layout.alignSelf('center')}>
@@ -97,13 +93,11 @@ const Onboarding: React.FC<RootScreenProps<Paths.Onboarding>> = ({
         marginHorizontal={42}
         textAlign='center'
       />
-    
   
 
       <Space mB={5} />
 
-    
-
+      
 <View style={{marginTop: "auto"}}>
       <AppButton
         bgColor={"#8A2BE1"}
@@ -119,10 +113,9 @@ const Onboarding: React.FC<RootScreenProps<Paths.Onboarding>> = ({
         variant="gradient"
         shadow={false}
       />
-
      </View>
-
    
+
       <Space mB={56} />
 
     </AppScreen>
@@ -130,4 +123,8 @@ const Onboarding: React.FC<RootScreenProps<Paths.Onboarding>> = ({
 };
 
 export default Onboarding;
+
+
+
+
 

@@ -107,7 +107,7 @@ const colorsLight = {
 
   // neutrals0: '#ffffff',
   // neutrals15: '#fafafa',
-  // neutrals20: '#f5f5f5',
+  neutrals20: '#f5f5f5',
   // neutrals30: '#ebebeb',
   // neutrals40: '#dedede',
   // neutrals50: '#bfbfbf',
@@ -235,7 +235,7 @@ const colorsDark = {
 
   // neutrals0: '#ffffff',
   // neutrals15: '#fafafa',
-  // neutrals20: '#f5f5f5',
+  neutrals20: '#f5f5f5',
   // neutrals30: '#ebebeb',
   // neutrals40: '#dedede',
   // neutrals50: '#bfbfbf',

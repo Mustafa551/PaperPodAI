@@ -3,13 +3,11 @@ import type { RootStackParamList } from '@/navigation/types';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-
 import { Paths } from '@/navigation/paths';
 import { useTheme } from '@/theme';
-
 import {
-  ForgotPasswordScreen,
-  HomeScreen,
+  AccountSetScreen,
+  LibraryScreen,
   LoginScreen,
   Onboarding,
   Onboarding2,
@@ -19,6 +17,7 @@ import ChangePasswordScreen from '@/screens/ChangePasswordScreen/ChangePasswordS
 import Onboarding3 from '@/screens/Onboarding3/Onboarding3';
 import BottomTabs from './BottomNavigation/BottomNavigation';
 import { navigationRef } from './navigationRef';
+import ForgotpassScreen from '@/screens/ForgotpassScreen/ForgotpassScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -30,9 +29,9 @@ const AuthStack = () => {
       <Stack.Screen component={Onboarding3} name={Paths.Onboarding3} />
       <Stack.Screen name={Paths.LoginScreen} component={LoginScreen} />
       <Stack.Screen name={Paths.SignUpScreen} component={SignUpScreen} />
-      <Stack.Screen
-        name={Paths.ForgotPasswordScreen}
-        component={ForgotPasswordScreen}
+  
+
+      <Stack.Screen name={Paths.ForgotpassScreen} component={ForgotpassScreen}
       />
       <Stack.Screen
         name={Paths.ChangePasswordScreen}
@@ -46,6 +45,10 @@ const HomeStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen component={BottomTabs} name={Paths.BottomTabs} />
+      <Stack.Screen name={Paths.LibraryScreen} component={LibraryScreen} />
+      <Stack.Screen name={Paths.AccountSetScreen} component={AccountSetScreen} />
+
+
     </Stack.Navigator>
   );
 };
@@ -56,7 +59,7 @@ function ApplicationNavigator() {
   return (
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
-        <Stack.Navigator key={variant} initialRouteName={Paths.HomeStack} screenOptions={{ headerShown: false }}>
+        <Stack.Navigator key={variant} initialRouteName={Paths.AuthStack} screenOptions={{ headerShown: false }}>
           <Stack.Screen name={Paths.AuthStack} component={AuthStack} />
           <Stack.Screen name={Paths.HomeStack} component={HomeStack} />
         </Stack.Navigator>

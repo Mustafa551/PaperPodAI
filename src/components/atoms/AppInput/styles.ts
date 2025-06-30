@@ -30,7 +30,7 @@ export const useStyles = () => {
       // borderStyle: 'solid',
       // marginRight: pixelSizeX(18),
       // overflow: 'hidden',
-      paddingRight: pixelSizeX(10),
+      paddingRight: pixelSizeX(6),
     },
 
     textInput: {

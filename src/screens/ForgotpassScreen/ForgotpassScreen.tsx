@@ -19,7 +19,6 @@ import {
   AssetByVariant,
   Divider,
   IconByVariant,
-  OtpConfirmModalContent,
   Space,
 } from '@/components/atoms';
 import { AppModalCentered } from '@/components/molecules';
@@ -31,9 +30,8 @@ import { SignUpForm } from '@/utils/schemasTypes';
 import { normalizeHeight, normalizeWidth, pixelSizeX } from '@/utils/sizes';
 
 import useStyles from './style';
-import OTPConfirmModalContent from '@/components/atoms/OtpConfirmModalContent/OtpConfirmModalContent';
 
-const ChangePasswordScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
+const ForgotpassScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
   navigation,
 }) => {
   const { colors, layout } = useTheme();
@@ -69,10 +67,10 @@ const ChangePasswordScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
             />
           </View>
 
-      <Space mB={80} />
+      <Space mB={155} />
 
       <AppText
-        title={'Create New Password'}
+        title={'Forget Password'}
         fontSize={24}
         fontWeight={500}
         color={"#FFFFFF"}
@@ -81,7 +79,7 @@ const ChangePasswordScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
       <Space mB={16} />
 
           <AppText
-              title={"Enter a new password  for your account, your new password must be different form previous password."}
+              title={"Enter your email address and we will send you instructions to reset your password"}
               fontSize={14}
               fontWeight={400}
               color={"#F5F5F5"}
@@ -89,28 +87,15 @@ const ChangePasswordScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
             />
       <Space mB={40} />
  
-   <AppInput
-         control={control}
-         error={errors.password?.message}
-         keyboardType="default"
-         name="password"
-         placeholder={'Enter your password'}
-         secureTextEntry
-         label='New Password'
-       />
-       <Space mB={30} />
- 
-       <AppInput
-         control={control}
-         error={errors.password?.message}
-         keyboardType="default"
-         name="confirmPassword"
-         placeholder={'Confirm your password'}
-         secureTextEntry
-         label='Confirm Password'
-         
- 
-       />
+      
+      <AppInput
+        control={control}
+        error={errors.email?.message}
+        keyboardType="email-address"
+        name="email"
+        placeholder={'Enter your email'}
+        label='Email'
+      />
 
 
       <Space mB={70} />
@@ -119,21 +104,51 @@ const ChangePasswordScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
        <AppButton
          bgColor={"#8A2BE1"}
          // onPress={handleSubmit(onSignin)}
-         onPress={
+         onPress={() => {
+           navigation.navigate(Paths.ChangePasswordScreen);
+          //  handleSubmit(onSignup);
+         }
            // openModal('forgotPassword', {
            //   email: 'user@example.com',
            //   type: 'phoneNum',
-           // })
-           handleSubmit(onSignup)
+           // })  
          }
-         title={'Create New Password'}
+         title={'Continue'}
          variant="gradient"
          shadow={false}
        />
+ 
       </View>
+
+
+   
+      <Space mB={14} />
+
+
+      <AppText
+           title={"Don't have an account?"}
+           color={colors.white}
+           alignSelf="center"
+           fontSize={15}
+           fontFamily="medium"
+         >
+           <AppText
+             title={'Sign up'}
+             onPress={() => navigation.goBack()}
+             color={colors.white}
+             extraStyle={layout.textDecorationLine('underline')}
+             fontSize={15}
+              fontWeight={500}
+             marginLeft={5}
+           />
+         </AppText>
       {/* <Space mB={20} /> */}
     </AppScreen>
   );
 };
 
-export default ChangePasswordScreen;
+export default ForgotpassScreen;
+
+
+
+

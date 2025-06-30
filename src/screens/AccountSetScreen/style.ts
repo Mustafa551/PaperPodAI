@@ -8,9 +8,8 @@ const useStyles = () => {
       flexDirection: 'row',
       alignItems: 'center',
       alignSelf: 'center',
-      marginVertical: pixelSizeY(20),
-      marginTop: pixelSizeY(16),
-    }
+      marginVertical: pixelSizeY(30),
+    },
   });
 };
 

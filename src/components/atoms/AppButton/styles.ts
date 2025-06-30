@@ -19,7 +19,6 @@ export const useStyles = () => {
       borderWidth: 1,
       flexDirection: 'row',
       justifyContent: 'center',
-      
       // paddingVertical: 10,
     },
     
