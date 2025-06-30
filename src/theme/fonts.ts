@@ -56,29 +56,31 @@ export const staticFontStyles = {
 
 export const FONTS_FAMILY = {
   regular: {
-    fontFamily: 'Satoshi',
+    fontFamily: 'Poppins-Regular',
     fontWeight: '400',
   },
   medium: {
-    fontFamily: 'Satoshi',
+    fontFamily: 'Poppins-Medium',
     fontWeight: '500',
   },
   semibold: {
-    fontFamily: 'Satoshi',
+    fontFamily: 'Poppins-SemiBold',
     fontWeight: '600',
   },
   bold: {
-    fontFamily: 'Satoshi',
+    fontFamily: 'Poppins-Bold',
     fontWeight: '700',
   },
   light: {
-    fontFamily: 'Satoshi',
+    fontFamily: 'Poppins-Light',
     fontWeight: '300',
-  },
-  fontFamily: {
-    fontFamily: 'Satoshi',
-  },
-  fontFamilyItalic: {
-    fontFamily: 'SatoshItalic',
-  },
+  }
 } as const satisfies Record<string, TextStyle>;
+
+export const FONTS = {
+  bold: 'Poppins-Bold',
+  semiBold: 'Poppins-SemiBold',
+  medium: 'Poppins-Medium',
+  regular: 'Poppins-Regular',
+  light: 'Poppins-Light'
+}

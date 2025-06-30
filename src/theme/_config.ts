@@ -46,6 +46,8 @@ const colorsLight = {
   lightGreenIconBg: '#D3E0D5',
   primary: '#8A2BE1',
   grey: '#666C74',
+  darkShade: '#201E23',
+  primary2: '#090311'
 
   // primary50: '#e9efea',
   // primary75: '#a6bfa9',

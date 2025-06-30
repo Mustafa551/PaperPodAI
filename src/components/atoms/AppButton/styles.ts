@@ -14,7 +14,7 @@ export const useStyles = () => {
     button: {
       alignItems: 'center',
       alignSelf: 'center',
-      borderColor: colors.greenPrimary,
+      borderColor: colors.primary,
       borderRadius: 100,
       borderWidth: 1,
       flexDirection: 'row',
