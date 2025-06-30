@@ -7,16 +7,18 @@ export type RootStackParamList = {
   [Paths.Example]: undefined;
   [Paths.LoginScreen]: undefined;
   [Paths.Startup]: undefined;
-  [Paths.ForgotPasswordScreen]: undefined;
+  [Paths.ForgotpassScreen]: undefined;
   [Paths.ChangePasswordScreen]: undefined;
   [Paths.SignUpScreen]: undefined;
   [Paths.AdditionalInfoScreen]: undefined;
   [Paths.Onboarding]: undefined;
   [Paths.Onboarding2]: undefined;
   [Paths.Onboarding3]: undefined;
+  [Paths.LibraryScreen]: undefined;
   [Paths.AuthStack]: undefined;
   [Paths.HomeStack]: undefined;
   [Paths.BottomTabs]: undefined;
+  [Paths.AccountSetScreen]: undefined;
 
 
 };

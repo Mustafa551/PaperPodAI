@@ -352,7 +352,7 @@ const LoginScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
         color={"#FFFFFF"}
         // paddingHorizontal={19.5}
       />
-      <Space mB={40} />
+      <Space mB={35} />
  
       
       <AppInput
@@ -388,7 +388,7 @@ const LoginScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
         
 
       />
-      <Space mB={60} />
+      <Space mB={50} />
 
  <View >
        <AppButton
@@ -422,7 +422,7 @@ const LoginScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
       >
         <AppText
           title={'Login'}
-          onPress={() => navigation.goBack()}
+                  onPress={() => navigation.navigate(Paths.LoginScreen)}
           color={colors.white}
           extraStyle={layout.textDecorationLine('underline')}
           fontSize={15}
