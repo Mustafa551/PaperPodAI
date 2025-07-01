@@ -18,6 +18,7 @@ import Onboarding3 from '@/screens/Onboarding3/Onboarding3';
 import BottomTabs from './BottomNavigation/BottomNavigation';
 import { navigationRef } from './navigationRef';
 import ForgotpassScreen from '@/screens/ForgotpassScreen/ForgotpassScreen';
+import OtpScreen from '@/screens/OtpScreen/OtpScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -36,6 +37,11 @@ const AuthStack = () => {
       <Stack.Screen
         name={Paths.ChangePasswordScreen}
         component={ChangePasswordScreen}
+      />
+
+      <Stack.Screen
+        name={Paths.OtpScreen}
+        component={OtpScreen}
       />
     </Stack.Navigator>
   );

@@ -105,7 +105,7 @@ const ForgotpassScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
          bgColor={"#8A2BE1"}
          // onPress={handleSubmit(onSignin)}
          onPress={() => {
-           navigation.navigate(Paths.ChangePasswordScreen);
+           navigation.navigate(Paths.OtpScreen);
           //  handleSubmit(onSignup);
          }
            // openModal('forgotPassword', {
