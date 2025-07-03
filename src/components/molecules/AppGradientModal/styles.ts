@@ -18,9 +18,9 @@ export const useStyle = () => {
   return StyleSheet.create<IStyle>({
     container: {
       alignItems: 'center',
-      backgroundColor: colors.glassBlack2,
+      backgroundColor: colors.transparent,
       flex: 1,
-      justifyContent: 'center',
+      justifyContent: 'flex-end',
       width: '100%',
     },
 
@@ -37,12 +37,15 @@ export const useStyle = () => {
 
     subContainer: {
       // alignItems: 'center',
-      backgroundColor: colors.darkShade,
+      // backgroundColor: colors.background,
       borderRadius: 30,
       maxHeight: HEIGHT * 0.9,
       paddingHorizontal: pixelSizeX(30),
       paddingVertical: pixelSizeY(20),
-      width: WIDTH * 0.9,
+      width: WIDTH * 0.95,
+      borderWidth: 1,
+      borderColor: colors.primary,
+      marginBottom: pixelSizeY(HEIGHT * 0.1)
     },
   });
 };

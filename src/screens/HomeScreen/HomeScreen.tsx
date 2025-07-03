@@ -13,7 +13,7 @@ import { Image, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import Carousel, { Pagination } from 'react-native-reanimated-carousel';
 import useStyles from './style';
-import { AppCard, SubscriptionBanner } from '@/components/molecules';
+import { AppCard, AppGradientModal, AppModalCentered, SubscriptionBanner } from '@/components/molecules';
 
 const data = [
 {
@@ -204,6 +204,15 @@ const HomeScreen = () => {
       />
 
       <Space mB={20}/>
+
+      {/* <AppModalCentered visible={true} onClose={() => {}} btn2Title='Upgrade to Pro Plan' title='Upgrade To Pro Plan' description='To upload your own research papers and turn them into personalized better audio, and faster processing, you’ll need a premium plan.' /> */}
+      <AppGradientModal data={{...data[0], description: `AI is transforming climate modeling by improving prediction accuracy and processing speed.
+
+It helps analyze vast environmental data and detect complex patterns.
+
+Researchers use AI to simulate climate scenarios more efficiently.
+
+This innovation supports better forecasting and smarter environmental decisions.`}}  visible={true} onClose={() => {}} />
     </AppScreen>
   );
 };
