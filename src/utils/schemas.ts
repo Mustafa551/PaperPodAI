@@ -223,3 +223,10 @@ export const AdditionalInfoSchema = (t: TFunction) =>
       .string()
       .optional(),
   });
+
+  export const uploadSchema = (t: TFunction) =>
+  z.object({
+    link: z
+      .string().min(1,{message: 'Url required'}).url({message: 'Invalid Url'})
+    
+  });

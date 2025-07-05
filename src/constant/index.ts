@@ -1,4 +1,4 @@
-import { AccountSetScreen, HomeScreen, LibraryScreen } from '@/screens';
+import { AccountSetScreen, HomeScreen, LibraryScreen,UploadingScreen } from '@/screens';
 import { SVG } from '@/theme/assets/icons';
 import i18next from 'i18next';
 import { CountryCode } from 'libphonenumber-js';
@@ -27,8 +27,8 @@ export const BOTTOM_TABS = [
     title: 'Library',
   },
   {
-    name: 'BookingScreen',
-    component: HomeScreen,
+    name: 'UploadingScreen',
+    component: UploadingScreen,
     svg: SVG.Upload,
     initialParams: {},
     title: 'Upload',

@@ -133,7 +133,7 @@ const AppGradientModal: React.FC<IAppGradientModalProps> = memo(
                                         button: [layout.borderRadius(50), layout.borderWidth(0)],
                                         title: [fonts.size_14, fonts.semibold],
                                     }}
-                                    SVGLeft={<SVG.Download style={{ top: pixelSizeY(-2) }} />}
+                                    SVGLeft={<SVG.Download2 style={[layout.top(pixelSizeY(-2)), layout.mR(5)]} />}
                                     onPress={onBtnPress}
                                     shadow={false}
                                     title={'Download'}
