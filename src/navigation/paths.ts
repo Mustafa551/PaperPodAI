@@ -15,5 +15,5 @@ export const enum Paths {
   BottomTabs = 'BottomTabs',
   AccountSetScreen = 'AccountSetScreen',
   OtpScreen = 'OtpScreen',
-
+PaywallScreen = 'PaywallScreen'
 }

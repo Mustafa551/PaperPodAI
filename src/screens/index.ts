@@ -11,6 +11,7 @@ export { default as HomeScreen } from './HomeScreen/HomeScreen';
 export { default as LibraryScreen } from './LibraryScreen/LibraryScreen';
 export { default as AccountSetScreen } from './AccountSetScreen/AccountSetScreen';
 export { default as UploadingScreen } from './UploadingScreen/UploadingScreen';
+export { default as PaywallScreen } from './PaywallScreen/PaywallScreen';
 
 
 

@@ -5,9 +5,12 @@ import { AppButton, AppText, Space } from '@/components/atoms'
 import { pixelSizeY } from '@/utils/sizes'
 import { SVG } from '@/theme/assets/icons'
 import { ISubscriptionBannerProps } from './SubscriptionBannerTypes'
+import { useNavigation } from '@react-navigation/native'
+import { NavigationProps } from '@/navigation/types'
 
 const SubscriptionBanner: React.FC<ISubscriptionBannerProps> = ({description, btnTitle}) => {
     const {colors} = useTheme()
+    const navigation = useNavigation<NavigationProps>()
   return (
    <View
         style={{
@@ -29,7 +32,7 @@ const SubscriptionBanner: React.FC<ISubscriptionBannerProps> = ({description, bt
         <Space mB={20} />
 
         <AppButton
-          onPress={() => {}}
+          onPress={() => navigation.navigate('PaywallScreen')}
           title={btnTitle}
           variant="gradient"
           shadow={false}

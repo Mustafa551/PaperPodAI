@@ -11,6 +11,7 @@ import {
   LoginScreen,
   Onboarding,
   Onboarding2,
+  PaywallScreen,
   SignUpScreen
 } from '@/screens';
 import ChangePasswordScreen from '@/screens/ChangePasswordScreen/ChangePasswordScreen';
@@ -52,6 +53,7 @@ const HomeStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen component={BottomTabs} name={Paths.BottomTabs} />
       <Stack.Screen name={Paths.LibraryScreen} component={LibraryScreen} />
+      <Stack.Screen name={Paths.PaywallScreen} component={PaywallScreen} />
       <Stack.Screen name={Paths.AccountSetScreen} component={AccountSetScreen} />
 
 
