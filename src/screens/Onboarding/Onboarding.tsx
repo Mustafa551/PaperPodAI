@@ -125,6 +125,3 @@ const Onboarding: React.FC<RootScreenProps<Paths.Onboarding>> = ({
 export default Onboarding;
 
 
-
-
-
