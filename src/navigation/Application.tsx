@@ -11,6 +11,7 @@ import {
   LoginScreen,
   Onboarding,
   Onboarding2,
+  PaywallScreen,
   SignUpScreen
 } from '@/screens';
 import ChangePasswordScreen from '@/screens/ChangePasswordScreen/ChangePasswordScreen';
@@ -18,6 +19,7 @@ import Onboarding3 from '@/screens/Onboarding3/Onboarding3';
 import BottomTabs from './BottomNavigation/BottomNavigation';
 import { navigationRef } from './navigationRef';
 import ForgotpassScreen from '@/screens/ForgotpassScreen/ForgotpassScreen';
+import OtpScreen from '@/screens/OtpScreen/OtpScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -37,6 +39,11 @@ const AuthStack = () => {
         name={Paths.ChangePasswordScreen}
         component={ChangePasswordScreen}
       />
+
+      <Stack.Screen
+        name={Paths.OtpScreen}
+        component={OtpScreen}
+      />
     </Stack.Navigator>
   );
 };
@@ -46,6 +53,7 @@ const HomeStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen component={BottomTabs} name={Paths.BottomTabs} />
       <Stack.Screen name={Paths.LibraryScreen} component={LibraryScreen} />
+      <Stack.Screen name={Paths.PaywallScreen} component={PaywallScreen} />
       <Stack.Screen name={Paths.AccountSetScreen} component={AccountSetScreen} />
 
 
@@ -59,7 +67,7 @@ function ApplicationNavigator() {
   return (
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
-        <Stack.Navigator key={variant} initialRouteName={Paths.AuthStack} screenOptions={{ headerShown: false }}>
+        <Stack.Navigator key={variant} initialRouteName={Paths.HomeStack} screenOptions={{ headerShown: false }}>
           <Stack.Screen name={Paths.AuthStack} component={AuthStack} />
           <Stack.Screen name={Paths.HomeStack} component={HomeStack} />
         </Stack.Navigator>

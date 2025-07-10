@@ -19,6 +19,9 @@ export type RootStackParamList = {
   [Paths.HomeStack]: undefined;
   [Paths.BottomTabs]: undefined;
   [Paths.AccountSetScreen]: undefined;
+  [Paths.OtpScreen]: undefined;
+  [Paths.PaywallScreen]: undefined;
+  
 
 
 };

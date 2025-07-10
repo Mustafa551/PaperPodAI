@@ -2,6 +2,8 @@ import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
 
 export type BottomParamList = {
   HomeScreen: object;
+  UploadingScreen: object
+
 };
 
 export type BottomTabsProps = {

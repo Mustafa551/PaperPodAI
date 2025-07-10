@@ -28,6 +28,7 @@ import useStyles from './style';
 import { useModal } from '@/context/ModalProvider';
 import { useTranslation } from 'react-i18next';
 import LinearGradient from 'react-native-linear-gradient';
+import { resetStack } from '@/navigation/navigationRef';
 
 
 
@@ -48,6 +49,8 @@ const LoginScreen: React.FC<RootScreenProps<Paths.LoginScreen>> = ({
 
   const onSignin = (value: SignInForm) => {
     console.debug('🚀 ~ onSignin ~ value:', value);
+    // navigation.navigate(Paths.HomeStack)
+    resetStack('HomeStack', 'BottomTabs')
   };
 
   return (

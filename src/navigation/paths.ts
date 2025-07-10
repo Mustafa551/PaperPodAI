@@ -14,5 +14,6 @@ export const enum Paths {
   HomeStack = 'HomeStack',
   BottomTabs = 'BottomTabs',
   AccountSetScreen = 'AccountSetScreen',
-
+  OtpScreen = 'OtpScreen',
+PaywallScreen = 'PaywallScreen'
 }

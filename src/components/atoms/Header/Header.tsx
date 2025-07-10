@@ -1,7 +1,7 @@
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SafeAreaView, View } from 'react-native';
+import {  View } from 'react-native';
 
 import { useTheme } from '@/theme';
 import { SVG } from '@/theme/assets/icons';
@@ -13,6 +13,7 @@ import AppText from '../AppText/AppText';
 import Icon from '../Icon/Icon';
 import { IHeaderProps } from './HeaderTypes';
 import { useStyles } from './styles';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Header: React.FC<IHeaderProps> = memo((props) => {
   const { colors, layout } = useTheme();
@@ -28,7 +29,7 @@ const Header: React.FC<IHeaderProps> = memo((props) => {
     renderLeftFunc = null,
     renderRightFunc = null,
     cross = false,
-    bar = colors.white,
+    bar = colors.black,
     iconColor = colors.black,
 
     onBackPress = null,
@@ -107,8 +108,8 @@ const Header: React.FC<IHeaderProps> = memo((props) => {
               alignSelf="center"
               extraStyle={styles.title}
               fontSize={18}
-              fontFamily="DMBold"
-              color={colors.black}
+              fontFamily="bold"
+              color={colors.white}
             />
           )}
           <View style={styles.rightCont}>

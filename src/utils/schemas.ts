@@ -42,8 +42,6 @@ export const signUpSchema = (t: TFunction) =>
         .string()
         .min(1, t('errors.emailReq'))
         .email(t('errors.invalidEmail')),
-      location: z.string().min(1, t('errors.locationReq')),
-      referralCode: z.string().optional(),
       password: z
         .string()
         .trim()
@@ -129,6 +127,19 @@ export const otpSchema = (screen: string, t: TFunction) =>
       path: ['confirmPassword'],
     });
 
+
+    export const onlyOtpSchema = ( t: TFunction) =>
+  z
+    .object({
+      otp: z
+        .string()
+        .min(1, { message: t('errors.enterOtp') })
+        .length(4, { message: t('errors.otp6Digits') }),
+
+      
+    })
+   
+
 export const forgotEmailSchema = (t: TFunction, type: string) =>
   z.object({
     email:
@@ -204,3 +215,18 @@ export const AdditionalInfoSchema = (t: TFunction) =>
         });
       }
     });
+
+
+    export const homeSearchSchema = (t: TFunction) =>
+  z.object({
+    search: z
+      .string()
+      .optional(),
+  });
+
+  export const uploadSchema = (t: TFunction) =>
+  z.object({
+    link: z
+      .string().min(1,{message: 'Url required'}).url({message: 'Invalid Url'})
+    
+  });

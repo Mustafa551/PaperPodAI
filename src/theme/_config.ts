@@ -45,7 +45,10 @@ const colorsLight = {
   greenSuccess: '#25632D',
   lightGreenIconBg: '#D3E0D5',
   primary: '#8A2BE1',
+  lightPurple: '#F0DFFF',
   grey: '#666C74',
+  darkShade: '#201E23',
+  primary2: '#090311',
 
   // primary50: '#e9efea',
   // primary75: '#a6bfa9',
@@ -174,6 +177,7 @@ const colorsDark = {
   greenSuccess: '#25632D',
   lightGreenIconBg: '#D3E0D5',
   primary: '#8A2BE1',
+  lightPurple: '#F0DFFF',
   grey: '#666C74',
   // primary50: '#e9efea',
   // primary75: '#a6bfa9',

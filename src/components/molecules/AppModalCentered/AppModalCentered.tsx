@@ -26,8 +26,8 @@ const AppModalCentered: React.FC<IAppModalCenteredProps> = memo(
     cancelIcon = false,
     description = '',
     icon = null,
-    onBtn1Press = () => {},
-    onBtn2Press = () => {},
+    onBtn1Press = () => { },
+    onBtn2Press = () => { },
     onClose,
     title = '',
     visible,
@@ -58,7 +58,7 @@ const AppModalCentered: React.FC<IAppModalCenteredProps> = memo(
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.container}>
               <View style={styles.subContainer}>
-                {cancelIcon && (
+                {/* {cancelIcon && (
                   <Icon
                     extraStyle={{
                       container: styles.iconCont,
@@ -72,33 +72,50 @@ const AppModalCentered: React.FC<IAppModalCenteredProps> = memo(
                       />
                     }
                   />
-                )}
+                )} */}
 
                 {icon && icon}
                 <Space mB={10} />
+                <View style={layout.rowCenterBt}>
 
-                <AppText
-                  alignSelf="center"
-                  extraStyle={[fonts.size_24, fonts.black, fonts.semibold]}
-                  title={title}
-                />
-                <Space mB={10} />
+
+                  <AppText
+                    alignSelf="center"
+                    extraStyle={[fonts.size_18, fonts.white, fonts.semibold]}
+                    title={title}
+                    fontFamily='semibold'
+                  />
+                  <TouchableWithoutFeedback onPress={onClose}>
+
+                    <AppText
+                      // alignSelf="center"
+                      onPress={onClose}
+                      extraStyle={[fonts.size_18, fonts.white, fonts.semibold]}
+                      title='x'
+                    fontFamily='semibold'
+
+                    />
+                  </TouchableWithoutFeedback>
+                </View>
+                <Space mB={15} />
 
                 <AppText
                   alignSelf="center"
                   extraStyle={[
                     fonts.size_14,
-                    fonts.darkLiver,
-                    layout.fontFamily('400'),
+                    fonts.white,
+                    // layout.fontFamily('400'),
+                    
                   ]}
-                  textAlign="center"
+                  fontFamily='regular'
+                  // textAlign="center"
                   title={description}
                 />
                 {/* <View style={layout.flex_1}> */}
 
                 {btn2Title && (
                   <>
-                    <Space mB={10} />
+                    <Space mB={20} />
                     <AppButton
                       // extraStyle={{ title: {} }}
                       contViewStyle={{ width: '100%' }}

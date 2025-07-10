@@ -15,7 +15,6 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   View,
@@ -26,6 +25,7 @@ import { useTheme } from '@/theme';
 import { FocusAwareStatusBar } from '@/components/atoms';
 
 import { pixelSizeX } from '@/utils/sizes';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface BaseScreenProps {
   /**

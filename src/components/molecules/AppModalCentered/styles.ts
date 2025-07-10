@@ -36,13 +36,13 @@ export const useStyle = () => {
     },
 
     subContainer: {
-      alignItems: 'center',
-      backgroundColor: colors.background,
+      // alignItems: 'center',
+      backgroundColor: colors.darkShade,
       borderRadius: 30,
       maxHeight: HEIGHT * 0.9,
-      paddingHorizontal: pixelSizeX(10),
+      paddingHorizontal: pixelSizeX(30),
       paddingVertical: pixelSizeY(20),
-      width: WIDTH * 0.8,
+      width: WIDTH * 0.9,
     },
   });
 };
