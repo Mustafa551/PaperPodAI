@@ -281,32 +281,27 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
-
+import { View, Alert } from 'react-native';
+import axios from 'axios';
 import { useTheme } from '@/theme';
-import { SVG } from '@/theme/assets/icons';
 import { FONTS_FAMILY } from '@/theme/fonts';
 import { Paths } from '@/navigation/paths';
 import { RootScreenProps } from '@/navigation/types';
-
 import {
   AppButton,
   AppInput,
   AppText,
   AssetByVariant,
-  Divider,
-  IconByVariant,
   Space,
 } from '@/components/atoms';
-import { AppModalCentered } from '@/components/molecules';
 import { AppScreen } from '@/components/templates';
-
-import { useModal } from '@/context/ModalProvider';
 import { signUpSchema } from '@/utils/schemas';
 import { SignUpForm } from '@/utils/schemasTypes';
 import { normalizeHeight, normalizeWidth, pixelSizeX } from '@/utils/sizes';
-
 import useStyles from './style';
+
+
+const BASE_URL = 'https://rude-vickie-3dotmedia-5ccb6d6e.koyeb.app';
 
 const LoginScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
   navigation,
@@ -317,12 +312,49 @@ const LoginScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
 
   const {
     control,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     handleSubmit,
+    reset,
   } = useForm({ resolver: zodResolver(signUpSchema(t)) });
 
-  const onSignup = (value: SignUpForm) => {
-    console.debug('🚀 ~ onSignin ~ value:', value);
+  React.useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      console.log('Form Validation Errors:', errors);
+    }
+  }, [errors]);
+
+  const onSignup = async (data: SignUpForm) => {
+    console.log('Form Submitted with Data:', data); 
+    try {
+      // console.log('Making API call to:', `${BASE_URL}/v1/user/signup`);
+      const response = await axios.post(
+        `${BASE_URL}/v1/user/signup`,
+        {
+          email: data.email,
+          password: data.password,
+        }, 
+        {
+          headers: {
+            'x-device-id': 'test-device-id',
+            'x-user-agent': 'android',
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      console.log('Signup Response:', response.data);
+      Alert.alert('Success', 'Account created successfully!');
+      reset();
+      navigation.navigate(Paths.LoginScreen);
+    } catch (error: any) {
+      console.error('Signup Error:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      }); 
+      const errorMessage = error.response?.data?.message || 'Something went wrong. Please try again.';
+      Alert.alert('Error', errorMessage);
+    }
   };
 
   return (
@@ -330,11 +362,9 @@ const LoginScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
       ScrollViewProps={{ showsVerticalScrollIndicator: false }}
       backgroundColor={colors.black}
       preset="scroll"
-      style={ layout.pH(pixelSizeX(10))}
+      style={layout.pH(pixelSizeX(10))}
     >
-      {/* <Space mB={20} /> */}
-      <Space mT={80} />
-
+      <Space mT={40} />
       <View style={layout.alignSelf('center')}>
         <AssetByVariant
           resizeMode="contain"
@@ -343,27 +373,24 @@ const LoginScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
           height={normalizeHeight(247)}
         />
       </View>
-      <Space mB={50} />
+      <Space mB={40} />
 
       <AppText
         title={'Create Your Account'}
         fontSize={24}
         fontWeight={500}
-        color={"#FFFFFF"}
-        // paddingHorizontal={19.5}
+        color={'#FFFFFF'}
       />
-      <Space mB={35} />
- 
-      
+      <Space mB={30} />
+
       <AppInput
         control={control}
         error={errors.email?.message}
         keyboardType="email-address"
         name="email"
         placeholder={'Enter your email'}
-        label='Email'
+        label="Email"
       />
-
       <Space mB={16} />
 
       <AppInput
@@ -373,45 +400,37 @@ const LoginScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
         name="password"
         placeholder={'Enter your password'}
         secureTextEntry
-        label='Password'
+        label="Password"
       />
       <Space mB={16} />
 
       <AppInput
         control={control}
-        error={errors.password?.message}
+        error={errors.confirmPassword?.message}
         keyboardType="default"
         name="confirmPassword"
         placeholder={'Confirm your password'}
         secureTextEntry
-        label='Confirm Password'
-        
-
+        label="Confirm Password"
       />
-      <Space mB={50} />
+      <Space mB={40} />
 
- <View >
-       <AppButton
-         bgColor={"#8A2BE1"}
-         // onPress={handleSubmit(onSignin)}
-         onPress={
-           // openModal('forgotPassword', {
-           //   email: 'user@example.com',
-           //   type: 'phoneNum',
-           // })
-           handleSubmit(onSignup)
-         }
-         title={'Sign Up'}
-         variant="gradient"
-         shadow={false}
-       />
- 
+      <View>
+        <AppButton
+          bgColor={'#8A2BE1'}
+          onPress={() => {
+            console.log('Sign Up Button Pressed'); 
+            handleSubmit(onSignup)();
+          }}
+          title={'Sign Up'}
+          variant="gradient"
+          shadow={false}
+          loading={isSubmitting}
+          disabled={isSubmitting}
+        />
       </View>
 
-
-   
       <Space mB={14} />
-
 
       <AppText
         title={t('screen_signUp.alreadyHaveAnAcc')}
@@ -422,15 +441,14 @@ const LoginScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
       >
         <AppText
           title={'Login'}
-                  onPress={() => navigation.navigate(Paths.LoginScreen)}
+          onPress={() => navigation.navigate(Paths.LoginScreen)}
           color={colors.white}
           extraStyle={layout.textDecorationLine('underline')}
           fontSize={15}
-     fontWeight={500}
+          fontWeight={500}
           marginLeft={5}
         />
       </AppText>
-      {/* <Space mB={20} /> */}
     </AppScreen>
   );
 };
