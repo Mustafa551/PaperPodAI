@@ -28,7 +28,7 @@ export default function FocusAwareStatusBar(
   return isFocused ? (
     <StatusBar
       backgroundColor={backgroundColor ? backgroundColor : colors.background}
-      barStyle={navigationTheme.dark ? 'light-content' : 'dark-content'}
+      barStyle={!navigationTheme.dark ? 'light-content' : 'dark-content'}
     />
   ) : null;
 }
