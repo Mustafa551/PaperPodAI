@@ -450,7 +450,7 @@ const LoginScreen: React.FC<RootScreenProps<Paths.LoginScreen>> = () => {
 
   return (
     <AppScreen
-      ScrollViewProps={{ showsVerticalScrollIndicator: false }}
+      ScrollViewProps={{ showsVerticalScrollIndicator: false, contentInsetAdjustmentBehavior: 'automatic' }}
       preset="scroll"
       backgroundColor={colors.black}
       style={layout.pH(pixelSizeX(10))}

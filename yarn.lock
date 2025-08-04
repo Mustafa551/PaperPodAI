@@ -1664,15 +1664,11 @@
 
 "@react-native-community/slider@^4.5.7":
   version "4.5.7"
-  resolved "https://registry.npmjs.org/@react-native-community/slider/-/slider-4.5.7.tgz"
+
+  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-4.5.7.tgz#523178779f302aa162b0d57211842f81522e8ece"
   integrity sha512-WMDDZjNF2Bd8M8TrSqKf5xhM9ikdfCHtSPur64Ow3bB/OVrKufUQZ59NmYdNZNeGPvcHHTsafuYTY8zfZfbchQ==
 
-"@react-native-google-signin/google-signin@^15.0.0":
-  version "15.0.0"
-  resolved "https://registry.npmjs.org/@react-native-google-signin/google-signin/-/google-signin-15.0.0.tgz"
-  integrity sha512-oU49nE+Z9TT/WaO1K7BH/QL2Nx3d2T3I5PGcYdD8swKNtfhMt8qCX/3mOnNEzthTBPrR0CWFGo3LXpkYspalog==
-
-"@react-native-masked-view/masked-view@^0.3.2", "@react-native-masked-view/masked-view@>= 0.2.0":
+"@react-native-masked-view/masked-view@^0.3.2":
   version "0.3.2"
   resolved "https://registry.npmjs.org/@react-native-masked-view/masked-view/-/masked-view-0.3.2.tgz"
   integrity sha512-XwuQoW7/GEgWRMovOQtX3A4PrXhyaZm0lVUiY8qJDvdngjLms9Cpdck6SmGAUNqQwcj2EadHC1HwL0bEyoa/SQ==
@@ -1845,6 +1841,11 @@
     "@react-native/metro-babel-transformer" "0.78.2"
     metro-config "^0.81.3"
     metro-runtime "^0.81.3"
+
+"@react-native/normalize-color@*":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@react-native/normalize-color/-/normalize-color-2.1.0.tgz#939b87a9849e81687d3640c5efa2a486ac266f91"
+  integrity sha512-Z1jQI2NpdFJCVgpY+8Dq/Bt3d+YUi1928Q+/CZm/oh66fzM0RUl54vvuXlPJKybH4pdCZey1eDTPaLHkMPNgWA==
 
 "@react-native/normalize-colors@0.78.2":
   version "0.78.2"
@@ -3496,6 +3497,15 @@ depd@2.0.0:
   resolved "https://registry.npmjs.org/depd/-/depd-2.0.0.tgz"
   integrity sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==
 
+deprecated-react-native-prop-types@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/deprecated-react-native-prop-types/-/deprecated-react-native-prop-types-2.3.0.tgz#c10c6ee75ff2b6de94bb127f142b814e6e08d9ab"
+  integrity sha512-pWD0voFtNYxrVqvBMYf5gq3NA2GCpfodS1yNynTPc93AYA/KEMGeWDqqeUB6R2Z9ZofVhks2aeJXiuQqKNpesA==
+  dependencies:
+    "@react-native/normalize-color" "*"
+    invariant "*"
+    prop-types "*"
+
 destroy@1.2.0:
   version "1.2.0"
   resolved "https://registry.npmjs.org/destroy/-/destroy-1.2.0.tgz"
@@ -4751,7 +4761,7 @@ intl-pluralrules@^2.0.1:
   resolved "https://registry.npmjs.org/intl-pluralrules/-/intl-pluralrules-2.0.1.tgz"
   integrity sha512-astxTLzIdXPeN0K9Rumi6LfMpm3rvNO0iJE+h/k8Kr/is+wPbRe4ikyDjlLr6VTh/mEfNv8RjN+gu3KwDiuhqg==
 
-invariant@^2.2.4:
+invariant@*, invariant@^2.2.4:
   version "2.2.4"
   resolved "https://registry.npmjs.org/invariant/-/invariant-2.2.4.tgz"
   integrity sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==
@@ -6678,7 +6688,7 @@ prompts@^2.0.1, prompts@^2.4.2:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.6.1, prop-types@^15.8.1:
+prop-types@*, prop-types@^15.6.1, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -6846,6 +6856,13 @@ react-native-permissions@^5.3.0:
   resolved "https://registry.npmjs.org/react-native-permissions/-/react-native-permissions-5.4.1.tgz"
   integrity sha512-MTou5DVn8IADr7OQjYePJzcxrVNEeODBvSpB8XOt5qBI9ui3HduSBn/KTNZECH/Ph2Y20OnZBMqe6Wp9IryrgQ==
 
+react-native-radial-gradient@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-radial-gradient/-/react-native-radial-gradient-1.2.1.tgz#52aa4f7f3a6d2cd4a81d13e1feed8aba28d469bb"
+  integrity sha512-q8xYtan4Qz+EWlGT7vyZ7MgxvERs5VrT7gnOsnp2W8D2rsp3vESVr7w6xN4ejshF2hDV7+m5HQyu+zn2voCIng==
+  dependencies:
+    deprecated-react-native-prop-types "^2.3.0"
+
 react-native-reanimated-carousel@^4.0.2:
   version "4.0.2"
   resolved "https://registry.npmjs.org/react-native-reanimated-carousel/-/react-native-reanimated-carousel-4.0.2.tgz"
@@ -6897,7 +6914,8 @@ react-native-snap-carousel@latest:
 
 react-native-sound@^0.11.2:
   version "0.11.2"
-  resolved "https://registry.npmjs.org/react-native-sound/-/react-native-sound-0.11.2.tgz"
+
+  resolved "https://registry.yarnpkg.com/react-native-sound/-/react-native-sound-0.11.2.tgz#e542dc5b9e16ab4b3ac7e6eaddb1fc8d98da9038"
   integrity sha512-LmGc8lgOK3qecYMVQpyHvww/C+wgT6sWeMpVbOe4NCRGC2yKd4fo4U0KBUo9PO7AqKESO3I/2GZg1/C0+bwiiA==
 
 react-native-svg-transformer@^1.5.0:

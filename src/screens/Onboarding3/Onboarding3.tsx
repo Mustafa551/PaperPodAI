@@ -49,8 +49,9 @@ const Onboarding3: React.FC<RootScreenProps<Paths.Onboarding3>> = ({
     <AppScreen
       ScrollViewProps={{ showsVerticalScrollIndicator: false }}
       preset="scroll"
+backgroundColor={colors.black}
 
-      style={layout.bgColor("black")}
+      // style={layout.bgColor("black")}
     >
 <Image
   source={require('../../theme/assets/images/Ellipse15.png')}
