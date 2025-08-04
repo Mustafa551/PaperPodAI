@@ -8,7 +8,7 @@ export type RootStackParamList = {
   [Paths.LoginScreen]: undefined;
   [Paths.Startup]: undefined;
   [Paths.ForgotpassScreen]: undefined;
-  [Paths.ChangePasswordScreen]: undefined;
+  [Paths.ChangePasswordScreen]: { email: string; token?: string };
   [Paths.SignUpScreen]: undefined;
   [Paths.AdditionalInfoScreen]: undefined;
   [Paths.Onboarding]: undefined;
@@ -19,7 +19,7 @@ export type RootStackParamList = {
   [Paths.HomeStack]: undefined;
   [Paths.BottomTabs]: undefined;
   [Paths.AccountSetScreen]: undefined;
-  [Paths.OtpScreen]: undefined;
+  [Paths.OtpScreen]: { email: string };
   [Paths.PaywallScreen]: undefined;
   
 

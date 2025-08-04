@@ -157,17 +157,17 @@ const HomeScreen = () => {
           defaultScrollOffsetValue={scrollOffsetValue}
           style={{ width: '100%' }}
           onScrollStart={() => {
-            console.log('Scroll start');
+            // console.log('Scroll start');
           }}
           onScrollEnd={() => {
-            console.log('Scroll end');
+            // console.log('Scroll end');
           }}
           onConfigurePanGesture={(g: { enabled: (arg0: boolean) => any }) => {
             'worklet';
             g.enabled(false);
           }}
           onProgressChange={progress}
-          onSnapToItem={(index: number) => console.log('current index:', index)}
+          // onSnapToItem={(index: number) => console.log('current index:', index)}
           renderItem={({ item }) => (
             <Image
               source={{ uri: item }}

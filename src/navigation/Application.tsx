@@ -68,11 +68,9 @@ function ApplicationNavigator() {
   return (
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
-        <Stack.Navigator
-          key={variant}
-          // initialRouteName={Paths.HomeStack}
-          screenOptions={{ headerShown: false }}
-        >
+
+        <Stack.Navigator key={variant} initialRouteName={Paths.AuthStack} screenOptions={{ headerShown: false }}>
+
           <Stack.Screen name={Paths.AuthStack} component={AuthStack} />
           <Stack.Screen name={Paths.HomeStack} component={HomeStack} />
         </Stack.Navigator>
