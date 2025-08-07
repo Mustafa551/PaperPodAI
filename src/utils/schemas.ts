@@ -22,22 +22,22 @@ export const signInSchema = (t: TFunction) =>
 export const signUpSchema = (t: TFunction) =>
   z
     .object({
-      firstName: z
-        .string()
-        .min(1, t('errors.firstNameReq'))
-        .max(25, t('errors.nameMax'))
-        .refine((val) => val.length >= 2, { message: t('errors.nameMin') })
-        .refine((val) => REGEX.firstName.test(val), {
-          message: t('errors.firstNameValid'),
-        }),
-      lastName: z
-        .string()
-        .min(2, t('errors.lastNameReq'))
-        .max(25, t('errors.nameMax'))
-        .refine((val) => val.length >= 2, { message: t('errors.nameMin') })
-        .refine((val) => REGEX.lastName.test(val), {
-          message: t('errors.lastNameValid'),
-        }),
+      // firstName: z
+      //   .string()
+      //   .min(1, t('errors.firstNameReq'))
+      //   .max(25, t('errors.nameMax'))
+      //   .refine((val) => val.length >= 2, { message: t('errors.nameMin') })
+      //   .refine((val) => REGEX.firstName.test(val), {
+      //     message: t('errors.firstNameValid'),
+      //   }),
+      // lastName: z
+      //   .string()
+      //   .min(2, t('errors.lastNameReq'))
+      //   .max(25, t('errors.nameMax'))
+      //   .refine((val) => val.length >= 2, { message: t('errors.nameMin') })
+      //   .refine((val) => REGEX.lastName.test(val), {
+      //     message: t('errors.lastNameValid'),
+      //   }),
       email: z
         .string()
         .min(1, t('errors.emailReq'))

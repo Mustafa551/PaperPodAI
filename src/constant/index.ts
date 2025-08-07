@@ -3,6 +3,15 @@ import { SVG } from '@/theme/assets/icons';
 import i18next from 'i18next';
 import { CountryCode } from 'libphonenumber-js';
 
+
+
+
+export const ASYNC_TOKEN_KEY = 'USER_TOKEN';
+export const ASYNC_USER_DATA_KEY = 'USER_DATA';
+export const USER_LANGUAGE = 'USER_LANGUAGE';
+export const FALL_BACK_LANG = 'en-US';
+
+
 export interface CountryCodeData {
   name: string;
   code: CountryCode;

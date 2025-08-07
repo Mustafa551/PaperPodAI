@@ -39,11 +39,12 @@
     "react-native": "0.78.2",
     "react-native-blasted-image": "^1.1.2",
     "react-native-confirmation-code-field": "^7.4.0",
+    "react-native-dotenv": "^3.4.11",
     "react-native-gesture-handler": "^2.25.0",
     "react-native-image-picker": "^8.2.0",
     "react-native-image-slider-box": "^2.0.7",
     "react-native-linear-gradient": "^2.8.3",
-    "react-native-mmkv": "^3.2.0",
+    "react-native-mmkv": "^3.3.0",
     "react-native-permissions": "^5.3.0",
     "react-native-radial-gradient": "^1.2.1",
     "react-native-reanimated": "^3.17.2",
@@ -54,7 +55,8 @@
     "react-native-sound": "^0.11.2",
     "react-native-svg": "^15.11.2",
     "react-native-swiper-flatlist": "^3.2.5",
-    "zod": "^3.24.2"
+    "zod": "^3.24.2",
+    "zustand": "^5.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

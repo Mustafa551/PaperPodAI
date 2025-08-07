@@ -6,7 +6,7 @@ import { NavigationProps } from './types';
 
 export const navigationRef = createNavigationContainerRef<NavigationProps>();
 
-export function navigate(name: any, params: any) {
+export function navigate(name: any, params: any = {}) {
   if (navigationRef.isReady()) {
     navigationRef.navigate(name, params);
   }
