@@ -195,6 +195,7 @@ import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-
 import { onlyOtpSchema } from '@/utils/schemas';
 import { saveAccessToken } from '../../utils/helpers';
 import useStyles from './style';
+import { forgotPassword, verifyOtp } from '@/store/authSlice/authApiService';
 
 const BASE_URL = 'https://rude-vickie-3dotmedia-5ccb6d6e.koyeb.app';
 
@@ -242,91 +243,35 @@ const OtpScreen: React.FC<RootScreenProps<Paths.OtpScreen>> = () => {
   }, [errors]);
 
   const onVerifyOtp = async (data: OtpForm) => {
-    console.log('Form Submitted with Data:', { email, otp: data.otp });
-    try {
-      console.log('Making API call to:', `${BASE_URL}/v1/user/verify-otp`);
-      const response = await axios.post<VerifyOtpResponse>(
-        `${BASE_URL}/v1/user/verify-otp`,
-        {
-          email,
-          otp: data.otp,
-          intent: 'PASSWORD_UPDATE',
-        },
-        {
-          headers: {
-            'x-device-id': 'test-device-id',
-            'x-user-agent': 'android',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+  try {
+    const response = await verifyOtp(email, data.otp, 'PASSWORD_UPDATE');
 
-      console.log('Verify OTP Response:', response.data);
-      if (response.data.success) {
-        if (response.data.token) {
-          await saveAccessToken(response.data.token);
-        } else {
-          console.warn('No access token in verify-otp response');
-        }
-        Alert.alert('Success', 'OTP verified successfully!');
-        reset();
-        navigation.navigate(Paths.ChangePasswordScreen, {
-          email,
-          token: response.data.token,
-        });
-      } else {
-        throw new Error(response.data.message || 'Failed to verify OTP');
-      }
-    } catch (error: unknown) {
-      const axiosError = error as AxiosError<{ message?: string }>;
-      console.error('Verify OTP Error:', {
-        message: axiosError.message,
-        response: axiosError.response?.data,
-        status: axiosError.response?.status,
-        headers: axiosError.response?.headers,
-      });
-      const errorMessage = axiosError.response?.data?.message || 'Something went wrong. Please try again.';
-      Alert.alert('Error', errorMessage);
-    }
-  };
+    // if (response?.token) {
+    //   await saveAccessToken(response.token);
+    // }
 
-  const onResendOtp = async () => {
-    console.log('Resend OTP Button Pressed');
-    try {
-      console.log('Making API call to:', `${BASE_URL}/v1/user/send-otp`);
-      const response = await axios.post<VerifyOtpResponse>(
-        `${BASE_URL}/v1/user/send-otp`,
-        {
-          email,
-        },
-        {
-          headers: {
-            'x-device-id': 'test-device-id',
-            'x-user-agent': 'android',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+    Alert.alert('Success', 'OTP verified successfully!');
+    reset();
+    navigation.navigate(Paths.ChangePasswordScreen, {
+      email,
+      token: response?.token,
+    });
+  } catch (error: any) {
+    const errorMessage = error.message || 'Something went wrong. Please try again.';
+    Alert.alert('Error', errorMessage);
+  }
+};
 
-      console.log('Resend OTP Response:', response.data);
-      if (response.data.success) {
-        Alert.alert('Success', 'New OTP sent to your email!');
-        reset();
-      } else {
-        throw new Error(response.data.message || 'Failed to resend OTP');
-      }
-    } catch (error: unknown) {
-      const axiosError = error as AxiosError<{ message?: string }>;
-      console.error('Resend OTP Error:', {
-        message: axiosError.message,
-        response: axiosError.response?.data,
-        status: axiosError.response?.status,
-        headers: axiosError.response?.headers,
-      });
-      const errorMessage = axiosError.response?.data?.message || 'Something went wrong. Please try again.';
-      Alert.alert('Error', errorMessage);
-    }
-  };
+const onResendOtp = async () => {
+  try {
+    await forgotPassword(email);
+    Alert.alert('Success', 'New OTP sent to your email!');
+    reset();
+  } catch (error: any) {
+    const errorMessage = error.message || 'Something went wrong. Please try again.';
+    Alert.alert('Error', errorMessage);
+  }
+};
 
   return (
     <AppScreen

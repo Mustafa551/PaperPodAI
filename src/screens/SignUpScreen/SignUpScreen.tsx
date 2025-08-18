@@ -299,9 +299,7 @@ import { signUpSchema } from '@/utils/schemas';
 import { SignUpForm } from '@/utils/schemasTypes';
 import { normalizeHeight, normalizeWidth, pixelSizeX } from '@/utils/sizes';
 import useStyles from './style';
-
-
-const BASE_URL = 'https://rude-vickie-3dotmedia-5ccb6d6e.koyeb.app';
+import { signUp } from '@/store/authSlice/authApiService';
 
 const LoginScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
   navigation,
@@ -324,36 +322,18 @@ const LoginScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
   }, [errors]);
 
   const onSignup = async (data: SignUpForm) => {
-    console.log('Form Submitted with Data:', data); 
     try {
-      // console.log('Making API call to:', `${BASE_URL}/v1/user/signup`);
-      const response = await axios.post(
-        `${BASE_URL}/v1/user/signup`,
-        {
-          email: data.email,
-          password: data.password,
-        }, 
-        {
-          headers: {
-            'x-device-id': 'test-device-id',
-            'x-user-agent': 'android',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      console.log('Signup Response:', response.data);
-      Alert.alert('Success', 'Account created successfully!');
-      reset();
+      // Only send the fields your API expects
+      await signUp({
+        email: data.email, // your backend expects emailAddress
+        password: data.password,
+      });
+      // Success: show message and navigate
+      Alert.alert('Success', 'Verification code sent to your email.');
       navigation.navigate(Paths.LoginScreen);
     } catch (error: any) {
-      console.error('Signup Error:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-      }); 
-      const errorMessage = error.response?.data?.message || 'Something went wrong. Please try again.';
-      Alert.alert('Error', errorMessage);
+      // Error handling is already done in signUp, but fallback here
+      Alert.alert('Error', error.message || 'Sign up failed.');
     }
   };
 

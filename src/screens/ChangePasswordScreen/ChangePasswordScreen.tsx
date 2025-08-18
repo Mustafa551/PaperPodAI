@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Alert } from 'react-native';
-import axios, { AxiosError } from 'axios';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,21 +17,14 @@ import {
 import { AppScreen } from '@/components/templates';
 import { normalizeHeight, normalizeWidth, pixelSizeX } from '@/utils/sizes';
 import useStyles from './style';
-import { getAccessToken, clearAuthData } from '../../utils/helpers';
 import { resetStack } from '@/navigation/navigationRef';
 import { changePasswordSchema } from '@/utils/schemas';
-
-const BASE_URL = 'https://rude-vickie-3dotmedia-5ccb6d6e.koyeb.app';
+import { updatePassword } from '@/store/authSlice/authApiService';
 
 type UpdatePasswordForm = {
   password: string;
   confirmPassword: string;
 };
-
-interface UpdatePasswordResponse {
-  success: boolean;
-  message?: string;
-}
 
 const ChangePasswordScreen: React.FC<RootScreenProps<Paths.ChangePasswordScreen>> = () => {
   const { colors, layout } = useTheme();
@@ -40,8 +32,7 @@ const ChangePasswordScreen: React.FC<RootScreenProps<Paths.ChangePasswordScreen>
   const styles = useStyles();
   const navigation = useNavigation<RootScreenProps<Paths.ChangePasswordScreen>['navigation']>();
   const route = useRoute<RootScreenProps<Paths.ChangePasswordScreen>['route']>();
-  const { email, token: navAccessToken } = route.params;
-// console.log(navAccessToken);
+  const { email, token: accessToken } = route.params;
   const {
     control,
     formState: { errors, isSubmitting },
@@ -62,47 +53,16 @@ const ChangePasswordScreen: React.FC<RootScreenProps<Paths.ChangePasswordScreen>
   }, [errors]);
 
   const onUpdatePassword = async (data: UpdatePasswordForm) => {
-    console.log('Form Submitted with Data:', { email, password: data.password });
     try {
-      const accessToken = navAccessToken;
       if (!accessToken) {
         throw new Error('No access token available');
       }
-
-      console.log('Making API call to:', `${BASE_URL}/v1/user/update-password`);
-      const response = await axios.put<UpdatePasswordResponse>(
-        `${BASE_URL}/v1/user/update-password`,
-        {
-          password: data.password,
-        },
-        {
-          headers: {
-            'x-device-id': 'test-device-id',
-            'x-user-agent': 'android',
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-
-      console.log('Update Password Response:', response.data);
-      if (response.data.success) {
-        await clearAuthData();
-        Alert.alert('Success', 'Password updated successfully! Please log in.');
-        reset();
-        resetStack('AuthStack', 'LoginScreen');
-      } else {
-        throw new Error(response.data.message || 'Failed to update password');
-      }
-    } catch (error: unknown) {
-      const axiosError = error as AxiosError<{ message?: string }>;
-      console.error('Update Password Error:', {
-        message: axiosError.message,
-        response: axiosError.response?.data,
-        status: axiosError.response?.status,
-      });
-      await clearAuthData();
-      Alert.alert('Error', 'Session expired or invalid. Please start the password reset process again.');
+      await updatePassword(data.password, accessToken);
+      Alert.alert('Success', 'Password updated successfully! Please log in.');
+      reset();
+      resetStack('AuthStack', 'LoginScreen');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Session expired or invalid. Please start the password reset process again.');
       resetStack('AuthStack', 'LoginScreen');
     }
   };
@@ -169,10 +129,7 @@ const ChangePasswordScreen: React.FC<RootScreenProps<Paths.ChangePasswordScreen>
       <View>
         <AppButton
           bgColor={'#8A2BE1'}
-          onPress={() => {
-            console.log('Create New Password Button Pressed');
-            handleSubmit(onUpdatePassword)();
-          }}
+          onPress={handleSubmit(onUpdatePassword)}
           title={'Create New Password'}
           variant="gradient"
           shadow={false}
@@ -185,7 +142,6 @@ const ChangePasswordScreen: React.FC<RootScreenProps<Paths.ChangePasswordScreen>
 };
 
 export default ChangePasswordScreen;
-
 // import { zodResolver } from '@hookform/resolvers/zod';
 // import { useNavigation } from '@react-navigation/native';
 // import React from 'react';

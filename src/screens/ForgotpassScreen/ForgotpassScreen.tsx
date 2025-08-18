@@ -175,6 +175,7 @@ import { normalizeHeight, normalizeWidth, pixelSizeX } from '@/utils/sizes';
 import useStyles from './style';
 import { saveTokensFromHeaders } from '../../utils/helpers';
 import { forgotPasswordSchema } from '@/utils/schemas';
+import { forgotPassword } from '@/store/authSlice/authApiService';
 
 const BASE_URL = 'https://rude-vickie-3dotmedia-5ccb6d6e.koyeb.app';
 
@@ -211,87 +212,18 @@ const ForgotpassScreen: React.FC<RootScreenProps<Paths.ForgotpassScreen>> = () =
     }
   }, [errors]);
 
-  const onSendOtp = async (data: ForgotPasswordForm) => {
-    console.log('Form Submitted with Data:', data);
-    try {
-      console.log('Making API call to:', `${BASE_URL}/v1/user/send-otp`);
-      const response = await axios.post<SendOtpResponse>(
-        `${BASE_URL}/v1/user/send-otp`,
-        {
-          email: data.email,
-        },
-        {
-          headers: {
-            'x-device-id': 'test-device-id',
-            'x-user-agent': 'android',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      console.log('Send OTP Response:', response.data);
-      if (response.data.success) {
-        Alert.alert('Success', 'OTP sent to your email!');
-        reset();
-        // navigation.navigate(Paths.OtpScreen, { email: data.email });
-      } else {
-        throw new Error(response.data.message || 'Failed to send OTP');
-      }
-    } catch (error: unknown) {
-      const axiosError = error as AxiosError<{ message?: string }>;
-      navigation.navigate(Paths.OtpScreen, { email: data.email });
-      console.error('Send OTP Error:', {
-        message: axiosError.message,
-        response: axiosError.response?.data,
-        status: axiosError.response?.status,
-        headers: axiosError.response?.headers,
-      });
-
-      if (axiosError.response?.status === 401) {
-        console.log('Received 401, extracting new tokens from headers');
-        const newTokens = await saveTokensFromHeaders(axiosError.response?.headers);
-        if (newTokens) {
-          try {
-            console.log('Retrying API call with new tokens');
-            const retryResponse = await axios.post<SendOtpResponse>(
-              `${BASE_URL}/v1/user/send-otp`,
-              {
-                email: data.email,
-              },
-              {
-                headers: {
-                  'x-device-id': 'test-device-id',
-                  'x-user-agent': 'android',
-                  'Content-Type': 'application/json',
-                  Authorization: `Bearer ${newTokens.accessToken}`,
-                },
-              }
-            );
-
-            console.log('Retry Send OTP Response:', retryResponse.data);
-            if (retryResponse.data.success) {
-              Alert.alert('Success', 'OTP sent to your email!');
-              reset();
-              navigation.navigate(Paths.OtpScreen, { email: data.email });
-              return;
-            } else {
-              throw new Error(retryResponse.data.message || 'Retry failed');
-            }
-          } catch (retryError: unknown) {
-            const retryAxiosError = retryError as AxiosError<{ message?: string }>;
-            console.error('Retry Send OTP Error:', {
-              message: retryAxiosError.message,
-              response: retryAxiosError.response?.data,
-              status: retryAxiosError.response?.status,
-            });
-          }
-        }
-      }
-
-      const errorMessage = axiosError.response?.data?.message || 'Something went wrong. Please try again.';
-      Alert.alert('Error', errorMessage);
-    }
-  };
+const onSendOtp = async (data: ForgotPasswordForm) => {
+  try {
+    await forgotPassword(data.email);
+    Alert.alert('Success', 'OTP sent to your email!');
+    reset();
+    // navigation.navigate(Paths.OtpScreen, { email: data.email });
+  } catch (error: any) {
+    const errorMessage = error.message || 'Something went wrong. Please try again.';
+    Alert.alert('Error', errorMessage);
+    navigation.navigate(Paths.OtpScreen, { email: data.email });
+  }
+};
 
   return (
     <AppScreen

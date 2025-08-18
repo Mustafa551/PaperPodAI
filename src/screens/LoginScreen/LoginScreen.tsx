@@ -269,6 +269,7 @@ import { SignInForm } from '@/utils/schemasTypes';
 import { normalizeHeight, normalizeWidth, pixelSizeX } from '@/utils/sizes';
 import useStyles from './style';
 import { resetStack } from '@/navigation/navigationRef';
+import { signIn } from '@/store/authSlice/authApiService';
 
 // Backend URL
 const BASE_URL = 'https://rude-vickie-3dotmedia-5ccb6d6e.koyeb.app';
@@ -334,43 +335,16 @@ const LoginScreen: React.FC<RootScreenProps<Paths.LoginScreen>> = () => {
 
   // Email/Password Login API call
   const onSignin = async (data: SignInForm) => {
-    console.log('Form Submitted with Data:', data);
     try {
-      console.log('Making API call to:', `${BASE_URL}/v1/user/login`);
-      const response = await axios.post<AuthResponse>(
-        `${BASE_URL}/v1/user/login`,
-        {
-          email: data.email,
-          password: data.password,
-        },
-        {
-          headers: {
-            'x-device-id': 'test-device-id',
-            'x-user-agent': 'android',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      console.log('Login Response:', response.data);
-      const { accessToken, refreshToken, user, success } = response.data;
-
-      if (success) {
-        await saveAuthData(accessToken, refreshToken, user);
-        Alert.alert('Success', 'Logged in successfully!');
-        reset();
-        resetStack('HomeStack', 'BottomTabs');
-      } else {
-        throw new Error(response.data.message || 'Login failed');
-      }
-    } catch (error: unknown) {
-      const axiosError = error as AxiosError<{ message?: string }>;
-      console.error('Login Error:', {
-        message: axiosError.message,
-        response: axiosError.response?.data,
-        status: axiosError.response?.status,
+      await signIn({
+        email: data.email,
+        password: data.password,
       });
-      const errorMessage = axiosError.response?.data?.message || 'Something went wrong. Please try again.';
+      Alert.alert('Success', 'Logged in successfully!');
+      reset();
+      resetStack('HomeStack', 'BottomTabs');
+    } catch (error: any) {
+      const errorMessage = error.message || 'Something went wrong. Please try again.';
       Alert.alert('Error', errorMessage);
     }
   };
