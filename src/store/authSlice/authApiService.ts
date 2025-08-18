@@ -1,5 +1,5 @@
 // authApiService.ts
-import {AUTH_API} from '../../api';
+import {API, AUTH_API} from '../../api';
 import {loadStorage} from '../../utils/storage/storage';
 import {resetAllSlices} from '../utils';
 import Toast from 'react-native-simple-toast';
@@ -8,74 +8,185 @@ import {tokenType, userDataType} from '../../@types';
 import {emailPassType, SignUpParams} from './types';
 import { ASYNC_TOKEN_KEY, ASYNC_USER_DATA_KEY } from '@/constant';
 import { navigate } from '@/navigation/navigationRef';
+import { Alert } from 'react-native';
+
+// export const signIn = async (params: emailPassType) => {
+//   try {
+//     const response = await AUTH_API.post('/auth/signin', {
+//       emailAddress: params.email,
+//       password: params.password,
+//     });
+
+//     console.log('🚀 ~ signIn: ~ response:', response);
+//     const user = response.data;
+//     if (user?.data && user?.tokens) {
+//       /*
+//        ** updating user data as well as tokens
+//        */
+//       useAppStore.getState().updateUserDataToken(user?.data, user?.tokens);
+//     }
+//   } catch (error: any | unknown) {
+//     console.log('🚀 ~ signIn: ~ error:', error);
+//     if (error?.response?.data?.message === 'User not confirmed') {
+//       resendConfirmationCode(params.email);
+//       Toast.show('User is not confirmed', Toast.LONG);
+//       navigate('ConfirmSignupScreen', {
+//         email: params.email,
+//         password: params.password,
+//       });
+//       return;
+//     }
+//     handleAuthContextError('signIn', error);
+//   }
+// };
 
 export const signIn = async (params: emailPassType) => {
   try {
-    const response = await AUTH_API.post('/auth/signin', {
-      emailAddress: params.email,
-      password: params.password,
-    });
-
+    const response = await AUTH_API.post(
+      '/v1/user/login',
+      {
+        email: params.email,
+        password: params.password,
+      },
+      {
+        headers: {
+          'x-device-id': 'test-device-id',
+          'x-user-agent': 'android',
+        },
+      }
+    );
     console.log('🚀 ~ signIn: ~ response:', response);
     const user = response.data;
     if (user?.data && user?.tokens) {
-      /*
-       ** updating user data as well as tokens
-       */
       useAppStore.getState().updateUserDataToken(user?.data, user?.tokens);
     }
-  } catch (error: any | unknown) {
-    console.log('🚀 ~ signIn: ~ error:', error);
-    if (error?.response?.data?.message === 'User not confirmed') {
-      resendConfirmationCode(params.email);
-      Toast.show('User is not confirmed', Toast.LONG);
-      navigate('ConfirmSignupScreen', {
-        email: params.email,
-        password: params.password,
-      });
-      return;
-    }
+    Toast.show('Login successful!', Toast.LONG);
+  } catch (error: any) {
+    console.log('🚀 ~ signIn: ~ error:', error?.response?.data || error);
     handleAuthContextError('signIn', error);
+    throw new Error(error?.response?.data?.message || error.message || 'Login failed');
   }
 };
 
 export const signUp = async (params: SignUpParams) => {
   try {
-    const response = await AUTH_API.post('/auth/signup', params);
+    const response = await AUTH_API.post(
+      '/v1/user/signup',
+      {
+        email: params.email,
+        password: params.password,
+      },
+      {
+        headers: {
+          'x-device-id': 'test-device-id',
+          'x-user-agent': 'android',
+        },
+      }
+    );
     console.log('🚀 ~ signUp: ~ response:', response);
-    Toast.show('Verification code has been sent to your email address', Toast.LONG);
+    Toast.show('Account created successfully!', Toast.LONG);
   } catch (error: any) {
-    console.log('🚀 ~ signUp: ~ error:', error);
+    console.log('🚀 ~ signUp: ~ error:', error?.response?.data || error);
     handleAuthContextError('signUp', error);
-    throw new Error(error.message || 'Sign-up failed');
+    throw new Error(error?.response?.data?.message || error.message || 'Sign-up failed');
   }
 };
 
-export const forgotPassword = async (emailAddress: string) => {
+// export const forgotPassword = async (emailAddress: string) => {
+//   try {
+//     const response = await AUTH_API.post('/auth/forgot/password', {emailAddress});
+//     console.log('🚀 ~ forgotPassword: ~ response:', response);
+//     Toast.show('Password reset email sent successfully', Toast.LONG);
+//   } catch (error: any) {
+//     console.log('🚀 ~ forgotPassword: ~ error:', error);
+//     handleAuthContextError('forgotPassword', error);
+//     throw new Error(error.message || 'Forgot password failed');
+//   }
+// };
+
+export const forgotPassword = async (email: string) => {
   try {
-    const response = await AUTH_API.post('/auth/forgot/password', {emailAddress});
+    const response = await AUTH_API.post(
+      '/v1/user/send-otp',
+      { email },
+      {
+        headers: {
+          'x-device-id': 'test-device-id',
+          'x-user-agent': 'android',
+        },
+      }
+    );
     console.log('🚀 ~ forgotPassword: ~ response:', response);
-    Toast.show('Password reset email sent successfully', Toast.LONG);
+    Toast.show('OTP sent to your email address', Toast.LONG);
   } catch (error: any) {
-    console.log('🚀 ~ forgotPassword: ~ error:', error);
+    console.log('🚀 ~ forgotPassword: ~ error:', error?.response?.data || error);
     handleAuthContextError('forgotPassword', error);
-    throw new Error(error.message || 'Forgot password failed');
+    throw new Error(error?.response?.data?.message || error.message || 'Forgot password failed');
   }
 };
 
-export const forgotChangePassword = async (emailAddress: string, password: string, confirmationCode: string) => {
+
+// export const forgotChangePassword = async (emailAddress: string, password: string, confirmationCode: string) => {
+//   try {
+//     const response = await AUTH_API.post('/auth/forgot/change/password', {
+//       emailAddress,
+//       password,
+//       confirmationCode,
+//     });
+//     console.log('🚀 ~ forgotChangePassword: ~ response:', response);
+//     Toast.show('Password changed successfully', Toast.LONG);
+//   } catch (error: any) {
+//     console.log('🚀 ~ forgotChangePassword: ~ error:', error);
+//     handleAuthContextError('forgotChangePassword', error);
+//     throw new Error(error.message || 'Change password failed');
+//   }
+// };
+
+
+export const verifyOtp = async (email: string, otp: string, intent: string = 'PASSWORD_UPDATE') => {
   try {
-    const response = await AUTH_API.post('/auth/forgot/change/password', {
-      emailAddress,
-      password,
-      confirmationCode,
-    });
-    console.log('🚀 ~ forgotChangePassword: ~ response:', response);
-    Toast.show('Password changed successfully', Toast.LONG);
+    const response = await AUTH_API.post(
+      '/v1/user/verify-otp',
+      { email, otp, intent },
+      {
+        headers: {
+          'x-device-id': 'test-device-  id',
+          'x-user-agent': 'android',
+        },
+      }
+    );
+    console.log('🚀 ~ verifyOtp: ~ response:', response);
+    Toast.show('OTP verified successfully!', Toast.LONG);
+    // You may want to return the token from response.data if needed for next step
+    return response.data;
   } catch (error: any) {
-    console.log('🚀 ~ forgotChangePassword: ~ error:', error);
-    handleAuthContextError('forgotChangePassword', error);
-    throw new Error(error.message || 'Change password failed');
+    console.log('🚀 ~ verifyOtp: ~ error:', error?.response?.data || error);
+    handleAuthContextError('verifyOtp', error);
+    throw new Error(error?.response?.data?.message || error.message || 'OTP verification failed');
+  }
+};
+
+export const updatePassword = async (password: string, accessToken: string) => {
+  try {
+    const response = await AUTH_API.put(
+      '/v1/user/update-password',
+      { password },
+      {
+        headers: {
+          'x-device-id': 'test-device-id',
+          'x-user-agent': 'android',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    console.log('🚀 ~ updatePassword: ~ response:', response);
+    Toast.show('Password updated successfully!', Toast.LONG);
+    // Alert.alert('Success', 'Password updated successfully! Please log in.');
+    return response.data;
+  } catch (error: any) {
+    console.log('🚀 ~ updatePassword: ~ error:', error?.response?.data || error);
+    handleAuthContextError('updatePassword', error);
+    throw new Error(error?.response?.data?.message || error.message || 'Password update failed');
   }
 };
 

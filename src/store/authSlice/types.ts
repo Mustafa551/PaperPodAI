@@ -6,13 +6,13 @@ export interface emailPassType {
 }
 
 export interface SignUpParams {
-  emailAddress: string;
+  email: string;
   password: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber?: string;
-  state?: string;
-  city?: string;
+  // firstName: string;
+  // lastName: string;
+  // phoneNumber?: string;
+  // state?: string;
+  // city?: string;
 }
 
 /*
