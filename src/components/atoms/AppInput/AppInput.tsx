@@ -168,6 +168,7 @@ const AppInput: React.FC<IAppInputProps> = memo((props) => {
           placeholderTextColor={placeholderColor}
           selectionColor={colors.black}
           style={[styles.textInput, extraStyle.textInput]}
+          cursorColor={colors.white}
           value={value || field.value}
           {...(secureTextEntry && { secureTextEntry: !showPassword })}
         />

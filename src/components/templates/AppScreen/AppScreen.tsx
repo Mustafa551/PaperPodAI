@@ -24,8 +24,9 @@ import { useTheme } from '@/theme';
 
 import { FocusAwareStatusBar } from '@/components/atoms';
 
-import { pixelSizeX } from '@/utils/sizes';
+import { pixelSizeX, WIDTH } from '@/utils/sizes';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Radial from 'react-native-radial-gradient';
 
 interface BaseScreenProps {
   /**
@@ -59,6 +60,9 @@ interface BaseScreenProps {
   backgroundImage?: ImageSourcePropType;
 
   KeyboardAvoidingViewProps?: keyboardProps;
+
+  isGradient?: boolean
+isGradientLeft?: boolean
 }
 
 interface FixedScreenProps extends BaseScreenProps {
@@ -158,6 +162,8 @@ export default function Screen(props: ScreenProps) {
     pH = false,
     preset = 'fixed',
     statusBarStyle = 'default',
+    isGradient = true,
+    isGradientLeft = false
   } = props;
   /*
    ** Hooks
@@ -177,6 +183,14 @@ export default function Screen(props: ScreenProps) {
           barStyle={navigationTheme.dark ? 'light-content' : 'dark-content'}
         />
       )}
+      {isGradient &&
+           <Radial
+           style={{height: '100%',width: '100%', position: 'absolute',}}
+           colors={['#8A2BE1', '#000000']}
+           center={isGradientLeft ? [30,60] :[WIDTH-30, 80]} // X and Y position of the center of gradient
+           radius={400}
+           />
+          }
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={

@@ -24,7 +24,6 @@ import { useModal } from '@/context/ModalProvider';
 import { useTranslation } from 'react-i18next';
 import LinearGradient from 'react-native-linear-gradient';
 import useStyles from '../LoginScreen/style';
-import Radial from 'react-native-radial-gradient';
 
 
 const Onboarding: React.FC<RootScreenProps<Paths.Onboarding>> = ({
@@ -50,16 +49,11 @@ const Onboarding: React.FC<RootScreenProps<Paths.Onboarding>> = ({
       ScrollViewProps={{ showsVerticalScrollIndicator: false }}
       preset="scroll"
 backgroundColor={colors.black}
-
+isGradientLeft
       // style={layout.bgColor("black")}
     >
-        <Radial
-      style={{}}
-      colors={['#8A2BE1', '#000000']}
-      center={[180, 300]} // X and Y position of the center of gradient
-      radius={400}
-     />
-<Image
+   
+{/* <Image
   source={require('../../theme/assets/images/Ellipse15.png')}
   style={{
     position: 'absolute',
@@ -72,7 +66,7 @@ backgroundColor={colors.black}
     zIndex: -1,
   }}
   blurRadius={50}
-/>
+/> */}
       <Space mT={144} />
 
       <View style={layout.alignSelf('center')}>

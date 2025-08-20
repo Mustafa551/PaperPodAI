@@ -50,10 +50,12 @@ const Onboarding2: React.FC<RootScreenProps<Paths.Onboarding2>> = ({
       ScrollViewProps={{ showsVerticalScrollIndicator: false }}
       preset="scroll"
 backgroundColor={colors.black}
+isGradientLeft
+
 
       // style={layout.bgColor("black")}
     >
-<Image
+{/* <Image
   source={require('../../theme/assets/images/Ellipse15.png')}
   style={{
     position: 'absolute',
@@ -66,7 +68,7 @@ backgroundColor={colors.black}
     zIndex: -1,
   }}
   blurRadius={50}
-/>
+/> */}
 
 
 

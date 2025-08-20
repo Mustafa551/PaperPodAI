@@ -558,6 +558,7 @@ const LoginScreen: React.FC<RootScreenProps<Paths.LoginScreen>> = () => {
           marginLeft={5}
         />
       </AppText>
+      <Space mB={30}/>
     </AppScreen>
   );
 };

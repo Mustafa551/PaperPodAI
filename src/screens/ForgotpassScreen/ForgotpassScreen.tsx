@@ -151,18 +151,6 @@
 
 
 
-import React, { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { View, Alert } from 'react-native';
-import axios, { AxiosError } from 'axios';
-import { useNavigation } from '@react-navigation/native';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useTheme } from '@/theme';
-import { FONTS_FAMILY } from '@/theme/fonts';
-import { Paths } from '@/navigation/paths';
-import { RootScreenProps } from '@/navigation/types';
 import {
   AppButton,
   AppInput,
@@ -171,11 +159,19 @@ import {
   Space,
 } from '@/components/atoms';
 import { AppScreen } from '@/components/templates';
-import { normalizeHeight, normalizeWidth, pixelSizeX } from '@/utils/sizes';
-import useStyles from './style';
-import { saveTokensFromHeaders } from '../../utils/helpers';
-import { forgotPasswordSchema } from '@/utils/schemas';
+import { Paths } from '@/navigation/paths';
+import { RootScreenProps } from '@/navigation/types';
 import { forgotPassword } from '@/store/authSlice/authApiService';
+import { useTheme } from '@/theme';
+import { forgotPasswordSchema } from '@/utils/schemas';
+import { normalizeHeight, normalizeWidth, pixelSizeX } from '@/utils/sizes';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { Alert, View } from 'react-native';
+import useStyles from './style';
 
 const BASE_URL = 'https://rude-vickie-3dotmedia-5ccb6d6e.koyeb.app';
 
@@ -270,7 +266,7 @@ const onSendOtp = async (data: ForgotPasswordForm) => {
         label="Email"
       />
 
-      <Space mB={70} />
+      <Space mB={50} />
 
       <View>
         <AppButton
@@ -287,25 +283,9 @@ const onSendOtp = async (data: ForgotPasswordForm) => {
         />
       </View>
 
-      <Space mB={14} />
+      <Space mB={20} />
 
-      <AppText
-        title={"Don't have an account?"}
-        color={colors.white}
-        alignSelf="center"
-        fontSize={15}
-        fontFamily="medium"
-      >
-        <AppText
-          title={'Sign up'}
-          onPress={() => navigation.navigate(Paths.SignUpScreen)}
-          color={colors.white}
-          extraStyle={layout.textDecorationLine('underline')}
-          fontSize={15}
-          fontWeight={500}
-          marginLeft={5}
-        />
-      </AppText>
+    
     </AppScreen>
   );
 };

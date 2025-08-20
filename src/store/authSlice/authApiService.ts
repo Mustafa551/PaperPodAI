@@ -184,7 +184,7 @@ export const updatePassword = async (password: string, accessToken: string) => {
     // Alert.alert('Success', 'Password updated successfully! Please log in.');
     return response.data;
   } catch (error: any) {
-    console.log('🚀 ~ updatePassword: ~ error:', error?.response?.data || error);
+    console.log('🚀 ~ updatePassword: ~ error:', error?.response?.data || error, error.response);
     handleAuthContextError('updatePassword', error);
     throw new Error(error?.response?.data?.message || error.message || 'Password update failed');
   }
