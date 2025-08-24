@@ -213,11 +213,12 @@ const onSendOtp = async (data: ForgotPasswordForm) => {
     await forgotPassword(data.email);
     Alert.alert('Success', 'OTP sent to your email!');
     reset();
-    // navigation.navigate(Paths.OtpScreen, { email: data.email });
+    navigation.navigate(Paths.OtpScreen, { email: data.email });
   } catch (error: any) {
+    console.log("🚀 ~ onSendOtp ~ error:", error)
     const errorMessage = error.message || 'Something went wrong. Please try again.';
     Alert.alert('Error', errorMessage);
-    navigation.navigate(Paths.OtpScreen, { email: data.email });
+    // navigation.navigate(Paths.OtpScreen, { email: data.email });
   }
 };
 

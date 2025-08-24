@@ -30,14 +30,14 @@ export const signUpSchema = (t: TFunction) =>
       //   .refine((val) => REGEX.firstName.test(val), {
       //     message: t('errors.firstNameValid'),
       //   }),
-      // lastName: z
-      //   .string()
-      //   .min(2, t('errors.lastNameReq'))
-      //   .max(25, t('errors.nameMax'))
-      //   .refine((val) => val.length >= 2, { message: t('errors.nameMin') })
-      //   .refine((val) => REGEX.lastName.test(val), {
-      //     message: t('errors.lastNameValid'),
-      //   }),
+      name: z
+        .string()
+        .min(2, t('errors.nameReq'))
+        .max(25, t('errors.nameMax'))
+        .refine((val) => val.length >= 2, { message: t('errors.nameMin') })
+        .refine((val) => REGEX.lastName.test(val), {
+          message: t('errors.nameValid'),
+        }),
       email: z
         .string()
         .min(1, t('errors.emailReq'))
@@ -45,6 +45,7 @@ export const signUpSchema = (t: TFunction) =>
       password: z
         .string()
         .trim()
+        .regex(REGEX.password,{message: t('errors.passwordInc')})
         .refine((value) => value.trim().length > 0, {
           message: t('errors.passReq'),
         }),
@@ -76,9 +77,7 @@ export const changePasswordSchema = (t: TFunction) =>
         .trim()
         .min(1, t('errors.passReq'))
         .max(256, t('errors.passwordLong'))
-        .refine((value) => REGEX.password.test(value.trim()), {
-          message: t('errors.passwordInc'),
-        }),
+        .regex(REGEX.password,{message: t('errors.passwordInc')}),
 
       confirmPassword: z
         .string()

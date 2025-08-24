@@ -8,6 +8,7 @@ export interface emailPassType {
 export interface SignUpParams {
   email: string;
   password: string;
+  name: string
   // firstName: string;
   // lastName: string;
   // phoneNumber?: string;

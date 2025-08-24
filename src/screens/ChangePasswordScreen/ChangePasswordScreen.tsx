@@ -60,7 +60,7 @@ const ChangePasswordScreen: React.FC<RootScreenProps<Paths.ChangePasswordScreen>
       await updatePassword(data.password, accessToken);
       Alert.alert('Success', 'Password updated successfully! Please log in.');
       reset();
-      // resetStack('AuthStack', 'LoginScreen');
+      resetStack('AuthStack', 'loginScreen');
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Session expired or invalid. Please start the password reset process again.');
       // resetStack('AuthStack', 'LoginScreen');

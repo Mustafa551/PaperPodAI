@@ -3,6 +3,7 @@ import Toast from 'react-native-simple-toast';
 import {useAppStore} from '../store';
 import { API_URL } from '@env';
 import { tokenType } from '@/@types';
+import { resetAllSlices } from '@/store/utils';
 
 // local storage
 
@@ -30,9 +31,16 @@ export const AUTH_API = axios.create({
 API.interceptors.request.use(
   async function (config) {
     // getting access token
-    const {accessToken} = useAppStore.getState().tokens;
+    const {accessToken, refreshToken} = useAppStore.getState().tokens;
     // injecting our token into header
-    config.headers.Authorization = `Bearer ${accessToken}`;
+    // config.headers.Authorization = `Bearer ${accessToken}`;
+      config.headers = {
+      ...config.headers,
+      Authorization: `Bearer ${accessToken}`,
+      'x-refresh-token': refreshToken,
+      'x-device-id': 'test-device-id',
+      'x-user-agent': 'android',
+    };
 
     return config;
   },
@@ -55,31 +63,32 @@ API.interceptors.response.use(
      */
     if (error.response && error.response.status === 401) {
       // Access token has expired, attempt to refresh
-      const {refreshToken} = useAppStore.getState().tokens;
+      // const {refreshToken} = useAppStore.getState().tokens;
 
-      try {
-        const response = await axios.post(`${API_URL}/auth/token`, {
-          refreshToken,
-        });
-        console.log('response refresh token', response);
+      // try {
+      //   const response = await axios.post(`${API_URL}/auth/token`, {
+      //     refreshToken,
+      //   });
+      //   console.log('response refresh token', response);
 
-        if (response?.status === 200 && response?.data?.tokens) {
-          const newTokens = response.data?.tokens as tokenType;
+      //   if (response?.status === 200 && response?.data?.tokens) {
+      //     const newTokens = response.data?.tokens as tokenType;
 
-          // Save new tokens
-          useAppStore.getState().updateToken(newTokens);
+      //     // Save new tokens
+      //     useAppStore.getState().updateToken(newTokens);
 
-          // Update the original request with the new token
-          originalRequest.headers.Authorization = `Bearer ${newTokens?.accessToken}`;
+      //     // Update the original request with the new token
+      //     originalRequest.headers.Authorization = `Bearer ${newTokens?.accessToken}`;
 
-          // Retry the original request with the new token
-          return API(originalRequest);
-        }
-      } catch (refreshError: unknown | any) {
-        console.log('🚀 ~ refreshError:', refreshError);
-        Toast.show('Session expired. Please log in again.', Toast.LONG);
-        return Promise.reject(refreshError);
-      }
+      //     // Retry the original request with the new token
+      //     return API(originalRequest);
+      //   }
+      // } catch (refreshError: unknown | any) {
+      //   console.log('🚀 ~ refreshError:', refreshError);
+      //   Toast.show('Session expired. Please log in again.', Toast.LONG);
+      //   return Promise.reject(refreshError);
+      // }
+      resetAllSlices()
     }
     return Promise.reject(error);
   },

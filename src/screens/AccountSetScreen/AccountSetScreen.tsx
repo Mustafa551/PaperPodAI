@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Alert } from 'react-native';
 import axios, { AxiosError } from 'axios';
@@ -22,6 +22,8 @@ import { normalizeHeight, normalizeWidth, pixelSizeX, pixelSizeY } from '@/utils
 import useStyles from './style';
 import { clearAuthData, getAccessToken, getRefreshToken, getUser, saveTokensFromHeaders } from '../../utils/helpers';
 import { resetStack } from '@/navigation/navigationRef';
+import { useAppStore } from '@/store';
+import { signOut } from '@/store/authSlice/authApiService';
 
 const BASE_URL = 'https://rude-vickie-3dotmedia-5ccb6d6e.koyeb.app';
 
@@ -48,6 +50,10 @@ const AccountSetScreen: React.FC<RootScreenProps<Paths.AccountSetScreen>> = () =
   const { t } = useTranslation();
   const styles = useStyles();
   const navigation = useNavigation<RootScreenProps<Paths.AccountSetScreen>['navigation']>();
+  const {userData} = useAppStore(state => state)
+  console.log("🚀 ~ AccountSetScreen ~ userData:", userData)
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const {
     control,
@@ -64,18 +70,17 @@ const AccountSetScreen: React.FC<RootScreenProps<Paths.AccountSetScreen>> = () =
 
 
   useEffect(() => {
-    const loadUserData = async () => {
-      const user = await getUser();
-      if (user) {
+
+      if (userData) {
         reset({
-          name: user.name || '',
-          email: user.email || '',
-          subscriptionStatus: user.subscriptionStatus || '',
+          name: userData?.name || '',
+          email: userData?.email || '',
+          subscriptionStatus: userData?.subscriptionStatus || '',
         });
       }
-    };
-    loadUserData();
-  }, [reset]);
+
+
+  }, [userData]);
 
   
   useEffect(() => {
@@ -87,40 +92,50 @@ const AccountSetScreen: React.FC<RootScreenProps<Paths.AccountSetScreen>> = () =
   // Logout API call
   const onLogout = async () => {
     console.log('Logout Button Pressed');
+    // try {
+    //   const accessToken = await getAccessToken();
+    //   const refreshToken = await getRefreshToken();
+    //   const user = await getUser();
+  
+    //   if (!accessToken || !refreshToken || !user?.email) {
+    //     console.log('Missing auth data, clearing and redirecting');
+    //     await clearAuthData();
+    //     Alert.alert('Error', 'Session invalid. Please log in again.');
+    //     resetStack('AuthStack', 'LoginScreen');
+    //     return;
+    //   }
+  
+    //   const response = await attemptLogout(accessToken, refreshToken, user.email, user.googleId || 'none');
+  
+    //   if (response?.data.success) {
+    //     await clearAuthData();
+    //     Alert.alert('Success', 'Logged out successfully!');
+    //     resetStack('AuthStack', 'LoginScreen');
+    //   } else {
+    //     throw new Error(response?.data.message || 'Logout failed');
+    //   }
+    // } catch (error: unknown) {
+    //   const axiosError = error as AxiosError<{ message?: string }>;
+    //   console.error('Logout Error:', {
+    //     message: axiosError.message,
+    //     response: axiosError.response?.data,
+    //     status: axiosError.response?.status,
+    //     headers: axiosError.response?.headers,
+    //   });
+  
+    //   await clearAuthData();
+    //   Alert.alert('Error', 'Session expired or invalid. Please log in again.');
+    //   resetStack('AuthStack', 'LoginScreen');
+    // }
+
     try {
-      const accessToken = await getAccessToken();
-      const refreshToken = await getRefreshToken();
-      const user = await getUser();
-  
-      if (!accessToken || !refreshToken || !user?.email) {
-        console.log('Missing auth data, clearing and redirecting');
-        await clearAuthData();
-        Alert.alert('Error', 'Session invalid. Please log in again.');
-        resetStack('AuthStack', 'LoginScreen');
-        return;
-      }
-  
-      const response = await attemptLogout(accessToken, refreshToken, user.email, user.googleId || 'none');
-  
-      if (response?.data.success) {
-        await clearAuthData();
-        Alert.alert('Success', 'Logged out successfully!');
-        resetStack('AuthStack', 'LoginScreen');
-      } else {
-        throw new Error(response?.data.message || 'Logout failed');
-      }
-    } catch (error: unknown) {
-      const axiosError = error as AxiosError<{ message?: string }>;
-      console.error('Logout Error:', {
-        message: axiosError.message,
-        response: axiosError.response?.data,
-        status: axiosError.response?.status,
-        headers: axiosError.response?.headers,
-      });
-  
-      await clearAuthData();
-      Alert.alert('Error', 'Session expired or invalid. Please log in again.');
-      resetStack('AuthStack', 'LoginScreen');
+      setIsLoading(true)
+      await signOut()
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    } finally {
+      setIsLoading(false)
+      resetStack('AuthStack', 'loginScreen')
     }
   };
   
@@ -229,6 +244,8 @@ const AccountSetScreen: React.FC<RootScreenProps<Paths.AccountSetScreen>> = () =
           title={'Logout'}
           variant="gradient"
           shadow={false}
+          loading={isLoading}
+          disabled={isLoading}
         />
       </View>
 

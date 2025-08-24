@@ -21,6 +21,10 @@ import { navigationRef } from './navigationRef';
 import ForgotpassScreen from '@/screens/ForgotpassScreen/ForgotpassScreen';
 import OtpScreen from '@/screens/OtpScreen/OtpScreen';
 import AudioPlayerScreen from '@/screens/TrackPlayerScreen/TrackPlayerScreen';
+import { useAppStore } from '@/store';
+import { useEffect, useState } from 'react';
+import { fetchUserDataLocal } from '@/store/authSlice/authApiService';
+import { ActivityIndicator, View } from 'react-native';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -63,13 +67,38 @@ const HomeStack = () => {
 };
 
 function ApplicationNavigator() {
-  const { navigationTheme, variant, fonts } = useTheme();
+  const { navigationTheme, variant, fonts, colors } = useTheme();
+  const {userData} = useAppStore(state => state)
+  console.log("🚀 ~ ApplicationNavigator ~ userData:", userData)
+
+  
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const init = async () => {
+      setLoading(true);
+      await fetchUserDataLocal();
+      setLoading(false);
+    };
+    init();
+  }, []);
+
+  if (loading) {
+    return (
+      <SafeAreaProvider>
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator color={colors.white} size="large" />
+        </View>
+      </SafeAreaProvider>
+    );
+  }
+
 
   return (
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
 
-        <Stack.Navigator key={variant} initialRouteName={Paths.AuthStack} screenOptions={{ headerShown: false }}>
+        <Stack.Navigator key={variant} initialRouteName={userData ? Paths.HomeStack : Paths.AuthStack} screenOptions={{ headerShown: false }}>
 
           <Stack.Screen name={Paths.AuthStack} component={AuthStack} />
           <Stack.Screen name={Paths.HomeStack} component={HomeStack} />

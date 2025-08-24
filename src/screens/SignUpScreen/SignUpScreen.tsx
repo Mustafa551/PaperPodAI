@@ -300,6 +300,7 @@ import { SignUpForm } from '@/utils/schemasTypes';
 import { normalizeHeight, normalizeWidth, pixelSizeX } from '@/utils/sizes';
 import useStyles from './style';
 import { signUp } from '@/store/authSlice/authApiService';
+import { resetStack } from '@/navigation/navigationRef';
 
 const LoginScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
   navigation,
@@ -327,9 +328,11 @@ const LoginScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
       await signUp({
         email: data.email, // your backend expects emailAddress
         password: data.password,
+        name: data.name
       });
       // Success: show message and navigate
-      Alert.alert('Success', 'Verification code sent to your email.');
+      // Alert.alert('Success', 'Verification code sent to your email.');
+      Alert.alert('Success', 'Account registered successfully.');
       navigation.navigate(Paths.LoginScreen);
     } catch (error: any) {
       // Error handling is already done in signUp, but fallback here
@@ -362,6 +365,17 @@ const LoginScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
         color={'#FFFFFF'}
       />
       <Space mB={30} />
+
+      <AppInput
+        control={control}
+        error={errors.name?.message}
+        keyboardType="default"
+        name="name"
+        placeholder={'Enter your Name'}
+        label="Name"
+      />
+      <Space mB={16} />
+
 
       <AppInput
         control={control}
@@ -399,8 +413,8 @@ const LoginScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
         <AppButton
           bgColor={'#8A2BE1'}
           onPress={() => {
-            console.log('Sign Up Button Pressed'); 
-            handleSubmit(onSignup)();
+            console.log('Sign Up Button Pressed');
+            handleSubmit(onSignup)();            
           }}
           title={'Sign Up'}
           variant="gradient"
@@ -429,6 +443,7 @@ const LoginScreen: React.FC<RootScreenProps<Paths.SignUpScreen>> = ({
           marginLeft={5}
         />
       </AppText>
+      <Space mB={30}/>
     </AppScreen>
   );
 };

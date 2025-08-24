@@ -3,12 +3,12 @@ import {API, AUTH_API} from '../../api';
 import {loadStorage} from '../../utils/storage/storage';
 import {resetAllSlices} from '../utils';
 import Toast from 'react-native-simple-toast';
-import {useAppStore} from '..';
 import {tokenType, userDataType} from '../../@types';
 import {emailPassType, SignUpParams} from './types';
 import { ASYNC_TOKEN_KEY, ASYNC_USER_DATA_KEY } from '@/constant';
 import { navigate } from '@/navigation/navigationRef';
 import { Alert } from 'react-native';
+import { useAppStore } from '../index';
 
 // export const signIn = async (params: emailPassType) => {
 //   try {
@@ -57,8 +57,9 @@ export const signIn = async (params: emailPassType) => {
     );
     console.log('🚀 ~ signIn: ~ response:', response);
     const user = response.data;
-    if (user?.data && user?.tokens) {
-      useAppStore.getState().updateUserDataToken(user?.data, user?.tokens);
+    console.log("🚀 ~ signIn ~ user:", user.user)
+    if (user?.user) {
+      useAppStore.getState().updateUserDataToken(user?.user, {refreshToken: user?.refreshToken, accessToken: user?.accessToken});
     }
     Toast.show('Login successful!', Toast.LONG);
   } catch (error: any) {
@@ -75,6 +76,7 @@ export const signUp = async (params: SignUpParams) => {
       {
         email: params.email,
         password: params.password,
+        name: params.name
       },
       {
         headers: {
@@ -213,15 +215,18 @@ export const resendConfirmationCode = async (emailAddress: string) => {
   }
 };
 
-export const signOut = async (userId: string, accessToken: string) => {
+export const signOut = async () => {
   try {
-    const response = await AUTH_API.post('/auth/logout', {userId, accessToken});
+    const response = await API.post('/v1/user/logout');
     console.log('🚀 ~ signOut: ~ response:', response);
 
     resetAllSlices();
+    
   } catch (error: any) {
     console.log('🚀 ~ signOut: ~ error:', error);
+    resetAllSlices();
     handleAuthContextError('signOut', error);
+     throw new Error(error?.response?.data?.message || error.message || 'signout failed');
   }
 };
 
@@ -243,13 +248,13 @@ export const fetchUserDataLocal = async () => {
     const userToken = loadStorage(ASYNC_TOKEN_KEY) as tokenType;
     console.log('🚀 ~ fetchUserDataLocal ~ userToken:', userToken);
 
-    if (user && 'PK' in user && 'accessToken' in userToken) {
+    if (user && 'accessToken' in userToken) {
       console.log('User is logged in');
 
       useAppStore.setState({userData: user, tokens: userToken});
-      const response = await AUTH_API.get(`/user/${user.PK}`);
+      const response = await API.get(`/v1/user/details`);
       console.log('🚀 ~ fetchUserDataLocal: ~ response:', response);
-      user = response?.data?.data;
+      user = response?.data?.user;
       useAppStore.getState().updateUserData(user);
     }
   } catch (error: any) {
