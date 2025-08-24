@@ -14,6 +14,9 @@ import { useSharedValue } from 'react-native-reanimated';
 import Carousel, { Pagination } from 'react-native-reanimated-carousel';
 import useStyles from './style';
 import { AppCard, AppGradientModal, AppModalCentered, NewUploadBanner, SubscriptionBanner } from '@/components/molecules';
+import { useAppStore } from '@/store';
+import { useQuery } from '@tanstack/react-query';
+import { getPublicArticles } from '@/store/userSlice/userApiServices';
 
 const data = [
 {
@@ -54,12 +57,21 @@ const HomeScreen = () => {
   const styles = useStyles();
   const scrollOffsetValue = useSharedValue<number>(0);
   const progress = useSharedValue<number>(0);
+  const {userData} = useAppStore(state => state)
 
   const {
     control,
     formState: { errors },
     handleSubmit,
   } = useForm({ resolver: zodResolver(homeSearchSchema(t)) });
+
+
+     const {data:publicArticles,error } = useQuery({
+    queryKey: ['getPublicArticles'],
+    queryFn: () => getPublicArticles(),
+  });
+     console.log("🚀 ~ HomeScreen ~ error:", error.response)
+     console.log("🚀 ~ HomeScreen ~ publicArticles:", publicArticles)
 
   return (
     <AppScreen
@@ -72,7 +84,7 @@ const HomeScreen = () => {
       <Space mB={60} />
 
       <AppText
-        title={'Welcome Back, User Name'}
+        title={`Welcome Back, ${userData?.name}`}
         fontSize={24}
         fontWeight={500}
         color={colors.white}

@@ -21,3 +21,9 @@ export const useDogs = () => {
     queryFn: () => axios.get('https://api.github.com/repos/tannerlinsley/react-query').then(res => res.data),
   });
 };
+
+export const getPublicArticles = async () => {
+  const {data} = await API.get(`/v1/article/public-article`);
+
+  return data;
+};
