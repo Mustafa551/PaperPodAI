@@ -70,7 +70,7 @@ const HomeScreen = () => {
     queryKey: ['getPublicArticles'],
     queryFn: () => getPublicArticles(),
   });
-     console.log("🚀 ~ HomeScreen ~ error:", error.response)
+     console.log("🚀 ~ HomeScreen ~ error:", error?.response)
      console.log("🚀 ~ HomeScreen ~ publicArticles:", publicArticles)
 
   return (
