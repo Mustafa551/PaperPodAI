@@ -154,7 +154,7 @@ const LibraryScreen = () => {
           {libraryItems.map((item) => (
             <View key={item.id}>
               <Space mB={5} />
-              <TouchableOpacity style={[styless.libraryItem]} >
+              <View style={[styless.libraryItem]} >
                 <View>
                   <AssetByVariant
                     resizeMode="contain"
@@ -176,15 +176,15 @@ const LibraryScreen = () => {
 
                 <View style={styless.itemRight}>
                   <TouchableOpacity onPress={() => handleItemPress(item)} style={styless.avatarPlaceholder}>
-                    <SVG.DownloadArtical
+                    {/* <SVG.DownloadArtical
                       width={normalizeWidth(16)}
-                      height={normalizeHeight(16)} />
-                    {/* <AssetByVariant
+                      height={normalizeHeight(16)} /> */}
+                    <AssetByVariant
                       resizeMode="contain"
                       path={'play'}
                       width={normalizeWidth(16)}
                       height={normalizeHeight(16)}
-                    /> */}
+                    />
                   </TouchableOpacity>
 
                   <TouchableOpacity style={layout.padding(5)} onPress={() => handleMenuPress(item)}>
@@ -196,7 +196,7 @@ const LibraryScreen = () => {
                     />
                   </TouchableOpacity>
                 </View>
-              </TouchableOpacity>
+              </View>
             </View>
           ))}
         </View>

@@ -69,8 +69,8 @@ const HomeScreen = () => {
     queryKey: ['getPublicArticles'],
     queryFn: () => getPublicArticles(),
   });
-  console.log("🚀 ~ HomeScreen ~ error:", error?.response)
-  console.log("🚀 ~ HomeScreen ~ publicArticles:", publicArticles)
+  console.log("🚀 ~ HomeScreen ~ error:", error)
+  console.log("🚀 ~ HomeScreen ~ publicArticles:new onws", publicArticles)
 
   return (
     <AppScreen
@@ -207,11 +207,10 @@ const HomeScreen = () => {
 
         <Space mB={40} />
       </View>
-      <SubscriptionBanner
+      {/* <SubscriptionBanner
         description="Want to listen to your own research as a podcast?"
         btnTitle="Upgrade to Upload Your Own Papers"
-      />
-
+      /> */}
       <NewUploadBanner />
 
       <Space mB={20} />

@@ -158,7 +158,7 @@ const navigation = useNavigation();
           style={{ paddingTop: useSafeAreaInsets().top + pixelSizeY(10) , paddingHorizontal: pixelSizeX(20) }}
     >  
     <TouchableOpacity 
-    style={{ backgroundColor:'coral' , paddingRight:pixelSizeX(12), width: normalizeWidth(50) }}
+    style={{  paddingRight:pixelSizeX(12), width: normalizeWidth(50) }}
     onPress={() => {
       navigation.goBack();
     }}>
