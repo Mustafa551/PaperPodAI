@@ -177,7 +177,7 @@ export default function Screen(props: ScreenProps) {
         pH && layout.pH(pixelSizeX(20)),
       ]}
     >
-      <SafeAreaView />
+      {/* <SafeAreaView /> */}
       {!overideStatusBar && (
         <FocusAwareStatusBar
           barStyle={navigationTheme.dark ? 'light-content' : 'dark-content'}

@@ -16,6 +16,8 @@ import { AppText, AssetByVariant, Space } from '@/components/atoms';
 import { Modal, Pressable } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { SVG } from '@/theme/assets/icons';
+import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const { width } = Dimensions.get('window');
 
 interface LibraryItem {
@@ -29,6 +31,7 @@ const LibraryScreen = () => {
   const [showDetail, setShowDetail] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
   const [sortBtnWidth, setSortBtnWidth] = useState(0);
+  const navigation = useNavigation();
   const sortOptions = [
     { key: 'latest', label: 'Latest Added' },
     { key: 'oldest', label: 'Oldest First' },
@@ -80,7 +83,9 @@ const LibraryScreen = () => {
   ];
 
   const handleItemPress = (item: LibraryItem) => {
-    setShowDetail(true)
+    // setShowDetail(true)
+    navigation.navigate("AudioPlayerScreen" as never);
+
     console.log('Item pressed:', item.title);
   };
 
@@ -97,7 +102,7 @@ const LibraryScreen = () => {
       ScrollViewProps={{ showsVerticalScrollIndicator: false }}
       backgroundColor={colors.black}
       preset="scroll"
-      style={layout.pH(pixelSizeX(10))}
+      style={{ paddingTop: useSafeAreaInsets().top + pixelSizeY(10) , paddingHorizontal: pixelSizeX(20) }}
     >
       <View style={[styless.header, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}>
         <Text style={styless.title}>My Library</Text>
