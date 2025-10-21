@@ -64,6 +64,8 @@ export const SVG = {
   EyeOpen: require('./EyeOpen.svg').default,
   EyeClose: require('./EyeClose.svg').default,
   Warning: require('./Warning.svg').default,
+  ArrowLeft: require('./ArrowLeft.svg').default,
+  DownloadArtical: require('./DownloadArtical.svg').default,
 
   // drawer icons
   PrivacyGray: require('./PrivacyGray.svg').default,

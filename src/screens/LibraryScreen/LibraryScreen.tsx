@@ -1,4 +1,3 @@
-
 import { AppScreen } from '@/components/templates';
 import { useTheme } from '@/theme';
 import React, { useState } from 'react';
@@ -7,15 +6,16 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
   Dimensions,
+  StyleSheet,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import useStyles from './style';
-import { normalizeHeight, normalizeWidth, pixelSizeX, pixelSizeY } from '@/utils/sizes';
-import { AppButton, AppText, AssetByVariant, Space } from '@/components/atoms';
-
+import { normalizeFont, normalizeHeight, normalizeWidth, pixelSizeX, pixelSizeY } from '@/utils/sizes';
+import { AppText, AssetByVariant, Space } from '@/components/atoms';
+import { Modal, Pressable } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { SVG } from '@/theme/assets/icons';
 const { width } = Dimensions.get('window');
 
 interface LibraryItem {
@@ -26,10 +26,31 @@ interface LibraryItem {
 
 const LibraryScreen = () => {
   const [sortBy, setSortBy] = useState('Recent');
+  const [showDetail, setShowDetail] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
+  const [sortBtnWidth, setSortBtnWidth] = useState(0);
+  const sortOptions = [
+    { key: 'latest', label: 'Latest Added' },
+    { key: 'oldest', label: 'Oldest First' },
+  ];
   const { colors, layout } = useTheme();
   const { t } = useTranslation();
   const styless = useStyles();
 
+
+  const detailData = {
+    title: 'AI And Climate Modeling',
+    author: 'Dr. Emily Rao',
+    university: 'Stanford University',
+    date: '05 Jan 2025',
+    content: [
+      'AI is transforming climate modeling by improving prediction accuracy and processing speed.',
+      'It helps analyze vast environmental data and detect complex patterns.',
+      'Researchers use AI to simulate climate scenarios more efficiently.',
+      "This innovation supports better forecasting and smarter environmental decisions.",
+      'This innovation supports better forecasting and smarter environmental decisions.',
+    ],
+  };
   const libraryItems: LibraryItem[] = [
     {
       id: '1',
@@ -59,11 +80,16 @@ const LibraryScreen = () => {
   ];
 
   const handleItemPress = (item: LibraryItem) => {
+    setShowDetail(true)
     console.log('Item pressed:', item.title);
   };
 
   const handleMenuPress = (item: LibraryItem) => {
     console.log('Menu pressed for:', item.title);
+  };
+  const handleSortPress = (opt: any) => {
+    setSortBy(opt.key);
+    setSortOpen(false);
   };
 
   return (
@@ -73,50 +99,57 @@ const LibraryScreen = () => {
       preset="scroll"
       style={layout.pH(pixelSizeX(10))}
     >
-      <Space mT={60} />
-
-      <View style={styless.header}>
+      <View style={[styless.header, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}>
         <Text style={styless.title}>My Library</Text>
-        <AppButton
-          bgColor={'transparent'}
-          onPress={() => console.log('Sort pressed')}
-          title={'Sort By'}
-          variant="outlined"
-          shadow={false}
-          width={140}
-          height={35}
-          extraStyle={{
-            button: {
-              borderColor: '#FFFFFF',
-              paddingVertical: pixelSizeY(8),
-              paddingHorizontal: pixelSizeX(16),
-              justifyContent: 'space-between',
-            },
-            title: {
-              fontWeight: '400',
-              fontSize: 14,
-              color: '#FFFFFF',
-            },
-          }}
-          SVGRight={
-            <AssetByVariant
-              resizeMode="contain"
-              path={'sorticon'}
-              width={normalizeWidth(18)}
-              height={normalizeHeight(18)}
+        <View style={{ position: 'relative', zIndex: 999 }}>
+          <TouchableOpacity
+            onPress={() => setSortOpen(prev => !prev)}
+            style={styles.sortButton}
+            onLayout={({ nativeEvent }) => setSortBtnWidth(nativeEvent.layout.width)}
+          >
+            <AppText
+              onPress={() => setSortOpen(prev => !prev)}
+              title={sortOptions.find(opt => opt.key === sortBy)?.label || 'Sort By'}
+              fontSize={normalizeFont(14)}
+              fontWeight={400}
+              color={'#FFFFFF'}
             />
-          }
-        />
+            <View style={{ marginLeft: pixelSizeX(20), transform: [{ rotate: sortOpen ? '180deg' : '0deg' }] }}>
+              <AssetByVariant
+                resizeMode="contain"
+                path={'sorticon'}
+                width={normalizeWidth(18)}
+                height={normalizeHeight(18)}
+              />
+            </View>
+          </TouchableOpacity>
+          {sortOpen && (
+            <View style={[styles.dropdown, { width: sortBtnWidth }]}>
+              {sortOptions?.map(opt => (
+                <TouchableOpacity
+                  key={opt.key}
+                  style={[styles.dropdownItem]}
+                  onPress={() => {
+                    handleSortPress(opt);
+
+                  }}
+                >
+                  <AppText onPress={() => {
+                    handleSortPress(opt);
+                  }} title={opt.label} fontSize={normalizeFont(12)} fontWeight={400} color={opt.key === sortBy ? '#111827' : '#475569'} />
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+        </View>
       </View>
-
-      <Space mB={20} />
-
+      <Space mB={30} />
       <ScrollView style={styless.scrollView} showsVerticalScrollIndicator={false}>
         <View>
           {libraryItems.map((item) => (
             <View key={item.id}>
               <Space mB={5} />
-              <TouchableOpacity style={[styless.libraryItem]} onPress={() => handleItemPress(item)}>
+              <TouchableOpacity style={[styless.libraryItem]} >
                 <View>
                   <AssetByVariant
                     resizeMode="contain"
@@ -137,14 +170,17 @@ const LibraryScreen = () => {
                 </View>
 
                 <View style={styless.itemRight}>
-                  <View style={styless.avatarPlaceholder}>
-                    <AssetByVariant
+                  <TouchableOpacity onPress={() => handleItemPress(item)} style={styless.avatarPlaceholder}>
+                    <SVG.DownloadArtical
+                      width={normalizeWidth(16)}
+                      height={normalizeHeight(16)} />
+                    {/* <AssetByVariant
                       resizeMode="contain"
                       path={'play'}
-                      width={normalizeWidth(15)}
-                      height={normalizeHeight(15)}
-                    />
-                  </View>
+                      width={normalizeWidth(16)}
+                      height={normalizeHeight(16)}
+                    /> */}
+                  </TouchableOpacity>
 
                   <TouchableOpacity style={layout.padding(5)} onPress={() => handleMenuPress(item)}>
                     <AssetByVariant
@@ -160,9 +196,144 @@ const LibraryScreen = () => {
           ))}
         </View>
       </ScrollView>
+      {/* Download Modal */}
+      <Modal
+        animationType="slide"
+        transparent
+        visible={showDetail}
+        onRequestClose={() => setShowDetail(false)}
+      >
+        <Pressable onPress={() => setShowDetail(false)} style={styles.modalContainer}>
+          <LinearGradient
+            colors={['#4C1D95', '#000000']}
+            style={styles.modalBox}
+          >
+            <View style={{ width: '87%', paddingTop: pixelSizeY(22), paddingBottom: pixelSizeY(30) }}>
+              <TouchableOpacity onPress={() => setShowDetail(false)} style={styles.backButton}>
+                <SVG.ArrowLeft />
+              </TouchableOpacity>
+              <AppText
+                title={detailData.title}
+                fontSize={normalizeFont(14)}
+                fontWeight={600}
+                color="#FFFFFF"
+                extraStyle={{ marginTop: 8 }}
+              />
+
+              <View style={styles.metaRow}>
+                <AppText title={detailData.author} fontSize={12} color="#ffff" />
+                <AppText title={detailData.university} fontSize={12} color="#ffff" />
+                <AppText title={detailData.date} fontSize={12} color="#ffff" />
+              </View>
+
+              <View style={styles.content}>
+                {detailData.content.map((para, idx) => (
+                  <AppText
+                    key={idx}
+                    title={para}
+                    fontSize={14}
+                    fontWeight={400}
+                    color="#FFFFFF"
+                    extraStyle={{ lineHeight: 22, marginBottom: 12 }}
+                  />
+                ))}
+              </View>
+
+              <TouchableOpacity style={styles.downloadBtn}>
+                <SVG.Download2 />
+                <AppText
+                  title="Download"
+                  fontSize={normalizeFont(14)}
+                  fontWeight={400}
+                  color="#7C3AED"
+                  extraStyle={{ marginLeft: pixelSizeX(12), paddingVertical: pixelSizeY(4) }}
+                />
+              </TouchableOpacity>
+            </View>
+          </LinearGradient>
+        </Pressable>
+      </Modal>
     </AppScreen>
   );
 };
 
-export default LibraryScreen;
+const styles = StyleSheet.create({
+  sortButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: pixelSizeX(18),
+    paddingVertical: pixelSizeY(10),
+    borderRadius: 40,
+    borderWidth: normalizeWidth(1),
+    borderColor: '#FFFFFF',
+    minHeight: normalizeHeight(42),
+  },
+  caret: {
+    marginLeft: 8,
+    color: '#FFFFFF',
+    fontSize: 16,
+    lineHeight: 16,
+  },
+  dropdown: {
+    position: 'absolute',
+    right: 0,
+    top: normalizeHeight(48),
+    borderRadius: 18,
+    paddingVertical: pixelSizeY(6),
+    backgroundColor: 'rgba(226, 232, 240, 1)',
+    // shadow (iOS)
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    // elevation (Android)
+    elevation: 6,
+    overflow: 'hidden',
+  },
+  dropdownItem: {
+    paddingVertical: pixelSizeY(12),
+    paddingHorizontal: pixelSizeX(16),
+  },
+  modalContainer: {
+    flex: 1,
+    bottom: normalizeHeight(120),
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    width: '100%'
+  },
+  modalBox: {
+    width: '95%',
+    alignSelf: 'center',
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 0.7,
+    borderColor: '#8A2BE1',
 
+  },
+  backButton: {
+    marginBottom: 10,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 6,
+    width: '100%',
+  },
+  content: {
+    marginTop: 16,
+    marginBottom: 20,
+  },
+  downloadBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: pixelSizeY(8),
+    paddingBottom: pixelSizeY(8),
+    borderRadius: 50,
+    backgroundColor: '#FFFFFF',
+  },
+
+});
+
+export default LibraryScreen;

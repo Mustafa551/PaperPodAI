@@ -25,8 +25,6 @@ const useStyles = () => {
     alignItems: 'center',
   },
     avatarPlaceholder: {
-    // width: '100%',
-    // height: '100%',
     backgroundColor: '#ffffff',
     borderRadius: 20,
     padding: 10,
@@ -40,8 +38,6 @@ const useStyles = () => {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 20,
   },
   title: {
     color: '#ffffff',
@@ -51,6 +47,7 @@ const useStyles = () => {
   scrollView: {
     flex: 1,
   },
+  
   });
 };
 
