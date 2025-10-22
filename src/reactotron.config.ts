@@ -20,7 +20,10 @@ Reactotron.configure({
     queryClientManager.unsubscribe();
   },
 })
-  .useReactNative()
+  // Disable the error tracking plugin; it blows up when React Query surfaces non-Error throwables.
+  .useReactNative({
+    errors: false,
+  })
   .use(mmkvPlugin<ReactotronReactNative>({ storage }))
   .use(reactotronReactQuery(queryClientManager))
   .connect();

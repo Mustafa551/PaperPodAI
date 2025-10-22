@@ -3,11 +3,14 @@ import { useTheme } from '@/theme';
 import { SVG } from '@/theme/assets/icons';
 import { normalizeFont, pixelSizeX, pixelSizeY } from '@/utils/sizes';
 import React from 'react';
-import { Image, View } from 'react-native';
+import { Image, TouchableOpacity, View } from 'react-native';
 import { IAppCardProps } from './AppCardTypes';
 import { useStyle } from './styles';
+import { downloadAudio } from '@/utils/helpers';
 
 const AppCard: React.FC<IAppCardProps> = ({ data }) => {
+  console.log("🚀 ~ AppCard ~ data:", data);
+
   const { colors, layout } = useTheme();
   const styles = useStyle();
   return (
@@ -59,7 +62,7 @@ const AppCard: React.FC<IAppCardProps> = ({ data }) => {
         <Space mB={10} />
 
         <View style={[layout.rowCenter]}>
-          <AppButton
+          {/* <AppButton
             width="90%"
             height={pixelSizeY(30)}
             shadow={false}
@@ -75,9 +78,13 @@ const AppCard: React.FC<IAppCardProps> = ({ data }) => {
               ],
               button: layout.alignSelf('flex-start'),
             }}
-          />
-
-          <SVG.Download />
+          /> */}
+          <TouchableOpacity style={{}} onPress={()=>{
+            console.log("data?.audioFilePath" , data?.audioFilePath)
+             downloadAudio(data?.audioFilePath);
+          }} >
+            <SVG.Download />
+          </TouchableOpacity>
         </View>
       </View>
       <View style={[layout.height(110), layout.mR(pixelSizeX(5))]}>

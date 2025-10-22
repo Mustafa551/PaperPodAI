@@ -55,6 +55,8 @@
 	<string>App needs Camera to update user Profile Picture</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>App needs Photo Library to update user Profile Picture</string>
+	<key>NSFileProviderDomainUsageDescription</key>
+	<string>App needs access to user files to download and manage audio files.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Poppins-Bold.ttf</string>

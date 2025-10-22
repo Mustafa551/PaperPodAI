@@ -5,6 +5,15 @@ import { z } from 'zod';
 
 import { REGEX } from './regex';
 
+const isValidHttpUrl = (value: string) => {
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
 export const signInSchema = (t: TFunction) =>
   z.object({
     email: z
@@ -226,6 +235,10 @@ export const AdditionalInfoSchema = (t: TFunction) =>
   export const uploadSchema = (t: TFunction) =>
   z.object({
     link: z
-      .string().min(1,{message: 'Url required'}).url({message: 'Invalid Url'})
-    
+      .string()
+      .trim()
+      .optional()
+      .refine(value => !value || value.length === 0 || isValidHttpUrl(value), {
+        message: 'Invalid Url',
+      }),
   });

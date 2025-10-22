@@ -14,9 +14,10 @@ export const API = axios.create({
 });
 
 export const AUTH_API = axios.create({
-  baseURL: API_URL,
+  baseURL: "https://rude-vickie-3dotmedia-5ccb6d6e.koyeb.app",
 });
-
+// malikshehzad1534@gmail.com
+// Malik@123
 /*
  ** Before every api request following be taken
  1 - we are getting accessToken as well as refresh token from the api
@@ -32,6 +33,7 @@ API.interceptors.request.use(
   async function (config) {
     // getting access token
     const {accessToken, refreshToken} = useAppStore.getState().tokens;
+
     // injecting our token into header
     // config.headers.Authorization = `Bearer ${accessToken}`;
       config.headers = {

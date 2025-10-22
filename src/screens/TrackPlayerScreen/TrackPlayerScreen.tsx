@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
@@ -6,6 +5,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Share,
+  Alert,
 } from 'react-native';
 import Slider from '@react-native-community/slider';
 import Sound from 'react-native-sound';
@@ -18,8 +19,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SVG } from '@/theme/assets/icons';
 
-// Enable playback in silence mode
-Sound.setCategory('Playback');
+// Enable playback in silent mode and allow mixing with other audio (iOS)
+Sound.setCategory('Playback', true);
 
 const AudioPlayerScreen = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -30,29 +31,45 @@ const AudioPlayerScreen = () => {
   // Sound reference
   const soundRef = useRef<Sound | null>(null);
   const playbackTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const audioUrlRef = useRef<string>('');
 
   // Initialize sound on component mount
   useEffect(() => {
-    // Sample audio URL - replace with your actual audio file
-    const sampleAudio = new Sound('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', Sound.MAIN_BUNDLE, (error) => {
+    // Remote audio URL — replace with your actual audio file
+    const url = 'https://res.cloudinary.com/dptcdlae6/video/upload/v1761080187/audios/test_quotes.mp3.mp3';
+    audioUrlRef.current = url;
+
+    const sampleAudio = new Sound(url, undefined as any, (error) => {
       if (error) {
         console.log('Failed to load sound', error);
         return;
       }
-      
       // Sound loaded successfully
       soundRef.current = sampleAudio;
-      setDuration(sampleAudio.getDuration());
-      console.log('Sound loaded successfully');
+      const dur = sampleAudio.getDuration();
+      setDuration(dur);
+      sampleAudio.setNumberOfLoops(0);
+
+      // Auto‑play when screen opens
+      sampleAudio.play((success) => {
+        if (!success) {
+          console.log('Playback failed due to audio decoding errors');
+        }
+        handlePlaybackComplete();
+      });
+      setIsPlaying(true);
+      console.log('Sound loaded and auto‑playing');
     });
 
     // Cleanup on unmount
     return () => {
       if (soundRef.current) {
         soundRef.current.release();
+        soundRef.current = null;
       }
       if (playbackTimerRef.current) {
         clearInterval(playbackTimerRef.current);
+        playbackTimerRef.current = null;
       }
     };
   }, []);
@@ -60,11 +77,14 @@ const AudioPlayerScreen = () => {
   // Update progress timer
   useEffect(() => {
     if (isPlaying) {
+      if (playbackTimerRef.current) {
+        clearInterval(playbackTimerRef.current);
+      }
       playbackTimerRef.current = setInterval(() => {
         if (soundRef.current) {
           soundRef.current.getCurrentTime((seconds) => {
             setCurrentTime(seconds);
-            if (seconds >= duration) {
+            if (duration > 0 && seconds >= duration) {
               handlePlaybackComplete();
             }
           });
@@ -72,11 +92,13 @@ const AudioPlayerScreen = () => {
       }, 1000);
     } else if (playbackTimerRef.current) {
       clearInterval(playbackTimerRef.current);
+      playbackTimerRef.current = null;
     }
 
     return () => {
       if (playbackTimerRef.current) {
         clearInterval(playbackTimerRef.current);
+        playbackTimerRef.current = null;
       }
     };
   }, [isPlaying, duration]);
@@ -88,6 +110,10 @@ const AudioPlayerScreen = () => {
       soundRef.current.stop();
       soundRef.current.setCurrentTime(0);
     }
+    if (playbackTimerRef.current) {
+      clearInterval(playbackTimerRef.current);
+      playbackTimerRef.current = null;
+    }
   };
 
   const formatTime = (seconds: number) => {
@@ -97,18 +123,33 @@ const AudioPlayerScreen = () => {
   };
 
   const handlePlayPause = () => {
-    if (!soundRef.current) return;
+    const snd = soundRef.current;
+    if (!snd) return;
 
     if (isPlaying) {
-      soundRef.current.pause();
-    } else {
-      soundRef.current.play((success) => {
-        if (!success) {
-          console.log('Playback failed');
-        }
-      });
+      snd.pause();
+      setIsPlaying(false);
+      return;
     }
-    setIsPlaying(!isPlaying);
+
+    // If we are at (or beyond) the end, restart from 0
+    if (duration > 0 && currentTime >= duration - 0.2) {
+      snd.stop(() => {
+        snd.setCurrentTime(0);
+        setCurrentTime(0);
+        snd.play(() => {
+          handlePlaybackComplete();
+        });
+        setIsPlaying(true);
+      });
+      return;
+    }
+
+    // Resume / start playback from current position
+    snd.play(() => {
+      handlePlaybackComplete();
+    });
+    setIsPlaying(true);
   };
 
   const handleRewind = () => {
@@ -139,8 +180,29 @@ const AudioPlayerScreen = () => {
     }
   };
 
-  const handleShare = () => {
-    console.log('Share pressed');
+  const handleShare = async () => {
+    try {
+      const url = audioUrlRef.current;
+      if (!url) {
+        Alert.alert('Nothing to share', 'Audio URL is not available yet.');
+        return;
+      }
+
+      await Share.share(
+        {
+          title: 'Check out this audio',
+          message: `Listen to this audio:\n${url}`,
+          url,
+        },
+        {
+          dialogTitle: 'Share audio',
+          subject: 'Audio link',
+        },
+      );
+    } catch (e) {
+      console.warn('Share error', e);
+      Alert.alert('Share failed', 'Could not open the share dialog.');
+    }
   };
 
   const handleSliderChange = (value: number) => {

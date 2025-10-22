@@ -1,3 +1,4 @@
+import RNFS from 'react-native-fs';
 export const maskEmail = (email: string): string => {
   const [localPart, domain] = email.split('@');
 
@@ -14,6 +15,7 @@ export const maskEmail = (email: string): string => {
 // src/utils/auth.ts
 // src/utils/auth.ts
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert, Platform, PermissionsAndroid } from 'react-native';
 
 export const saveAuthData = async (accessToken: string, refreshToken: string, user: any) => {
   try {
@@ -95,5 +97,78 @@ export const saveAccessToken = async (accessToken: string) => {
     console.log('Access token saved:', accessToken);
   } catch (error) {
     console.error('Error saving access token:', error);
+  }
+};
+
+// Ask for the right storage/media permission before downloading audio
+export const ensureAudioDownloadPermission = async (): Promise<boolean> => {
+  if (Platform.OS !== 'android') return true; // iOS: saving to DocumentDirectoryPath needs no extra permission
+
+  try {
+    const sdkInt = typeof Platform.Version === 'number' ? Platform.Version : parseInt(String(Platform.Version), 10);
+
+    if (sdkInt >= 33) {
+      // Android 13+ (Tiramisu): granular media permissions
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_MEDIA_AUDIO,
+        {
+          title: 'Audio Access Permission',
+          message: 'We need access to your audio files to save downloads to your device.',
+          buttonPositive: 'Allow',
+          buttonNegative: 'Deny',
+        },
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    }
+
+    // Android 12 and below: external storage permissions
+    const result = await PermissionsAndroid.requestMultiple([
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+    ]);
+
+    const allGranted = Object.values(result).every(v => v === PermissionsAndroid.RESULTS.GRANTED);
+    return allGranted;
+  } catch (e) {
+    console.warn('Permission check failed:', e);
+    return false;
+  }
+};
+
+export const downloadAudio = async (url: string) => {
+  console.log('🚀 ~ downloadAudio ~ url:', url);
+
+  try {
+    // Ensure we have the right permission before writing to public storage
+    const hasPermission = await ensureAudioDownloadPermission();
+    if (!hasPermission) {
+      Alert.alert('Permission Required', 'Please allow access so we can save audio to your device.');
+      return;
+    }
+    const dirPath =
+      Platform.OS === 'android'
+        ? `${RNFS.DownloadDirectoryPath}`
+        : `${RNFS.DocumentDirectoryPath}`;
+    // Define the target directory and file path
+    const folderPath = `${dirPath}`;
+    const fileName = `audio_${Date.now()}.mp3`;
+    const filePath = `${folderPath}/${fileName}`;
+    // Create the SVD folder if it doesn't exist
+    const folderExists = await RNFS.exists(folderPath);
+    if (!folderExists) {
+      await RNFS.mkdir(folderPath);
+    }
+    const options = {
+      fromUrl: url,
+      toFile: filePath,
+    };
+    console.log('options $$$', options);
+
+    const result = await RNFS.downloadFile(options).promise;
+    Alert.alert('Download Complete', `File downloaded to: ${filePath}`);
+    console.log('🚀 ~ downloadAudio ~ result:', result);
+  } catch (error) {
+    console.error('Error downloading audio:', error);
+    Alert.alert('Download Failed', 'An error occurred while downloading the file.');
   }
 };

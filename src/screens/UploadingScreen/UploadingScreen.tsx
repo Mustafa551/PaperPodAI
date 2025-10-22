@@ -3,28 +3,176 @@ import { AppScreen } from '@/components/templates';
 import { useTheme } from '@/theme';
 import { SVG } from '@/theme/assets/icons';
 import { FONTS } from '@/theme/fonts';
+import { uploadArticle, type UploadArticleFile, type UploadArticlePayload } from '@/store/userSlice/userApiServices';
 import { uploadSchema } from '@/utils/schemas';
-import { normalizeHeight, pixelSizeX } from '@/utils/sizes';
+import { pixelSizeX } from '@/utils/sizes';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import DocumentPicker, { isCancel, types as DocumentPickerTypes } from 'react-native-document-picker';
+import Toast from 'react-native-simple-toast';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { useStyles } from './style';
+
+type UploadFormValues = {
+  link?: string;
+};
 
 const UploadingScreen: React.FC = () => {
   const { layout, colors } = useTheme();
-  const { t } = useTranslation()
-  const styles = useStyles()
+  const { t } = useTranslation();
+  const styles = useStyles();
+  const queryClient = useQueryClient();
+
+  const [selectedFile, setSelectedFile] = useState<UploadArticleFile | null>(null);
+
+  const uploadPayloadRef = useRef<UploadArticlePayload | null>(null);
 
   const {
     control,
     formState: { errors },
     handleSubmit,
-  } = useForm({ resolver: zodResolver(uploadSchema(t)) });
+    reset,
+  } = useForm<UploadFormValues>({
+    defaultValues: { link: '' },
+    resolver: zodResolver(uploadSchema(t)),
+  });
 
+  const {
+    error: uploadError,
+    isError: isUploadError,
+    isFetching: isUploading,
+    isSuccess: isUploadSuccess,
+    refetch: triggerUpload,
+  } = useQuery({
+    enabled: false,
+    queryFn: async () => {
+      if (!uploadPayloadRef.current) {
+        throw new Error('Missing upload payload');
+      }
 
-  const renderCard = (title: string) => {
+      return uploadArticle(uploadPayloadRef.current);
+    },
+    queryKey: ['uploadArticle'],
+    retry: 0,
+  });
+
+  const handlePickFile = useCallback(async () => {
+    try {
+      const response = await DocumentPicker.pickSingle({
+        presentationStyle: 'fullScreen',
+        type: [
+          DocumentPickerTypes.pdf,
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        ],
+      });
+
+      const file: UploadArticleFile = {
+        name: response.name ?? 'document.pdf',
+        type: response.type,
+        uri: response.uri,
+        size: response.size,
+      };
+
+      setSelectedFile(file);
+    } catch (err) {
+      if (isCancel(err)) {
+        return;
+      }
+
+      console.log('🚀 ~ handlePickFile ~ err:', err);
+      Toast.show('Unable to select file. Please try again.', Toast.SHORT);
+    }
+  }, []);
+
+  const onSubmit = useCallback(
+    async ({ link }: UploadFormValues) => {
+      const trimmedLink = link?.trim();
+
+      if (!selectedFile && !trimmedLink) {
+        Toast.show('Select a PDF or paste a link to continue.', Toast.SHORT);
+        return;
+      }
+
+      uploadPayloadRef.current = {
+        file: selectedFile,
+        link: trimmedLink ? trimmedLink : undefined,
+      };
+
+      await triggerUpload({ throwOnError: false });
+    },
+    [selectedFile, triggerUpload],
+  );
+
+  const selectedFileName = useMemo(() => {
+    if (!selectedFile) {
+      return undefined;
+    }
+
+    if (selectedFile.name) {
+      return selectedFile.name;
+    }
+
+    const parts = selectedFile.uri.split('/');
+    return parts[parts.length - 1];
+  }, [selectedFile]);
+
+  const selectedFileSizeLabel = useMemo(() => {
+    if (!selectedFile?.size) {
+      return undefined;
+    }
+
+    if (selectedFile.size >= 1024 * 1024) {
+      return `${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB`;
+    }
+
+    return `${(selectedFile.size / 1024).toFixed(1)} KB`;
+  }, [selectedFile]);
+
+  const uploadStatusMeta = useMemo(() => {
+    if (isUploading) {
+      return { color: colors.primary, label: 'Uploading...' };
+    }
+
+    if (isUploadSuccess) {
+      return { color: colors.greenSuccess ?? colors.primary, label: 'Uploaded' };
+    }
+
+    if (isUploadError) {
+      return { color: colors.redError ?? colors.red500 ?? colors.primary, label: 'Failed' };
+    }
+
+    if (selectedFile) {
+      return { color: colors.grey, label: 'Ready to upload' };
+    }
+
+    return null;
+  }, [colors, isUploadError, isUploadSuccess, isUploading, selectedFile]);
+
+  const uploadErrorMessage = useMemo(() => {
+    if (!isUploadError) {
+      return undefined;
+    }
+
+    const apiMessage =
+      (uploadError as { response?: { data?: { message?: string } } } | undefined)?.response?.data
+        ?.message;
+
+    return apiMessage ?? 'Failed to upload. Please try again.';
+  }, [isUploadError, uploadError]);
+
+  React.useEffect(() => {
+    if (isUploadSuccess) {
+      uploadPayloadRef.current = null;
+      queryClient.invalidateQueries({ queryKey: ['getPublicArticles'] });
+      reset({ link: '' });
+    }
+  }, [isUploadSuccess, queryClient, reset]);
+
+  const renderCard = (title: string, statusLabel: string, statusColor: string) => {
     return (
       <View style={styles.cardCont}>
         <View style={styles.iconCont}>
@@ -34,10 +182,10 @@ const UploadingScreen: React.FC = () => {
         </View>
         <Space mR={10} />
         <View>
-          <AppText title={title} color={colors.black} fontSize={16} fontFamily='regular' />
+          <AppText title={title} color={colors.black} fontSize={16} fontFamily="regular" />
           <Space mB={5} />
 
-          <AppText title={'In progress'} color={colors.primary} fontSize={16} fontFamily='regular' />
+          <AppText title={statusLabel} color={statusColor} fontSize={16} fontFamily="regular" />
 
         </View>
       </View>
@@ -52,31 +200,78 @@ const UploadingScreen: React.FC = () => {
       style={[layout.pH(pixelSizeX(10))]}
     >
       <View style={[layout.flex1, layout.itemsCenter, layout.justifyCenter]}>
-
-        <AppText title='Upload Any Research PDF, Or Paste A Link Of A Pdf' alignSelf='center' textAlign='center' color={colors.white} fontSize={24} fontFamily='medium' />
+        <AppText
+          title="Upload Any Research PDF, Or Paste A Link Of A Pdf"
+          alignSelf="center"
+          textAlign="center"
+          color={colors.white}
+          fontSize={24}
+          fontFamily="medium"
+        />
         <Space mB={40} />
 
-        <View style={styles.uploadCont}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          disabled={isUploading}
+          onPress={handlePickFile}
+          style={styles.uploadCont}
+        >
           <SVG.UploadPrimary />
           <Space mB={5} />
 
-          <AppText title='Click to upload' color={colors.primary} fontSize={13} fontFamily='regular' alignSelf='center' />
+          <AppText
+            title={selectedFile ? 'Tap to change file' : 'Click to upload'}
+            color={colors.primary}
+            fontSize={13}
+            fontFamily="regular"
+            alignSelf="center"
+          />
           <Space mB={10} />
 
-          <AppText textAlign='center' title={'Supported format: PDF, Docx \n (max. 800x400px)'} color={colors.grey} fontSize={10} fontFamily='regular' alignSelf='center' />
+          {selectedFileName ? (
+            <>
+              <AppText
+                title={selectedFileName}
+                textAlign="center"
+                color={colors.black}
+                fontSize={12}
+                fontFamily="regular"
+                alignSelf="center"
+              />
+              {selectedFileSizeLabel ? (
+                <>
+                  <Space mB={4} />
+                  <AppText
+                    title={selectedFileSizeLabel}
+                    textAlign="center"
+                    color={colors.grey}
+                    fontSize={10}
+                    fontFamily="regular"
+                    alignSelf="center"
+                  />
+                </>
+              ) : (
+                <Space mB={4} />
+              )}
+            </>
+          ) : null}
 
-        </View>
-        <Space mB={40} />
-
+          <AppText
+            textAlign="center"
+            title={'Supported format: PDF, Docx \n (max. 800x400px)'}
+            color={colors.grey}
+            fontSize={10}
+            fontFamily="regular"
+            alignSelf="center"
+          />
+        </TouchableOpacity>
+        <Space mB={30} />
 
         <AppInput
           control={control}
           extraStyle={{
-            container: [
-              layout.borderRadius(40),
-              layout.minHeight(47),
-            ] as any,
-            textInput: { fontFamily: FONTS.light }
+            container: [layout.borderRadius(40), layout.minHeight(47)] as any,
+            textInput: { fontFamily: FONTS.light },
           }}
           error={errors.link?.message}
           keyboardType="url"
@@ -89,32 +284,29 @@ const UploadingScreen: React.FC = () => {
           <AppButton
             width={'100%'}
             bgColor={colors.primary}
-            onPress={handleSubmit(() => {})}
-            title={'Upload Papers'}
+            onPress={handleSubmit(onSubmit)}
+            title={isUploadSuccess ? 'Upload Another Paper' : 'Upload Papers'}
             variant="gradient"
             shadow={false}
+            loading={isUploading}
+            disabled={isUploading}
           />
         </View>
+        {isUploadError && uploadErrorMessage ? (
+          <>
+            <Space mB={10} />
+            <AppText
+              title={uploadErrorMessage}
+              color={colors.redError ?? colors.red500}
+              fontSize={12}
+              fontFamily="regular"
+              textAlign="center"
+            />
+          </>
+        ) : null}
       </View>
-
-{/* 
-      <View style={[layout.flex1, layout.itemsCenter]}>
-        <Space mB={80} />
-
-        <SVG.UploadingFrame1 />
-
-
-        <Space mB={40} />
-        <AppText title='We’re Working On It' alignSelf='center' textAlign='center' color={colors.white} fontSize={24} fontFamily='medium' />
-        <Space mB={5} />
-
-        <AppText title={'Your paper is being converted. This \n may take a few minutes'} alignSelf='center' textAlign='center' color={colors.white} fontSize={16} fontFamily='regular' />
-
-        {renderCard('AI in Healthcare.pdf')}
-      </View> */}
-
     </AppScreen>
-  )
-}
+  );
+};
 
-export default UploadingScreen  
+export default UploadingScreen;

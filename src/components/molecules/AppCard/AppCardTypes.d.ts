@@ -7,5 +7,6 @@ export interface IAppCardProps {
         institute: string;
         prof:string;
         image:string
+        audioFilePath:string
     }
 } 

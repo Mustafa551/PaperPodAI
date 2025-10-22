@@ -28,6 +28,7 @@ const data = [
     prof: 'Dr. Emily Rao',
     image:
       'https://img.freepik.com/free-photo/top-view-hand-writing-love-letter_23-2150716552.jpg',
+    audioFilePath: "https://res.cloudinary.com/dptcdlae6/video/upload/v1761080187/audios/test_quotes.mp3.mp3",
   },
   {
     title: 'AI in Healthcare: Breakthroughs in 2025',
@@ -38,6 +39,7 @@ const data = [
     prof: 'Dr. Emily Rao',
     image:
       'https://img.freepik.com/free-photo/top-view-hand-writing-love-letter_23-2150716552.jpg',
+    audioFilePath: "https://res.cloudinary.com/dptcdlae6/video/upload/v1761080187/audios/test_quotes.mp3.mp3",
   },
   {
     title: 'AI in Healthcare: Breakthroughs in 2025',
@@ -46,10 +48,60 @@ const data = [
     description:
       'This paper explores cutting-edge applications of artificial intelligence in diagnostics, predictive care...',
     prof: 'Dr. Emily Rao',
+    audioFilePath: "https://res.cloudinary.com/dptcdlae6/video/upload/v1761080187/audios/test_quotes.mp3.mp3",
     image:
       'https://img.freepik.com/free-photo/top-view-hand-writing-love-letter_23-2150716552.jpg',
   }
 ]
+
+// const ArtitalData = [
+//   {
+//     "success": true,
+//     "message": "Article Details Fetched Successfully",
+//     "articles": [
+//       {
+//         "uuid": "45e7e142-c3d6-441b-9162-774cb74d6438",
+//         "userId": "fb83c592-b824-49e0-b355-2f8ce0e0a958",
+//         "fileName": "test_quotes.pdf",
+//         "pdfFilePath": "{}",
+//         "audioFilePath": "https://res.cloudinary.com/dptcdlae6/video/upload/v1761080187/audios/test_quotes.mp3.mp3",
+//         "convertingStatus": "completed",
+//         "type": "public",
+//         "createdAt": "2025-10-21T20:56:21.494Z"
+//       },
+//       {
+//         "uuid": "bdd44ba5-37dc-41eb-8bb6-7ddd56141d7f",
+//         "userId": "fb83c592-b824-49e0-b355-2f8ce0e0a958",
+//         "fileName": "test_quotes.pdf",
+//         "pdfFilePath": "{}",
+//         "audioFilePath": "https://res.cloudinary.com/dptcdlae6/video/upload/v1761080187/audios/test_quotes.mp3.mp3",
+//         "convertingStatus": "completed",
+//         "type": "public",
+//         "createdAt": "2025-10-21T20:56:21.494Z"
+//       },
+//       {
+//         "uuid": "e96a254c-e086-4c3a-8731-4e3722be31c3",
+//         "userId": "fb83c592-b824-49e0-b355-2f8ce0e0a958",
+//         "fileName": "test_quotes.pdf",
+//         "pdfFilePath": "{}",
+//         "audioFilePath": "https://res.cloudinary.com/dptcdlae6/video/upload/v1761080187/audios/test_quotes.mp3.mp3",
+//         "convertingStatus": "completed",
+//         "type": "public",
+//         "createdAt": "2025-10-21T20:56:21.494Z"
+//       },
+//       {
+//         "uuid": "f8d8f796-2ece-4ccf-b1fb-6d8d10041c6a",
+//         "userId": "fb83c592-b824-49e0-b355-2f8ce0e0a958",
+//         "fileName": "test_quotes.pdf",
+//         "pdfFilePath": "{}",
+//         "audioFilePath": "https://res.cloudinary.com/dptcdlae6/video/upload/v1761080187/audios/test_quotes.mp3.mp3",
+//         "convertingStatus": "completed",
+//         "type": "public",
+//         "createdAt": "2025-10-21T20:56:21.494Z"
+//       }
+//     ]
+//   }
+// ]
 
 const HomeScreen = () => {
   const { layout, colors } = useTheme();
