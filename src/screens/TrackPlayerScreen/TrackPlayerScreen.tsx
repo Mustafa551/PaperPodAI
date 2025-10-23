@@ -5,19 +5,23 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  FlatList,
   Share,
   Alert,
 } from 'react-native';
+import { Buffer } from 'buffer';
 import Slider from '@react-native-community/slider';
 import Sound from 'react-native-sound';
 import { AppScreen } from '@/components/templates';
 import { useTheme } from '@/theme';
-import { normalizeHeight, normalizeWidth, pixelSizeX, pixelSizeY } from '@/utils/sizes';
+import { normalizeFont, normalizeHeight, normalizeWidth, pixelSizeX, pixelSizeY } from '@/utils/sizes';
 import { AppText, AssetByVariant, Space } from '@/components/atoms';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SVG } from '@/theme/assets/icons';
+import { useQuery } from '@tanstack/react-query';
+import { getArticlesUuid } from '@/store/userSlice/userApiServices';
 
 // Enable playback in silent mode and allow mixing with other audio (iOS)
 Sound.setCategory('Playback', true);
@@ -26,23 +30,59 @@ const AudioPlayerScreen = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [sentences, setSentences] = useState<Array<{ sentence: string; start: number; end: number }>>([]);
+  const [activeIndex, setActiveIndex] = useState<number>(-1);
+  const flatListRef = useRef<FlatList>(null);
   const { colors, layout } = useTheme();
-  
+
   // Read item from navigation params
   const route = useRoute() as any;
   const item = route?.params?.item || {};
-  console.log("item item@@@", item );
-  
+  console.log("item item@@@ new ones", item);
+
   const {
     audioFilePath = '',
-    title: itemTitle = '',
-    prof: itemProf = '',
-    institute: itemInstitute = '',
-    date: itemDate = '',
-    description: itemDescription = ''
+    fileName = '',
+    uuid,
   } = item;
+  console.log("fileName fileName", fileName);
+
   console.log("audioFilePath audioFilePath", audioFilePath);
-  
+  const { data: articles, error } = useQuery({
+    queryKey: ['getArticlesByUuid'],
+    queryFn: () => getArticlesUuid(uuid),
+  });
+  console.log("articles articles by uuid", articles?.article);
+  console.log("articles articles by uuid sentencesTimestamps", articles?.article?.sentencesTimestamps);
+
+  useEffect(() => {
+    const b64 = articles?.article?.sentencesTimestamps;
+    if (!b64) {
+      setSentences([]);
+      return;
+    }
+    try {
+      const decoded = Buffer.from(b64, 'base64').toString('utf8');
+      const parsed = JSON.parse(decoded);
+      if (Array.isArray(parsed)) {
+        // Ensure numeric times and valid shape
+        const clean = parsed
+          .map((s: any) => ({
+            sentence: String(s.sentence ?? ''),
+            start: Number(s.start ?? 0),
+            end: Number(s.end ?? 0),
+          }))
+          .filter((s: any) => s.sentence && !Number.isNaN(s.start) && !Number.isNaN(s.end));
+        setSentences(clean);
+      } else {
+        setSentences([]);
+      }
+    } catch (e) {
+      console.log('Failed to decode/parse sentencesTimestamps', e);
+      setSentences([]);
+    }
+  }, [articles?.article?.sentencesTimestamps]);
+
   // Sound reference
   const soundRef = useRef<Sound | null>(null);
   const playbackTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -104,6 +144,12 @@ const AudioPlayerScreen = () => {
         if (soundRef.current) {
           soundRef.current.getCurrentTime((seconds) => {
             setCurrentTime(seconds);
+            if (sentences.length) {
+              const idx = sentences.findIndex(s => seconds >= s.start && seconds < s.end);
+              if (idx !== -1 && idx !== activeIndex) {
+                setActiveIndex(idx);
+              }
+            }
             if (duration > 0 && seconds >= duration) {
               handlePlaybackComplete();
             }
@@ -121,7 +167,17 @@ const AudioPlayerScreen = () => {
         playbackTimerRef.current = null;
       }
     };
-  }, [isPlaying, duration]);
+  }, [isPlaying, duration, sentences, activeIndex]);
+
+  useEffect(() => {
+    if (!flatListRef.current) return;
+    if (activeIndex < 0) return;
+    try {
+      (flatListRef.current as any).scrollToIndex({ index: activeIndex, animated: true, viewPosition: 0.5 });
+    } catch (e) {
+      // In case the index is out of range briefly
+    }
+  }, [activeIndex]);
 
   const handlePlaybackComplete = () => {
     setIsPlaying(false);
@@ -174,7 +230,7 @@ const AudioPlayerScreen = () => {
 
   const handleRewind = () => {
     if (!soundRef.current) return;
-    
+
     const newTime = Math.max(0, currentTime - 10);
     soundRef.current.setCurrentTime(newTime);
     setCurrentTime(newTime);
@@ -182,7 +238,7 @@ const AudioPlayerScreen = () => {
 
   const handleFastForward = () => {
     if (!soundRef.current) return;
-    
+
     const newTime = Math.min(duration, currentTime + 10);
     soundRef.current.setCurrentTime(newTime);
     setCurrentTime(newTime);
@@ -190,11 +246,11 @@ const AudioPlayerScreen = () => {
 
   const handleRestart = () => {
     if (!soundRef.current) return;
-    
+
     soundRef.current.stop();
     soundRef.current.setCurrentTime(0);
     setCurrentTime(0);
-    
+
     if (isPlaying) {
       soundRef.current.play();
     }
@@ -227,28 +283,28 @@ const AudioPlayerScreen = () => {
 
   const handleSliderChange = (value: number) => {
     if (!soundRef.current) return;
-    
+
     soundRef.current.setCurrentTime(value);
     setCurrentTime(value);
   };
-const navigation = useNavigation();
+  const navigation = useNavigation();
   return (
     <AppScreen
       ScrollViewProps={{ showsVerticalScrollIndicator: false }}
       backgroundColor={colors.black}
-      preset="scroll"
-          style={{ paddingTop: useSafeAreaInsets().top + pixelSizeY(10) , paddingHorizontal: pixelSizeX(20) }}
-    >  
-    <TouchableOpacity 
-    style={{  paddingRight:pixelSizeX(12), width: normalizeWidth(50) }}
-    onPress={() => {
-      navigation.goBack();
-    }}>
-       <SVG.ArrowLeft/>
-        </TouchableOpacity>
+      // preset="fixed"
+      style={{ paddingTop: useSafeAreaInsets().top + pixelSizeY(10), paddingHorizontal: pixelSizeX(20) }}
+    >
+      <TouchableOpacity
+        style={{ paddingRight: pixelSizeX(12), width: normalizeWidth(50) }}
+        onPress={() => {
+          navigation.goBack();
+        }}>
+        <SVG.ArrowLeft />
+      </TouchableOpacity>
       <Space mB={20} />
       <AppText
-        title={itemTitle || 'Audio'}
+        title={fileName || 'Audio'}
         fontSize={24}
         fontWeight={500}
         color={'#F5F5F5'}
@@ -256,32 +312,46 @@ const navigation = useNavigation();
 
       <Space mB={30} />
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-            <LinearGradient
-                      colors={['#461D7A', '#8A2BE1']}
-                      style={[layout.bgColor('#8A2BE1'), layout.borderRadius(12)]}
-                      >
-          <View style={[layout.padding(pixelSizeX(30))]} >              
-          <AppText
-            title={itemDescription ? itemDescription : 'Welcome to ResearchPod, where we bring complex science to life—one voice at a time.'}
-            fontSize={16} 
-            fontWeight={500}
-            color={colors.white}
-            extraStyle={{ lineHeight: 22.5 }}
-          />
-          <Space mB={15} />
-          <AppText
-            title={[itemProf, itemInstitute, itemDate].filter(Boolean).join(' • ')}
-            fontSize={14}
-            fontWeight={500}
-            color={'#A9A9A9'}
-            extraStyle={{ lineHeight: 21 }}
-          />
-        </View>
-                </LinearGradient>
-      </ScrollView>
+      <View style={{ height: '55%', backgroundColor: 'coral' }} >
+        <LinearGradient
+          colors={['#461D7A', '#8A2BE1']}
+          style={[layout.bgColor('#8A2BE1'), layout.borderRadius(12)]}
+        >
+          <View style={[layout.padding(pixelSizeX(30))]} >
+            <FlatList
+              ref={flatListRef}
+              data={sentences}
+              keyExtractor={(_, i) => `line-${i}`}
+              style={{ maxHeight: normalizeHeight(260) }}
+              showsVerticalScrollIndicator={false}
+              initialNumToRender={12}
+              getItemLayout={(data, index) => ({ length: 34, offset: 34 * index, index })}
+              renderItem={({ item, index }) => {
+                const isActive = index === activeIndex;
+                return (
+                  <View style={{ paddingVertical: 6 }}>
+                    <Text
+                      style={{
+                        color: isActive ? colors.white : '#A9A9A9',
+                        fontSize: isActive ? normalizeFont(16) : normalizeFont(14),
+                        fontWeight: isActive ? '700' as const : '400' as const,
+                        opacity: isActive ? 1 : 0.7,
+                      }}
+                    >
+                      {item.sentence}
+                    </Text>
+                  </View>
+                );
+              }}
+            />
+          </View>
+        </LinearGradient>
+      </View>
 
-        <Space mB={40} />
+      <Space mB={20} />
+
+
+      <Space mB={40} />
 
       {/* Audio Controls */}
       <View>
@@ -294,7 +364,7 @@ const navigation = useNavigation();
               height={normalizeHeight(26)}
             />
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={styles.controlButton} onPress={handleRewind}>
             <AssetByVariant
               resizeMode="contain"
@@ -303,17 +373,17 @@ const navigation = useNavigation();
               height={normalizeHeight(26)}
             />
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={styles.playButton} onPress={handlePlayPause}>
             <AssetByVariant
               resizeMode="contain"
               path={isPlaying ? 'pause' : 'play1'}
               // path='pause'
-            width={normalizeWidth(35)}
+              width={normalizeWidth(35)}
               height={normalizeHeight(35)}
             />
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={styles.controlButton} onPress={handleFastForward}>
             <AssetByVariant
               resizeMode="contain"
@@ -322,7 +392,7 @@ const navigation = useNavigation();
               height={normalizeHeight(26)}
             />
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={styles.controlButton} onPress={handleShare}>
             <AssetByVariant
               resizeMode="contain"
@@ -330,7 +400,7 @@ const navigation = useNavigation();
               width={normalizeWidth(24)}
               height={normalizeHeight(24)}
             />
-          </TouchableOpacity>        
+          </TouchableOpacity>
         </View>
 
         <Space mB={35} />
@@ -365,15 +435,15 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   controlButton: {
-    width:normalizeWidth(49),
-    height:normalizeHeight(49),
+    width: normalizeWidth(49),
+    height: normalizeHeight(49),
     justifyContent: 'center',
     alignItems: 'center',
     // backgroundColor:'pink'
   },
   playButton: {
-    width:normalizeWidth(49),
-    height:normalizeHeight(49),
+    width: normalizeWidth(49),
+    height: normalizeHeight(49),
     justifyContent: 'center',
     alignItems: 'center',
   },

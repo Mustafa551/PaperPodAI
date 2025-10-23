@@ -28,6 +28,11 @@ export const getPublicArticles = async () => {
   console.log("🚀 ~ getPublicArticles ~ data:", data)
   return data;
 };
+export const getArticlesUuid = async (uuid : string) => {
+  const {data} = await API.get(`/v1/article/id/${uuid}`);
+  console.log("🚀 ~ getPublicArticles ~ data:", data)
+  return data;
+};
 
 export type UploadArticleFile = {
   name: string;
