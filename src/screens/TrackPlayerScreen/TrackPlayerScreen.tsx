@@ -91,7 +91,7 @@ const AudioPlayerScreen = () => {
   // Initialize sound on component mount or when audioFilePath changes
   useEffect(() => {
     // Pick audio URL from params (fallback to previous demo URL if missing)
-    const url = audioFilePath || 'https://res.cloudinary.com/dptcdlae6/video/upload/v1761080187/audios/test_quotes.mp3.mp3';
+    const url = audioFilePath || '';
     audioUrlRef.current = url;
 
     // Clean any existing sound before creating a new one
@@ -312,7 +312,7 @@ const AudioPlayerScreen = () => {
 
       <Space mB={30} />
 
-      <View style={{ height: '55%', backgroundColor: 'coral' }} >
+      <View style={{ height: '55%'}} >
         <LinearGradient
           colors={['#461D7A', '#8A2BE1']}
           style={[layout.bgColor('#8A2BE1'), layout.borderRadius(12)]}

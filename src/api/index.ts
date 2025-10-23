@@ -32,18 +32,28 @@ API.interceptors.request.use(
   async function (config) {
     // getting access token
     const {accessToken, refreshToken} = useAppStore.getState().tokens;
-    console.log("accessToken accessToken" , accessToken);
-    
-    // injecting our token into header
-    // config.headers.Authorization = `Bearer ${accessToken}`;
-      config.headers = {
+    console.log('accessToken accessToken', accessToken);
+    console.log('refreshToken refreshToken', refreshToken);
+
+    const headers = {
       ...config.headers,
-      Authorization: `Bearer ${accessToken}`,
-      'x-refresh-token': refreshToken,
       'x-device-id': 'test-device-id',
       'x-user-agent': 'android',
-      "Content-Type" :'application/json'
-    };
+    } as Record<string, string>;
+
+    if (accessToken) {
+      headers.Authorization = `Bearer ${accessToken}`;
+    }
+
+    if (refreshToken) {
+      headers['x-refresh-token'] = refreshToken;
+    }
+
+    if (!headers['Content-Type'] && !headers['content-type']) {
+      headers['Content-Type'] = 'application/json';
+    }
+
+    config.headers = headers;
 
     return config;
   },

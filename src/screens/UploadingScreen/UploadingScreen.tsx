@@ -13,8 +13,9 @@ import DocumentPicker, { isCancel, types as DocumentPickerTypes } from 'react-na
 import Toast from 'react-native-simple-toast';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from './style';
+import { useNavigation } from '@react-navigation/native';
 
 type UploadFormValues = {
   link?: string;
@@ -25,7 +26,7 @@ const UploadingScreen: React.FC = () => {
   const { t } = useTranslation();
   const styles = useStyles();
   const queryClient = useQueryClient();
-
+  const navigation = useNavigation()
   const [selectedFile, setSelectedFile] = useState<UploadArticleFile | null>(null);
 
   const uploadPayloadRef = useRef<UploadArticlePayload | null>(null);
@@ -35,10 +36,14 @@ const UploadingScreen: React.FC = () => {
     formState: { errors },
     handleSubmit,
     reset,
+    setValue,
+    watch,
   } = useForm<UploadFormValues>({
     defaultValues: { link: '' },
     resolver: zodResolver(uploadSchema(t)),
   });
+  const watchedLink = watch('link');
+  const hasLinkSelection = Boolean(watchedLink?.trim().length);
 
   const {
     error: uploadError,
@@ -52,7 +57,6 @@ const UploadingScreen: React.FC = () => {
       if (!uploadPayloadRef.current) {
         throw new Error('Missing upload payload');
       }
-
       return uploadArticle(uploadPayloadRef.current);
     },
     queryKey: ['uploadArticle'],
@@ -63,11 +67,7 @@ const UploadingScreen: React.FC = () => {
     try {
       const response = await DocumentPicker.pickSingle({
         presentationStyle: 'fullScreen',
-        type: [
-          DocumentPickerTypes.pdf,
-          'application/msword',
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        ],
+        type: [DocumentPickerTypes.pdf],
       });
 
       const file: UploadArticleFile = {
@@ -78,6 +78,7 @@ const UploadingScreen: React.FC = () => {
       };
 
       setSelectedFile(file);
+      setValue('link', '');
     } catch (err) {
       if (isCancel(err)) {
         return;
@@ -92,15 +93,19 @@ const UploadingScreen: React.FC = () => {
     async ({ link }: UploadFormValues) => {
       const trimmedLink = link?.trim();
 
+      if (selectedFile && trimmedLink) {
+        Toast.show('Choose either a PDF file or paste a PDF link, not both.', Toast.SHORT);
+        return;
+      }
+
       if (!selectedFile && !trimmedLink) {
         Toast.show('Select a PDF or paste a link to continue.', Toast.SHORT);
         return;
       }
 
-      uploadPayloadRef.current = {
-        file: selectedFile,
-        link: trimmedLink ? trimmedLink : undefined,
-      };
+      uploadPayloadRef.current = selectedFile
+        ? { file: selectedFile }
+        : { link: trimmedLink };
 
       await triggerUpload({ throwOnError: false });
     },
@@ -149,8 +154,12 @@ const UploadingScreen: React.FC = () => {
       return { color: colors.grey, label: 'Ready to upload' };
     }
 
+    if (hasLinkSelection) {
+      return { color: colors.grey, label: 'Link ready to upload' };
+    }
+
     return null;
-  }, [colors, isUploadError, isUploadSuccess, isUploading, selectedFile]);
+  }, [colors, hasLinkSelection, isUploadError, isUploadSuccess, isUploading, selectedFile]);
 
   const uploadErrorMessage = useMemo(() => {
     if (!isUploadError) {
@@ -166,27 +175,31 @@ const UploadingScreen: React.FC = () => {
 
   React.useEffect(() => {
     if (isUploadSuccess) {
+      navigation.navigate('UploadingProgressScreen' as never)
       uploadPayloadRef.current = null;
+      setSelectedFile(null);
       queryClient.invalidateQueries({ queryKey: ['getPublicArticles'] });
       reset({ link: '' });
     }
   }, [isUploadSuccess, queryClient, reset]);
+
+  React.useEffect(() => {
+    if (hasLinkSelection && selectedFile) {
+      setSelectedFile(null);
+    }
+  }, [hasLinkSelection, selectedFile]);
 
   const renderCard = (title: string, statusLabel: string, statusColor: string) => {
     return (
       <View style={styles.cardCont}>
         <View style={styles.iconCont}>
           <SVG.Upload fill={colors.primary} />
-          {/* <SVG.TickPrimary fill={colors.primary} /> */}
-
         </View>
         <Space mR={10} />
         <View>
           <AppText title={title} color={colors.black} fontSize={16} fontFamily="regular" />
           <Space mB={5} />
-
           <AppText title={statusLabel} color={statusColor} fontSize={16} fontFamily="regular" />
-
         </View>
       </View>
     )
@@ -200,6 +213,11 @@ const UploadingScreen: React.FC = () => {
       style={[layout.pH(pixelSizeX(10))]}
     >
       <View style={[layout.flex1, layout.itemsCenter, layout.justifyCenter]}>
+         {/* <Text onPress={()=>{
+          navigation.navigate('UploadingProgressScreen')
+         }} >
+          go to UploadingProgressScreen
+         </Text> */}
         <AppText
           title="Upload Any Research PDF, Or Paste A Link Of A Pdf"
           alignSelf="center"
@@ -285,7 +303,7 @@ const UploadingScreen: React.FC = () => {
             width={'100%'}
             bgColor={colors.primary}
             onPress={handleSubmit(onSubmit)}
-            title={isUploadSuccess ? 'Upload Another Paper' : 'Upload Papers'}
+            title={'Upload Papers'}
             variant="gradient"
             shadow={false}
             loading={isUploading}

@@ -13,6 +13,7 @@ import {
   Onboarding2,
   PaywallScreen,
   SignUpScreen,
+  UploadingProgressScreen,
 } from '@/screens';
 import ChangePasswordScreen from '@/screens/ChangePasswordScreen/ChangePasswordScreen';
 import Onboarding3 from '@/screens/Onboarding3/Onboarding3';
@@ -62,6 +63,7 @@ const HomeStack = () => {
         component={AccountSetScreen}
       />
       <Stack.Screen name={'AudioPlayerScreen'} component={AudioPlayerScreen} />
+      <Stack.Screen name={'UploadingProgressScreen'} component={UploadingProgressScreen} />
     </Stack.Navigator>
   );
 };

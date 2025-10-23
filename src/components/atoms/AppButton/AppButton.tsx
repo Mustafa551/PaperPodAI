@@ -219,7 +219,7 @@ const AppButton: React.FC<IAppButtonProps> = memo((props) => {
       >
         {SVGLeft}
         {loading ? (
-          <ActivityIndicator color={colors.white} size="small" />
+          <ActivityIndicator color={'white'} size="small" />
         ) : (
           <AppText
             alignSelf="center"

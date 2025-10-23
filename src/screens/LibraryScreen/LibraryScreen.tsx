@@ -1,15 +1,7 @@
 import { AppScreen } from '@/components/templates';
 import { useTheme } from '@/theme';
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Dimensions,
-  StyleSheet,
-} from 'react-native';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
 import useStyles from './style';
 import { normalizeFont, normalizeHeight, normalizeWidth, pixelSizeX, pixelSizeY } from '@/utils/sizes';
 import { AppText, AssetByVariant, Space } from '@/components/atoms';
@@ -18,27 +10,93 @@ import LinearGradient from 'react-native-linear-gradient';
 import { SVG } from '@/theme/assets/icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-const { width } = Dimensions.get('window');
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { ArticleListItem, getMyArticles } from '@/store/userSlice/userApiServices';
 
-interface LibraryItem {
-  id: string;
-  title: string;
-  authorImage: string;
-}
+type SortOption = {
+  key: 'desc' | 'asc';
+  label: string;
+};
+
+const PAGE_SIZE = 10;
 
 const LibraryScreen = () => {
-  const [sortBy, setSortBy] = useState('Recent');
+  const [sortBy, setSortBy] = useState<SortOption['key']>('desc');
   const [showDetail, setShowDetail] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
   const [sortBtnWidth, setSortBtnWidth] = useState(0);
   const navigation = useNavigation();
-  const sortOptions = [
-    { key: 'latest', label: 'Latest Added' },
-    { key: 'oldest', label: 'Oldest First' },
+  const sortOptions: SortOption[] = [
+    { key: 'desc', label: 'Latest Added' },
+    { key: 'asc', label: 'Oldest First' },
   ];
   const { colors, layout } = useTheme();
-  const { t } = useTranslation();
   const styless = useStyles();
+  const flatListRef = useRef<FlatList<ArticleListItem>>(null);
+
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isRefetching,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ['myArticles', sortBy],
+    queryFn: ({ pageParam = 0 }) =>
+      getMyArticles({ sort: sortBy, limit: PAGE_SIZE, offset: pageParam }),
+    getNextPageParam: (lastPage, allPages) => {
+      const lastItems = lastPage?.articles ?? [];
+
+      if (!lastItems || lastItems.length === 0) {
+        return undefined;
+      }
+
+      const totalFetched = allPages.reduce(
+        (total, page) => total + (page?.articles?.length ?? 0),
+        0,
+      );
+
+      if (lastPage?.total && totalFetched >= lastPage.total) {
+        return undefined;
+      }
+
+      if (lastItems.length < PAGE_SIZE) {
+        return undefined;
+      }
+
+      return totalFetched;
+    },
+    initialPageParam: 0,
+    staleTime: 30_000,
+  });
+  console.log("data data @#@" , data);
+  
+  const articles = useMemo(
+    () => data?.pages.flatMap(page => page?.articles ?? []) ?? [],
+    [data],
+  );
+
+  const isInitialLoading = isLoading && articles.length === 0;
+  const isRefreshing = isRefetching && !isFetchingNextPage;
+
+  const errorMessage = useMemo(() => {
+    if (!error) {
+      return undefined;
+    }
+
+    if (error instanceof Error && error.message) {
+      return error.message;
+    }
+
+    const apiMessage =
+      (error as { response?: { data?: { message?: string } } } | undefined)
+        ?.response?.data?.message;
+
+    return apiMessage ?? 'Failed to load articles.';
+  }, [error]);
 
 
   const detailData = {
@@ -54,57 +112,151 @@ const LibraryScreen = () => {
       'This innovation supports better forecasting and smarter environmental decisions.',
     ],
   };
-  const libraryItems: LibraryItem[] = [
-    {
-      id: '1',
-      title: 'Climate Modeling with Machine Learning',
-      authorImage: '/placeholder.svg?height=40&width=40',
+  const handleItemPress = useCallback(
+    (item: ArticleListItem) => {
+      navigation.navigate('AudioPlayerScreen' as never, { item } as never);
+      console.log('Item pressed:', item?.title ?? item?.fileName ?? 'Untitled');
     },
-    {
-      id: '2',
-      title: 'Ethics of AI: Navigating Bias and Responsibility',
-      authorImage: '/placeholder.svg?height=40&width=40',
-    },
-    {
-      id: '3',
-      title: 'Climate Modeling with Machine Learning',
-      authorImage: '/placeholder.svg?height=40&width=40',
-    },
-    {
-      id: '4',
-      title: 'Climate Modeling with Machine Learning',
-      authorImage: '/placeholder.svg?height=40&width=40',
-    },
-    {
-      id: '5',
-      title: 'Climate Modeling with Machine Learning',
-      authorImage: '/placeholder.svg?height=40&width=40',
-    },
-  ];
+    [navigation],
+  );
 
-  const handleItemPress = (item: LibraryItem) => {
-    // setShowDetail(true)
-    navigation.navigate("AudioPlayerScreen" as never);
+  const handleMenuPress = useCallback((item: ArticleListItem) => {
+    console.log('Menu pressed for:', item?.title ?? item?.fileName ?? 'Untitled');
+  }, []);
 
-    console.log('Item pressed:', item.title);
+  const handleSortPress = useCallback(
+    (opt: SortOption) => {
+      setSortBy(opt.key);
+      setSortOpen(false);
+      flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
+    },
+    [],
+  );
+
+  const handleLoadMore = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  const handleRefresh = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  const keyExtractor = (item: ArticleListItem, index: number) =>
+    item?.uuid ?? item?.fileName ?? `article-${index}`;
+
+  const renderArticleItem = ({ item }: { item: ArticleListItem }) => {
+    const displayTitle = item?.title ?? item?.fileName ?? 'Untitled Article';
+
+    return (
+      <View>
+        <Space mB={5} />
+        <View style={styless.libraryItem}>
+          <View>
+            <AssetByVariant
+              resizeMode="contain"
+              path={'docimg'}
+              width={normalizeWidth(70)}
+              height={normalizeHeight(70)}
+            />
+          </View>
+
+          <View style={styless.itemContent}>
+            <AppText
+              title={displayTitle}
+              fontSize={16}
+              fontWeight={400}
+              color={'#FFFFFF'}
+              extraStyle={{ lineHeight: 22.5 }}
+            />
+          </View>
+
+          <View style={styless.itemRight}>
+            <TouchableOpacity
+              onPress={() => handleItemPress(item)}
+              style={styless.avatarPlaceholder}
+            >
+              <AssetByVariant
+                resizeMode="contain"
+                path={'play'}
+                width={normalizeWidth(16)}
+                height={normalizeHeight(16)}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={layout.padding(5)}
+              onPress={() => handleMenuPress(item)}
+            >
+              <AssetByVariant
+                resizeMode="contain"
+                path={'threedot'}
+                width={normalizeWidth(5)}
+                height={normalizeHeight(22)}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    );
   };
 
-  const handleMenuPress = (item: LibraryItem) => {
-    console.log('Menu pressed for:', item.title);
-  };
-  const handleSortPress = (opt: any) => {
-    setSortBy(opt.key);
-    setSortOpen(false);
-  };
+  const listEmptyComponent = (
+    <View style={styles.emptyState}>
+      {isInitialLoading ? (
+        <ActivityIndicator color={colors.primary} />
+      ) : (
+        <AppText
+          title={
+            errorMessage ?? 'No articles found yet. Upload to see them here.'
+          }
+          color={colors.grey}
+          fontSize={14}
+          fontFamily="regular"
+          textAlign="center"
+        />
+      )}
+    </View>
+  );
+
+  const listFooterComponent =
+    isFetchingNextPage ? (
+      <View style={styles.footer}>
+        <ActivityIndicator color={colors.primary} />
+      </View>
+    ) : !hasNextPage && articles.length > 0 ? (
+      <View style={styles.footer}>
+        <AppText
+          title="You've reached the end."
+          color={colors.grey}
+          fontSize={12}
+          fontFamily="regular"
+        />
+      </View>
+    ) : null;
+
+  const insets = useSafeAreaInsets();
 
   return (
     <AppScreen
-      ScrollViewProps={{ showsVerticalScrollIndicator: false }}
       backgroundColor={colors.black}
-      preset="scroll"
-      style={{ paddingTop: useSafeAreaInsets().top + pixelSizeY(10) , paddingHorizontal: pixelSizeX(20) }}
+      preset="fixed"
+      style={{
+        paddingTop: insets.top + pixelSizeY(10),
+        paddingHorizontal: pixelSizeX(20),
+      }}
     >
-      <View style={[styless.header, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}>
+      <View
+        style={[
+          styless.header,
+          {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          },
+        ]}
+      >
         <Text style={styless.title}>My Library</Text>
         <View style={{ position: 'relative', zIndex: 999 }}>
           <TouchableOpacity
@@ -114,12 +266,19 @@ const LibraryScreen = () => {
           >
             <AppText
               onPress={() => setSortOpen(prev => !prev)}
-              title={sortOptions.find(opt => opt.key === sortBy)?.label || 'Sort By'}
+              title={
+                sortOptions.find(opt => opt.key === sortBy)?.label || 'Sort By'
+              }
               fontSize={normalizeFont(14)}
               fontWeight={400}
               color={'#FFFFFF'}
             />
-            <View style={{ marginLeft: pixelSizeX(20), transform: [{ rotate: sortOpen ? '180deg' : '0deg' }] }}>
+            <View
+              style={{
+                marginLeft: pixelSizeX(20),
+                transform: [{ rotate: sortOpen ? '180deg' : '0deg' }],
+              }}
+            >
               <AssetByVariant
                 resizeMode="contain"
                 path={'sorticon'}
@@ -130,18 +289,19 @@ const LibraryScreen = () => {
           </TouchableOpacity>
           {sortOpen && (
             <View style={[styles.dropdown, { width: sortBtnWidth }]}>
-              {sortOptions?.map(opt => (
+              {sortOptions.map(opt => (
                 <TouchableOpacity
                   key={opt.key}
-                  style={[styles.dropdownItem]}
-                  onPress={() => {
-                    handleSortPress(opt);
-
-                  }}
+                  style={styles.dropdownItem}
+                  onPress={() => handleSortPress(opt)}
                 >
-                  <AppText onPress={() => {
-                    handleSortPress(opt);
-                  }} title={opt.label} fontSize={normalizeFont(12)} fontWeight={400} color={opt.key === sortBy ? '#111827' : '#475569'} />
+                  <AppText
+                    onPress={() => handleSortPress(opt)}
+                    title={opt.label}
+                    fontSize={normalizeFont(12)}
+                    fontWeight={400}
+                    color={opt.key === sortBy ? '#111827' : '#475569'}
+                  />
                 </TouchableOpacity>
               ))}
             </View>
@@ -149,58 +309,25 @@ const LibraryScreen = () => {
         </View>
       </View>
       <Space mB={30} />
-      <ScrollView style={styless.scrollView} showsVerticalScrollIndicator={false}>
-        <View>
-          {libraryItems.map((item) => (
-            <View key={item.id}>
-              <Space mB={5} />
-              <View style={[styless.libraryItem]} >
-                <View>
-                  <AssetByVariant
-                    resizeMode="contain"
-                    path={'docimg'}
-                    width={normalizeWidth(70)}
-                    height={normalizeHeight(70)}
-                  />
-                </View>
-
-                <View style={styless.itemContent}>
-                  <AppText
-                    title={item.title}
-                    fontSize={16}
-                    fontWeight={400}
-                    color={'#FFFFFF'}
-                    extraStyle={{ lineHeight: 22.5 }}
-                  />
-                </View>
-
-                <View style={styless.itemRight}>
-                  <TouchableOpacity onPress={() => handleItemPress(item)} style={styless.avatarPlaceholder}>
-                    {/* <SVG.DownloadArtical
-                      width={normalizeWidth(16)}
-                      height={normalizeHeight(16)} /> */}
-                    <AssetByVariant
-                      resizeMode="contain"
-                      path={'play'}
-                      width={normalizeWidth(16)}
-                      height={normalizeHeight(16)}
-                    />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity style={layout.padding(5)} onPress={() => handleMenuPress(item)}>
-                    <AssetByVariant
-                      resizeMode="contain"
-                      path={'threedot'}
-                      width={normalizeWidth(5)}
-                      height={normalizeHeight(22)}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          ))}
-        </View>
-      </ScrollView>
+      <View style={styles.listContainer}>
+        <FlatList
+          ref={flatListRef}
+          data={articles}
+          keyExtractor={keyExtractor}
+          renderItem={renderArticleItem}
+          showsVerticalScrollIndicator={false}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.6}
+          refreshing={isRefreshing}
+          onRefresh={handleRefresh}
+          ListEmptyComponent={listEmptyComponent}
+          ListFooterComponent={listFooterComponent}
+          contentContainerStyle={[
+            styles.listContent,
+            articles.length === 0 ? styles.listContentCentered : null,
+          ]}
+        />
+      </View>
       {/* Download Modal */}
       <Modal
         animationType="slide"
@@ -299,6 +426,27 @@ const styles = StyleSheet.create({
   dropdownItem: {
     paddingVertical: pixelSizeY(12),
     paddingHorizontal: pixelSizeX(16),
+  },
+  listContainer: {
+    flex: 1,
+    width: '100%',
+  },
+  listContent: {
+    flexGrow: 1,
+    paddingBottom: pixelSizeY(40),
+  },
+  listContentCentered: {
+    justifyContent: 'center',
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: pixelSizeY(32),
+  },
+  footer: {
+    paddingVertical: pixelSizeY(16),
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   modalContainer: {
     flex: 1,
