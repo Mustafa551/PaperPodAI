@@ -1,15 +1,15 @@
-import { AppButton, AppInput, AppText, Space } from '@/components/atoms';
+import { AppButton, AppInput, AppText, AssetByVariant, Space } from '@/components/atoms';
 import { AppScreen } from '@/components/templates';
 import { useTheme } from '@/theme';
 import { SVG } from '@/theme/assets/icons';
 import { IMAGES } from '@/theme/assets/images';
 import { homeSearchSchema } from '@/utils/schemas';
-import { normalizeHeight, pixelSizeX, WIDTH } from '@/utils/sizes';
+import { normalizeHeight, normalizeWidth, pixelSizeX, pixelSizeY, WIDTH } from '@/utils/sizes';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Image, View } from 'react-native';
+import { Image, TouchableOpacity, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import Carousel, { Pagination } from 'react-native-reanimated-carousel';
 import useStyles from './style';
@@ -17,6 +17,8 @@ import { AppCard, NewUploadBanner, SubscriptionBanner } from '@/components/molec
 import { useAppStore } from '@/store';
 import { useQuery } from '@tanstack/react-query';
 import { getPublicArticles } from '@/store/userSlice/userApiServices';
+import { useNavigation } from '@react-navigation/native';
+ 
 
 const data = [
   {
@@ -110,7 +112,7 @@ const HomeScreen = () => {
   const scrollOffsetValue = useSharedValue<number>(0);
   const progress = useSharedValue<number>(0);
   const { userData } = useAppStore(state => state)
-
+  const navigation = useNavigation()
   const {
     control,
     formState: { errors },
@@ -122,8 +124,16 @@ const HomeScreen = () => {
     queryFn: () => getPublicArticles(),
   });
   console.log("🚀 ~ HomeScreen ~ error:", error)
-  console.log("🚀 ~ HomeScreen ~ publicArticles:new onws", publicArticles)
-
+  console.log("🚀 ~ HomeScreen ~ publicArticles:new onws!!@@@", publicArticles?.articles)
+  const handleItemPress = (item: any) => {
+    console.log("item?.audioFilePath" , item?.audioFilePath);
+    // setShowDetail(true)
+    navigation.navigate('AudioPlayerScreen' as never, { item } as never);
+    console.log('Item pressed:', item.title);
+  };
+  const handleMenuPress = (item: any) => {
+    console.log('Menu pressed for:', item.title);
+  };
   return (
     <AppScreen
       ScrollViewProps={{ showsVerticalScrollIndicator: false }}
@@ -249,11 +259,81 @@ const HomeScreen = () => {
         </View>
         <Space mB={20} />
 
-        {data.map((val) => (
+        {publicArticles?.articles?.map((item) => (
+          <View key={item.id}>
+            <Space mB={5} />
+            <View style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: '#201E23',
+              borderRadius: 12,
+              padding: 12,
+              marginBottom: pixelSizeY(16),
+              borderWidth: 1,
+              borderColor: '#461D7A',
+            }} >
+              <View>
+                <AssetByVariant
+                  resizeMode="contain"
+                  path={'docimg'}
+                  width={normalizeWidth(70)}
+                  height={normalizeHeight(70)}
+                />
+              </View>
+
+              <View style={{
+                flex: 1,
+                marginHorizontal: pixelSizeX(30),
+              }}>
+                <AppText
+                  title={item?.fileName}
+                  fontSize={16}
+                  fontWeight={400}
+                  color={'#FFFFFF'}
+                  extraStyle={{ lineHeight: 22.5 }}
+                />
+              </View>
+
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+                <TouchableOpacity onPress={() => handleItemPress(item)} style={{
+                  backgroundColor: '#ffffff',
+                  borderRadius: 20,
+                  padding: 10,
+                  marginHorizontal: pixelSizeX(8),
+                }}>
+                  {/* <SVG.DownloadArtical
+                      width={normalizeWidth(16)}
+                      height={normalizeHeight(16)} /> */}
+                  <AssetByVariant
+                    resizeMode="contain"
+                    path={'play'}
+                    width={normalizeWidth(16)}
+                    height={normalizeHeight(16)}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={layout.padding(5)} onPress={() => handleMenuPress(item)}>
+                  <AssetByVariant
+                    resizeMode="contain"
+                    path={'threedot'}
+                    width={normalizeWidth(5)}
+                    height={normalizeHeight(22)}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        ))}
+
+
+        {/* {publicArticles?.articles?.map((val) => (
           <AppCard
             data={val}
           />
-        ))}
+        ))} */}
         <Space mB={20} />
 
 

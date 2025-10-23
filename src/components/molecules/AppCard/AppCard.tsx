@@ -1,7 +1,7 @@
-import { AppButton, AppText, Space } from '@/components/atoms';
+import { AppButton, AppText, AssetByVariant, Space } from '@/components/atoms';
 import { useTheme } from '@/theme';
 import { SVG } from '@/theme/assets/icons';
-import { normalizeFont, pixelSizeX, pixelSizeY } from '@/utils/sizes';
+import { normalizeFont, normalizeHeight, normalizeWidth, pixelSizeX, pixelSizeY } from '@/utils/sizes';
 import React from 'react';
 import { Image, TouchableOpacity, View } from 'react-native';
 import { IAppCardProps } from './AppCardTypes';
@@ -9,20 +9,35 @@ import { useStyle } from './styles';
 import { downloadAudio } from '@/utils/helpers';
 
 const AppCard: React.FC<IAppCardProps> = ({ data }) => {
-  console.log("🚀 ~ AppCard ~ data:", data);
+  console.log("🚀 ~ AppCard ~ data:@@@", data);
 
   const { colors, layout } = useTheme();
   const styles = useStyle();
+  // Format createdAt date to "Month day, year" (e.g., "May 3, 2025")
+  const formattedDate = data?.createdAt
+    ? new Date(data.createdAt).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+    : '';
+
   return (
     <View style={styles.container}>
-      <Image source={{ uri: data.image }} style={styles.imageStyle} />
+      <AssetByVariant
+        resizeMode="contain"
+        path={'docimg'}
+        width={normalizeWidth(90)}
+        height={normalizeHeight(110)}
+      />
+      {/* <Image source={{ uri: "https://img.freepik.com/free-photo/top-view-hand-writing-love-letter_23-2150716552.jpg" }} style={styles.imageStyle} /> */}
 
       <View style={[layout.flex(0.9), layout.mL(pixelSizeX(10))]}>
         <AppText
           color={colors.white}
           fontSize={16}
           fontFamily="medium"
-          title={data.title}
+          title={data?.fileName}
         />
         <View
           style={{
@@ -31,23 +46,23 @@ const AppCard: React.FC<IAppCardProps> = ({ data }) => {
             alignItems: 'center',
           }}
         >
-          <AppText
+          {/* <AppText
             color={colors.white}
             fontSize={8}
             fontFamily="regular"
             title={data.prof}
-          />
-          <AppText
+          /> */}
+          {/* <AppText
             color={colors.white}
             fontSize={8}
             fontFamily="regular"
             title={data.institute}
-          />
+          /> */}
           <AppText
             color={colors.white}
             fontSize={8}
             fontFamily="regular"
-            title={data.date}
+            title={formattedDate}
           />
         </View>
         <Space mB={10} />
@@ -79,9 +94,9 @@ const AppCard: React.FC<IAppCardProps> = ({ data }) => {
               button: layout.alignSelf('flex-start'),
             }}
           /> */}
-          <TouchableOpacity style={{}} onPress={()=>{
-            console.log("data?.audioFilePath" , data?.audioFilePath)
-             downloadAudio(data?.audioFilePath);
+          <TouchableOpacity style={{}} onPress={() => {
+            console.log("data?.audioFilePath", data?.audioFilePath)
+            downloadAudio(data?.audioFilePath);
           }} >
             <SVG.Download />
           </TouchableOpacity>

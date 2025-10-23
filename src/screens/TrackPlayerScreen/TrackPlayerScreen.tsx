@@ -14,7 +14,7 @@ import { AppScreen } from '@/components/templates';
 import { useTheme } from '@/theme';
 import { normalizeHeight, normalizeWidth, pixelSizeX, pixelSizeY } from '@/utils/sizes';
 import { AppText, AssetByVariant, Space } from '@/components/atoms';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SVG } from '@/theme/assets/icons';
@@ -28,29 +28,49 @@ const AudioPlayerScreen = () => {
   const [duration, setDuration] = useState(0);
   const { colors, layout } = useTheme();
   
+  // Read item from navigation params
+  const route = useRoute() as any;
+  const item = route?.params?.item || {};
+  console.log("item item@@@", item );
+  
+  const {
+    audioFilePath = '',
+    title: itemTitle = '',
+    prof: itemProf = '',
+    institute: itemInstitute = '',
+    date: itemDate = '',
+    description: itemDescription = ''
+  } = item;
+  console.log("audioFilePath audioFilePath", audioFilePath);
+  
   // Sound reference
   const soundRef = useRef<Sound | null>(null);
   const playbackTimerRef = useRef<NodeJS.Timeout | null>(null);
   const audioUrlRef = useRef<string>('');
 
-  // Initialize sound on component mount
+  // Initialize sound on component mount or when audioFilePath changes
   useEffect(() => {
-    // Remote audio URL — replace with your actual audio file
-    const url = 'https://res.cloudinary.com/dptcdlae6/video/upload/v1761080187/audios/test_quotes.mp3.mp3';
+    // Pick audio URL from params (fallback to previous demo URL if missing)
+    const url = audioFilePath || 'https://res.cloudinary.com/dptcdlae6/video/upload/v1761080187/audios/test_quotes.mp3.mp3';
     audioUrlRef.current = url;
+
+    // Clean any existing sound before creating a new one
+    if (soundRef.current) {
+      soundRef.current.release();
+      soundRef.current = null;
+    }
 
     const sampleAudio = new Sound(url, undefined as any, (error) => {
       if (error) {
         console.log('Failed to load sound', error);
         return;
       }
-      // Sound loaded successfully
       soundRef.current = sampleAudio;
       const dur = sampleAudio.getDuration();
       setDuration(dur);
       sampleAudio.setNumberOfLoops(0);
 
-      // Auto‑play when screen opens
+      // Auto‑play when screen opens or URL changes
       sampleAudio.play((success) => {
         if (!success) {
           console.log('Playback failed due to audio decoding errors');
@@ -58,10 +78,10 @@ const AudioPlayerScreen = () => {
         handlePlaybackComplete();
       });
       setIsPlaying(true);
-      console.log('Sound loaded and auto‑playing');
+      console.log('Sound loaded and auto‑playing from params URL');
     });
 
-    // Cleanup on unmount
+    // Cleanup on unmount or when URL changes
     return () => {
       if (soundRef.current) {
         soundRef.current.release();
@@ -72,7 +92,7 @@ const AudioPlayerScreen = () => {
         playbackTimerRef.current = null;
       }
     };
-  }, []);
+  }, [audioFilePath]);
 
   // Update progress timer
   useEffect(() => {
@@ -228,16 +248,10 @@ const navigation = useNavigation();
         </TouchableOpacity>
       <Space mB={20} />
       <AppText
-        title={"AI In Healthcare:"}
+        title={itemTitle || 'Audio'}
         fontSize={24}
         fontWeight={500}
-        color={"#F5F5F5"}
-      />
-      <AppText
-        title={"Breakthroughs In 2025"}
-        fontSize={24}
-        fontWeight={500}
-        color={"#F5F5F5"}
+        color={'#F5F5F5'}
       />
 
       <Space mB={30} />
@@ -249,45 +263,19 @@ const navigation = useNavigation();
                       >
           <View style={[layout.padding(pixelSizeX(30))]} >              
           <AppText
-            title={"Hey there!"}
-            fontSize={16} 
-            fontWeight={500}
-            color={colors.white}
-            extraStyle={{ lineHeight: 22.5 }}
-          />
-          <AppText
-            title={"Welcome to ResearchPod, where we bring complex science to life—one voice at a time."}
+            title={itemDescription ? itemDescription : 'Welcome to ResearchPod, where we bring complex science to life—one voice at a time.'}
             fontSize={16} 
             fontWeight={500}
             color={colors.white}
             extraStyle={{ lineHeight: 22.5 }}
           />
           <Space mB={15} />
-         
           <AppText
-            title={"This week's paper explores how artificial intelligence is transforming healthcare. We'll dive into predictive diagnostics, AI-assisted surgeries, and the role of data in personalized treatment."}
-            fontSize={16} 
+            title={[itemProf, itemInstitute, itemDate].filter(Boolean).join(' • ')}
+            fontSize={14}
             fontWeight={500}
             color={'#A9A9A9'}
-            extraStyle={{ lineHeight: 22.5 }}
-          />
-          <Space mB={15} />
-            
-          <AppText
-            title={"Authored by Dr. Emily Rao and Prof. John Martinez, this research outlines real-world AI applications being tested in hospitals today."}
-            fontSize={16} 
-            fontWeight={500}
-            color={'#A9A9A9'}
-            extraStyle={{ lineHeight: 22.5 }}
-          />
-          <Space mB={15} />
-            
-          <AppText
-            title={"From detecting early-stage cancers to..."}
-            fontSize={16} 
-            fontWeight={500}
-            color={'#A9A9A9'}
-            extraStyle={{ lineHeight: 22.5 }}
+            extraStyle={{ lineHeight: 21 }}
           />
         </View>
                 </LinearGradient>

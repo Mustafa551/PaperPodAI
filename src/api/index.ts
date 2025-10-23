@@ -14,10 +14,9 @@ export const API = axios.create({
 });
 
 export const AUTH_API = axios.create({
-  baseURL: "https://rude-vickie-3dotmedia-5ccb6d6e.koyeb.app",
+   baseURL: "http://3.95.228.97",
 });
-// malikshehzad1534@gmail.com
-// Malik@123
+ 
 /*
  ** Before every api request following be taken
  1 - we are getting accessToken as well as refresh token from the api
@@ -33,7 +32,8 @@ API.interceptors.request.use(
   async function (config) {
     // getting access token
     const {accessToken, refreshToken} = useAppStore.getState().tokens;
-
+    console.log("accessToken accessToken" , accessToken);
+    
     // injecting our token into header
     // config.headers.Authorization = `Bearer ${accessToken}`;
       config.headers = {
@@ -42,6 +42,7 @@ API.interceptors.request.use(
       'x-refresh-token': refreshToken,
       'x-device-id': 'test-device-id',
       'x-user-agent': 'android',
+      "Content-Type" :'application/json'
     };
 
     return config;

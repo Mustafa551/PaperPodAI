@@ -52,18 +52,21 @@ export const signIn = async (params: emailPassType) => {
         headers: {
           'x-device-id': 'test-device-id',
           'x-user-agent': 'android',
+          'Content-Type': 'application/json'
         },
       }
     );
     console.log('🚀 ~ signIn: ~ response:', response);
-    const user = response.data;
-    console.log("🚀 ~ signIn ~ user:", user.user)
+    const user = response?.data;
+    console.log("🚀 ~ signIn ~ user:", user)
     if (user?.user) {
       useAppStore.getState().updateUserDataToken(user?.user, {refreshToken: user?.refreshToken, accessToken: user?.accessToken});
     }
     Toast.show('Login successful!', Toast.LONG);
   } catch (error: any) {
-    console.log('🚀 ~ signIn: ~ error:', error?.response?.data || error);
+    console.log("error");
+    
+    console.log('🚀 ~ signIn: ~ error new ones:', error?.response?.data || error);
     handleAuthContextError('signIn', error);
     throw new Error(error?.response?.data?.message || error.message || 'Login failed');
   }

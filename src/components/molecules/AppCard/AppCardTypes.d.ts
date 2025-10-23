@@ -1,7 +1,7 @@
 
 export interface IAppCardProps {
     data:{
-        title: string;
+        fileName: string;
         description:string;
         date:string
         institute: string;
