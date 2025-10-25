@@ -174,7 +174,7 @@ const UploadingScreen: React.FC = () => {
   React.useEffect(() => {
     if (isUploadSuccess) {
       navigation.navigate('UploadingProgressScreen' as never);
-        uploadPayloadRef.current = null;
+      uploadPayloadRef.current = null;
       setSelectedFile(null);
       queryClient.invalidateQueries({ queryKey: ['getPublicArticles'] });
       queryClient.invalidateQueries({ queryKey: ['myArticles'] });
@@ -321,13 +321,18 @@ const UploadingScreen: React.FC = () => {
                 title="Uploading..."
                 color={colors.white}
                 fontSize={16}
+                alignSelf='center'
+                textAlign='center'
                 fontFamily="medium"
               />
             ) : (
               <AppText
+                onPress={handleSubmit(onSubmit)}
                 title="Upload Papers"
                 color={colors.white}
                 fontSize={16}
+                alignSelf='center'
+                textAlign='center'
                 fontFamily="medium"
               />
             )}
