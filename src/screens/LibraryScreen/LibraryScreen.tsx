@@ -522,7 +522,6 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
     width: '100%',
-    backgroundColor:'coral'
   },
   listContent: {
     flexGrow: 1,

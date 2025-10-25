@@ -5,13 +5,21 @@ import { z } from 'zod';
 
 import { REGEX } from './regex';
 
+const HTTP_URL_REGEX = /^https?:\/\/[^\s]+$/i;
+
 const isValidHttpUrl = (value: string) => {
+  const candidate = value.trim();
+
   try {
-    const parsed = new URL(value);
-    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
-  } catch {
-    return false;
+    const parsed = new URL(candidate);
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      return true;
+    }
+  } catch (error) {
+    console.warn('URL parsing failed, falling back to regex validation.', error);
   }
+
+  return HTTP_URL_REGEX.test(candidate);
 };
 
 export const signInSchema = (t: TFunction) =>
@@ -239,6 +247,6 @@ export const AdditionalInfoSchema = (t: TFunction) =>
       .trim()
       .optional()
       .refine(value => !value || value.length === 0 || isValidHttpUrl(value), {
-        message: 'Invalid Url',
+        message: 'Enter a valid http or https link.',
       }),
   });
