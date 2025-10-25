@@ -17,7 +17,7 @@ const useStyles = () => {
       gap: 5,
       marginBottom: 5,
       position: 'absolute',
-      bottom: 0,
+      bottom:10,
       left: pixelSizeX(20),
     },
   });

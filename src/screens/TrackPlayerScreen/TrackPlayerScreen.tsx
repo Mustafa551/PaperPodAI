@@ -58,7 +58,7 @@ const AudioPlayerScreen = () => {
     queryFn: () => getArticlesUuid(uuid),
   });
   console.log("error error message", error);
-  
+
   console.log("articles articles by uuid", articles?.article);
   console.log("articles articles by uuid sentencesTimestamps", articles?.article?.sentencesTimestamps);
 
@@ -137,8 +137,8 @@ const AudioPlayerScreen = () => {
     // Reject clearly invalid values
     const cleanedUrl =
       normalizedUrl &&
-      normalizedUrl !== 'null' &&
-      normalizedUrl !== 'undefined'
+        normalizedUrl !== 'null' &&
+        normalizedUrl !== 'undefined'
         ? normalizedUrl
         : '';
 
@@ -251,15 +251,28 @@ const AudioPlayerScreen = () => {
     };
   }, [isPlaying, duration, sentences, activeIndex]);
 
+  // Auto-scroll transcript to keep the active sentence near the top.
+  // Also prevents user from manually scrolling (FlatList has scrollEnabled={false} below).
   useEffect(() => {
     if (!flatListRef.current) return;
     if (activeIndex < 0) return;
-    try {
-      (flatListRef.current as any).scrollToIndex({ index: activeIndex, animated: true, viewPosition: 0.5 });
-    } catch (e) {
-      // In case the index is out of range briefly
-    }
-  }, [activeIndex]);
+    if (activeIndex >= sentences.length) return;
+
+    // wait one frame so layout / measurements are ready
+    requestAnimationFrame(() => {
+      try {
+        (flatListRef.current as any).scrollToIndex({
+          index: activeIndex,
+          animated: true,
+          // 0   = top, 1 = bottom
+          // keep active line ~5% from the top of the card so more of the next lines are visible and bottom text doesn't get hidden behind controls
+          viewPosition: 0.03,
+        });
+      } catch (e) {
+        // index may not be rendered yet; ignore safely
+      }
+    });
+  }, [activeIndex, sentences.length]);
 
   const handlePlaybackComplete = () => {
     if (soundRef.current) {
@@ -406,142 +419,142 @@ const AudioPlayerScreen = () => {
         // preset="fixed"
         style={{ paddingTop: insets.top + pixelSizeY(10), paddingHorizontal: pixelSizeX(20) }}
       >
-      <TouchableOpacity
-        style={{ paddingRight: pixelSizeX(12), width: normalizeWidth(50) }}
-        onPress={() => {
-          navigation.goBack();
-        }}>
-        <SVG.ArrowLeft />
-      </TouchableOpacity>
-      <Space mB={20} />
-      <AppText
-        title={fileName || 'Audio'}
-        fontSize={24}
-        numberOfLines={2}
-        fontWeight={500}
-        color={'#F5F5F5'}
-      />
+        <TouchableOpacity
+          style={{ paddingRight: pixelSizeX(12), width: normalizeWidth(50) }}
+          onPress={() => {
+            navigation.goBack();
+          }}>
+          <SVG.ArrowLeft />
+        </TouchableOpacity>
+        <Space mB={20} />
+        <AppText
+          title={fileName || 'Audio'}
+          fontSize={24}
+          numberOfLines={2}
+          fontWeight={500}
+          color={'#F5F5F5'}
+        />
 
-      <Space mB={30} />
+        <Space mB={30} />
 
-      <View style={{ height: normalizeHeight(440)}} >
-        <LinearGradient
-          colors={['#461D7A', '#8A2BE1']}
-          style={[layout.bgColor('#8A2BE1'), layout.borderRadius(12), {maxHeight: normalizeHeight(440)}]}
-        >
-          <View style={[layout.padding(pixelSizeX(30))]} >
-            <FlatList
-            // scrollEnabled={false}
-              ref={flatListRef}
-              data={sentences}
-              keyExtractor={(_, i) => `line-${i}`}
-              style={{maxHeight: normalizeHeight(440)}}
-              showsVerticalScrollIndicator={false}
-              initialNumToRender={12}
-              ListFooterComponent={()=>{
-                return(
-                  <View style={{height:normalizeHeight(122)}} />
-                )
-              }}
-              getItemLayout={(data, index) => ({ length: 34, offset: 34 * index, index })}
-              renderItem={({ item, index }) => {
-                const isActive = index === activeIndex;
+        <View style={{ height: normalizeHeight(440) }} >
+          <LinearGradient
+            colors={['#461D7A', '#8A2BE1']}
+            style={[layout.bgColor('#8A2BE1'), layout.borderRadius(12), { maxHeight: normalizeHeight(440) }]}
+          >
+            <View style={[layout.padding(pixelSizeX(30))]} >
+              <FlatList
+                scrollEnabled={false}
+                ref={flatListRef}
+                data={sentences}
+                keyExtractor={(_, i) => `line-${i}`}
+                style={{ maxHeight: normalizeHeight(440) }}
+                showsVerticalScrollIndicator={false}
+                initialNumToRender={12}
+                ListFooterComponent={() => {
                   return (
-                  <View style={{ paddingVertical: 6 }}>
-                    <Text
-                      style={{
-                        color: isActive ? colors.white : '#A9A9A9',
-                        fontSize: isActive ? normalizeFont(16) : normalizeFont(14),
-                        fontWeight: isActive ? '700' as const : '400' as const,
-                        opacity: isActive ? 1 : 0.7,
-                      }}
-                    >
-                      {item.sentence}
-                    </Text>
-                  </View>
-                );
-              }}
-            />
-          </View>
-        </LinearGradient>
-      </View>
-
-      <Space mB={20} />
-
-
-      <Space mB={40} />
-
-      {/* Audio Controls */}
-      <View>
-        <View style={styles.controls}>
-          <TouchableOpacity style={styles.controlButton} onPress={handleRestart}>
-            <AssetByVariant
-              resizeMode="contain"
-              path={'speed'}
-              width={normalizeWidth(26)}
-              height={normalizeHeight(26)}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.controlButton} onPress={handleRewind}>
-            <AssetByVariant
-              resizeMode="contain"
-              path={'time-backward-ten'}
-              width={normalizeWidth(26)}
-              height={normalizeHeight(26)}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.playButton} onPress={handlePlayPause}>
-            <AssetByVariant
-              resizeMode="contain"
-              path={isPlaying ? 'pause' : 'play1'}
-              // path='pause'
-              width={normalizeWidth(35)}
-              height={normalizeHeight(35)}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.controlButton} onPress={handleFastForward}>
-            <AssetByVariant
-              resizeMode="contain"
-              path={'time-forward-ten'}
-              width={normalizeWidth(26)}
-              height={normalizeHeight(26)}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.controlButton} onPress={handleShare}>
-            <AssetByVariant
-              resizeMode="contain"
-              path={'share1'}
-              width={normalizeWidth(24)}
-              height={normalizeHeight(24)}
-            />
-          </TouchableOpacity>
+                    <View style={{ height: normalizeHeight(122) }} />
+                  )
+                }}
+                getItemLayout={(data, index) => ({ length: 34, offset: 34 * index, index })}
+                renderItem={({ item, index }) => {
+                  const isActive = index === activeIndex;
+                  return (
+                    <View style={{ paddingVertical: 6 }}>
+                      <Text
+                        style={{
+                          color: isActive ? colors.white : '#A9A9A9',
+                          fontSize: isActive ? normalizeFont(16) : normalizeFont(14),
+                          fontWeight: isActive ? ('700' as const) : ('400' as const),
+                          opacity: isActive ? 1 : 0.4,
+                        }}
+                      >
+                        {item.sentence}
+                      </Text>
+                    </View>
+                  );
+                }}
+              />
+            </View>
+          </LinearGradient>
         </View>
 
-        <Space mB={35} />
+        <Space mB={20} />
 
-        {/* Progress Bar */}
-        <View style={styles.progressContainer}>
-          <Slider
-            style={styles.slider}
-            minimumValue={0}
-            maximumValue={duration > 0 ? duration : 1}
-            value={currentTime}
-            onValueChange={handleSliderChange}
-            minimumTrackTintColor="#ffffff"
-            maximumTrackTintColor="rgba(255, 255, 255, 0.3)"
-            thumbTintColor="#ffffff"
-          />
-          <View style={styles.timeContainer}>
-            <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
-            <Text style={styles.timeText}>{formatTime(duration)}</Text>
+
+        <Space mB={40} />
+
+        {/* Audio Controls */}
+        <View>
+          <View style={styles.controls}>
+            <TouchableOpacity style={styles.controlButton} onPress={handleRestart}>
+              <AssetByVariant
+                resizeMode="contain"
+                path={'speed'}
+                width={normalizeWidth(26)}
+                height={normalizeHeight(26)}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.controlButton} onPress={handleRewind}>
+              <AssetByVariant
+                resizeMode="contain"
+                path={'time-backward-ten'}
+                width={normalizeWidth(26)}
+                height={normalizeHeight(26)}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.playButton} onPress={handlePlayPause}>
+              <AssetByVariant
+                resizeMode="contain"
+                path={isPlaying ? 'pause' : 'play1'}
+                // path='pause'
+                width={normalizeWidth(35)}
+                height={normalizeHeight(35)}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.controlButton} onPress={handleFastForward}>
+              <AssetByVariant
+                resizeMode="contain"
+                path={'time-forward-ten'}
+                width={normalizeWidth(26)}
+                height={normalizeHeight(26)}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.controlButton} onPress={handleShare}>
+              <AssetByVariant
+                resizeMode="contain"
+                path={'share1'}
+                width={normalizeWidth(24)}
+                height={normalizeHeight(24)}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <Space mB={35} />
+
+          {/* Progress Bar */}
+          <View style={styles.progressContainer}>
+            <Slider
+              style={styles.slider}
+              minimumValue={0}
+              maximumValue={duration > 0 ? duration : 1}
+              value={currentTime}
+              onValueChange={handleSliderChange}
+              minimumTrackTintColor="#ffffff"
+              maximumTrackTintColor="rgba(255, 255, 255, 0.3)"
+              thumbTintColor="#ffffff"
+            />
+            <View style={styles.timeContainer}>
+              <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
+              <Text style={styles.timeText}>{formatTime(duration)}</Text>
+            </View>
           </View>
         </View>
-      </View>
-      <Space mB={70} />
+        <Space mB={70} />
       </AppScreen>
       {renderLoadingOverlay()}
     </View>

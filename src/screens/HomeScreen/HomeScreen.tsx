@@ -18,7 +18,7 @@ import { useAppStore } from '@/store';
 import { useQuery } from '@tanstack/react-query';
 import { getPublicArticles } from '@/store/userSlice/userApiServices';
 import { useNavigation } from '@react-navigation/native';
- 
+
 
 const data = [
   {
@@ -126,7 +126,7 @@ const HomeScreen = () => {
   console.log("🚀 ~ HomeScreen ~ error:", error)
   console.log("🚀 ~ HomeScreen ~ publicArticles:new onws!!@@@", publicArticles?.articles)
   const handleItemPress = (item: any) => {
-    console.log("item?.audioFilePath" , item?.audioFilePath);
+    console.log("item?.audioFilePath", item?.audioFilePath);
     // setShowDetail(true)
     navigation.navigate('AudioPlayerScreen' as never, { item } as never);
     console.log('Item pressed:', item.title);
@@ -182,7 +182,7 @@ const HomeScreen = () => {
               'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1zwhySGCEBxRRFYIcQgvOLOpRGqrT3d7Qng&s',
               'https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg',
               'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1zwhySGCEBxRRFYIcQgvOLOpRGqrT3d7Qng&s',
-              'https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg',
+ 
             ]}
             defaultScrollOffsetValue={scrollOffsetValue}
             style={{ width: '100%' }}
@@ -200,7 +200,8 @@ const HomeScreen = () => {
             // onSnapToItem={(index: number) => console.log('current index:', index)}
             renderItem={({ item }) => (
               <Image
-                source={{ uri: item }}
+                source={require('../../theme/assets/images/Frame.png')}
+                // source={{ uri: item }}
                 style={styles.crouselImage}
                 resizeMode="cover"
               />
@@ -215,7 +216,7 @@ const HomeScreen = () => {
               'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1zwhySGCEBxRRFYIcQgvOLOpRGqrT3d7Qng&s',
               'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUPIfiGgUML8G3ZqsNLHfaCnZK3I5g4tJabQ&s',
               'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1zwhySGCEBxRRFYIcQgvOLOpRGqrT3d7Qng&s',
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUPIfiGgUML8G3ZqsNLHfaCnZK3I5g4tJabQ&s',
+          
             ]}
             dotStyle={{
               backgroundColor: colors.grey,

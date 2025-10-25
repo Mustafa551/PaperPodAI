@@ -1,5 +1,5 @@
-import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
-import React, { useMemo, useState } from 'react'
+import { FlatList, StyleSheet, View, TouchableOpacity, ActivityIndicator } from 'react-native'
+import React, { useCallback, useMemo, useState } from 'react'
 import { AppScreen } from '@/components/templates'
 import { SVG } from '@/theme/assets/icons'
 import { AppText, AssetByVariant, Space } from '@/components/atoms'
@@ -13,6 +13,24 @@ type SortOption = {
     key: 'desc' | 'asc';
     label: string;
 };
+const extractArticlesFromPages = (pages: any[] | undefined) => {
+    if (!Array.isArray(pages)) return [];
+
+    // 1. Try new shape { data: { articles: [...] } }
+    const mergedNewShape = pages.flatMap((p: any) => {
+        if (Array.isArray(p?.data?.articles)) {
+            return p.data.articles;
+        }
+        return [];
+    });
+
+    if (mergedNewShape.length > 0) {
+        return mergedNewShape;
+    }
+
+    // 2. Fallback old shape { articles: [...] }
+    return pages.flatMap((p: any) => Array.isArray(p?.articles) ? p.articles : []);
+};
 const UploadingProgressScreen = () => {
     // Hooks
     const insets = useSafeAreaInsets();
@@ -20,6 +38,7 @@ const UploadingProgressScreen = () => {
     const navigation = useNavigation();
     const PAGE_SIZE = 10;
     const [sortBy, setSortBy] = useState<SortOption['key']>('desc');
+    const [isRefreshing, setIsRefreshing] = useState(false);
     // Api call 
     const {
         data,
@@ -32,61 +51,62 @@ const UploadingProgressScreen = () => {
         refetch,
     } = useInfiniteQuery({
         queryKey: ['myArticles', sortBy],
-        queryFn: ({ pageParam = 0 }) =>
-            getMyArticles({ sort: sortBy, limit: PAGE_SIZE, offset: pageParam, status: 'pending' }),
+        queryFn: async ({ pageParam = 0 }) => {
+            return getMyArticles({
+                sort: sortBy,
+                limit: PAGE_SIZE,
+                offset: pageParam,
+                status: 'pending',
+            });
+        },
         getNextPageParam: (lastPage, allPages) => {
-            const lastItems = lastPage?.articles ?? [];
+            // lastPage can be either { data: { articles, total } } OR { articles, total }
+            const lastItems: any[] =
+                Array.isArray(lastPage?.data?.articles)
+                    ? lastPage.data.articles
+                    : (Array.isArray(lastPage?.articles) ? lastPage.articles : []);
 
             if (!lastItems || lastItems.length === 0) {
                 return undefined;
             }
 
-            const totalFetched = allPages.reduce(
-                (total, page) => total + (page?.articles?.length ?? 0),
-                0,
-            );
+            // total fetched so far
+            const allArticlesSoFar = extractArticlesFromPages(allPages);
+            const totalFetched = allArticlesSoFar.length;
 
-            if (lastPage?.total && totalFetched >= lastPage.total) {
+            const totalAvailable =
+                typeof lastPage?.data?.total === 'number'
+                    ? lastPage.data.total
+                    : (typeof lastPage?.total === 'number' ? lastPage.total : undefined);
+
+            if (totalAvailable && totalFetched >= totalAvailable) {
                 return undefined;
             }
 
+            // if we got less than PAGE_SIZE, probably no more
             if (lastItems.length < PAGE_SIZE) {
                 return undefined;
             }
 
+            // else next offset is how many we've fetched so far
             return totalFetched;
         },
         initialPageParam: 0,
         staleTime: 30_000,
     });
-    console.log(
-        'data data @#@#@',
-        data?.pages?.[0]?.data?.articles,
-    );
-    console.log(
-        'FINAL articles passed to FlatList >>>',
-        Array.isArray(data?.pages?.[0]?.data?.articles)
-            ? data?.pages?.[0]?.data?.articles?.length
-            : 0,
-        data?.pages?.[0]?.data?.articles,
-    );
     const articles = useMemo(() => {
-        // Primary (new response shape)
-        const primary =
-            Array.isArray(data?.pages?.[0]?.data?.articles)
-                ? data?.pages?.[0]?.data?.articles
-                : [];
-        console.log("primary data for testing", primary);
-        if (primary.length > 0) {
-            return primary;
-        }
-
-        // Fallback (older response shape)
-        return (
-            data?.pages?.flatMap((page: any) => page?.articles ?? []) ?? []
-        );
+        return extractArticlesFromPages(data?.pages);
     }, [data]);
-    console.log("articles newonesaarticles@@@@@ pending", articles);   
+    const handleLoadMore = useCallback(() => {
+        if (!hasNextPage || isFetchingNextPage) return;
+        fetchNextPage();
+    }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+    const handleRefresh = useCallback(async () => {
+        setIsRefreshing(true);
+        await refetch();
+        setIsRefreshing(false);
+    }, [refetch]);
     return (
         <AppScreen
             backgroundColor={colors.black}
@@ -113,6 +133,7 @@ const UploadingProgressScreen = () => {
             </View>
             <FlatList
                 data={articles}
+                keyExtractor={(item, index) => `${item?.id || item?._id || item?.articleId || 'art'}-${index}`}
                 renderItem={({ item }) => {
                     return (
                         <View style={styles.cardCont}>
@@ -120,15 +141,38 @@ const UploadingProgressScreen = () => {
                                 <SVG.Upload fill={colors.primary} />
                             </View>
                             <Space mR={10} />
-                            <View style={{ width:'80%' }} >
-                                <AppText numberOfLines={2} title={item?.fileName} color='black' fontSize={16} fontFamily="regular" />
+                            <View style={{ width: '80%' }}>
+                                <AppText
+                                    numberOfLines={2}
+                                    title={item?.fileName || item?.title || 'Untitled file'}
+                                    color='black'
+                                    fontSize={16}
+                                    fontFamily="regular"
+                                />
                                 <Space mB={5} />
-                                <AppText title={"In progress"} color='#8A2BE1' fontSize={16} fontFamily="regular" />
+                                <AppText
+                                    title={"In progress"}
+                                    color='#8A2BE1'
+                                    fontSize={16}
+                                    fontFamily="regular"
+                                />
                             </View>
                         </View>
                     )
                 }}
-                contentContainerStyle={{ paddingHorizontal: 12, paddingTop: pixelSizeY(20) }}
+                ListFooterComponent={
+                    isFetchingNextPage ? (
+                        <View style={styles.footerLoading}>
+                            <ActivityIndicator color={colors.primary} />
+                            <Space mB={10} />
+                        </View>
+                    ) : null
+                }
+                contentContainerStyle={{ paddingHorizontal: 12, paddingTop: pixelSizeY(20), paddingBottom: pixelSizeY(40) }}
+                onEndReached={handleLoadMore}
+                onEndReachedThreshold={0.4}
+                refreshing={isRefreshing || isRefetching}
+                onRefresh={handleRefresh}
             />
         </AppScreen>
     )
@@ -153,5 +197,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 25
+    }
+    ,
+    footerLoading: {
+        paddingVertical: pixelSizeY(20),
+        alignItems: 'center',
+        justifyContent: 'center',
     }
 })

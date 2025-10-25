@@ -299,16 +299,39 @@ const UploadingScreen: React.FC = () => {
         <Space mB={20} />
 
         <View style={layout.width('100%')}>
-          <AppButton
-            width={'100%'}
-            bgColor={colors.primary}
+          <TouchableOpacity
+            activeOpacity={0.8}
             onPress={handleSubmit(onSubmit)}
-            title={'Upload Papers'}
-            variant="gradient"
-            shadow={false}
-            loading={isUploading}
             disabled={isUploading}
-          />
+            style={[
+              {
+                width: '100%',
+                backgroundColor: colors.primary,
+                borderRadius: 40,
+                paddingVertical: 14,
+                paddingHorizontal:22,
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: isUploading ? 0.6 : 1,
+              },
+            ]}
+          >
+            {isUploading ? (
+              <AppText
+                title="Uploading..."
+                color={colors.white}
+                fontSize={16}
+                fontFamily="medium"
+              />
+            ) : (
+              <AppText
+                title="Upload Papers"
+                color={colors.white}
+                fontSize={16}
+                fontFamily="medium"
+              />
+            )}
+          </TouchableOpacity>
         </View>
         {isUploadError && uploadErrorMessage ? (
           <>

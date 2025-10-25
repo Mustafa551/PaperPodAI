@@ -12,7 +12,6 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { ArticleListItem, getMyArticles } from '@/store/userSlice/userApiServices';
-import { log } from 'console';
 
 const formatDate = (iso?: string) => {
   if (!iso) {
@@ -31,6 +30,25 @@ type SortOption = {
   label: string;
 };
 
+const extractArticlesFromPages = (pages: any[] | undefined) => {
+  if (!Array.isArray(pages)) return [];
+
+  // Try new shape { data: { articles: [...] } }
+  const mergedNewShape = pages.flatMap((p: any) => {
+    if (Array.isArray(p?.data?.articles)) {
+      return p.data.articles;
+    }
+    return [];
+  });
+
+  if (mergedNewShape.length > 0) {
+    return mergedNewShape;
+  }
+
+  // Fallback old shape { articles: [...] }
+  return pages.flatMap((p: any) => Array.isArray(p?.articles) ? p.articles : []);
+};
+
 const PAGE_SIZE = 10;
 
 const LibraryScreen = () => {
@@ -38,6 +56,7 @@ const LibraryScreen = () => {
   const [showDetail, setShowDetail] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
   const [sortBtnWidth, setSortBtnWidth] = useState(0);
+  const [isRefreshingLocal, setIsRefreshingLocal] = useState(false);
   const navigation = useNavigation();
   const sortOptions: SortOption[] = [
     { key: 'desc', label: 'Latest Added' },
@@ -58,64 +77,55 @@ const LibraryScreen = () => {
     refetch,
   } = useInfiniteQuery({
     queryKey: ['myArticles', sortBy],
-    queryFn: ({ pageParam = 0 }) =>
-      getMyArticles({ sort: sortBy, limit: PAGE_SIZE, offset: pageParam , status:'completed' }),
+    queryFn: async ({ pageParam = 0 }) => {
+      return getMyArticles({
+        sort: sortBy,
+        limit: PAGE_SIZE,
+        offset: pageParam,
+        status: 'completed',
+      });
+    },
     getNextPageParam: (lastPage, allPages) => {
-      const lastItems = lastPage?.articles ?? [];
+      // lastPage can be either { data: { articles, total } } OR { articles, total }
+      const lastItems: any[] =
+        Array.isArray(lastPage?.data?.articles)
+          ? lastPage.data.articles
+          : (Array.isArray(lastPage?.articles) ? lastPage.articles : []);
 
       if (!lastItems || lastItems.length === 0) {
         return undefined;
       }
 
-      const totalFetched = allPages.reduce(
-        (total, page) => total + (page?.articles?.length ?? 0),
-        0,
-      );
+      // total fetched so far
+      const allArticlesSoFar = extractArticlesFromPages(allPages);
+      const totalFetched = allArticlesSoFar.length;
 
-      if (lastPage?.total && totalFetched >= lastPage.total) {
+      const totalAvailable =
+        typeof lastPage?.data?.total === 'number'
+          ? lastPage.data.total
+          : (typeof lastPage?.total === 'number' ? lastPage.total : undefined);
+
+      if (totalAvailable && totalFetched >= totalAvailable) {
         return undefined;
       }
 
+      // if backend returned less than PAGE_SIZE, likely no more
       if (lastItems.length < PAGE_SIZE) {
         return undefined;
       }
 
+      // else next offset = how many we've already fetched
       return totalFetched;
     },
     initialPageParam: 0,
     staleTime: 30_000,
   });
-  console.log(
-    'data data @#@@##data!!pageParamsarticles',
-    data?.pages?.[0]?.data?.articles,
-  );
-  console.log(
-    'FINAL articles passed to FlatList >>>',
-    Array.isArray(data?.pages?.[0]?.data?.articles)
-      ? data?.pages?.[0]?.data?.articles?.length
-      : 0,
-    data?.pages?.[0]?.data?.articles,
-  );
-  const articles = useMemo(() => {
-    // Primary (new response shape)
-    const primary =
-      Array.isArray(data?.pages?.[0]?.data?.articles)
-        ? data?.pages?.[0]?.data?.articles
-        : [];
-    console.log("primary data for testing", primary);
-    if (primary.length > 0) {
-      return primary;
-    }
 
-    // Fallback (older response shape)
-    return (
-      data?.pages?.flatMap((page: any) => page?.articles ?? []) ?? []
-    );
+  const articles = useMemo(() => {
+    return extractArticlesFromPages(data?.pages);
   }, [data]);
-  console.log("articles newonesaarticles", articles);
 
   const isInitialLoading = isLoading && articles.length === 0;
-  const isRefreshing = isRefetching && !isFetchingNextPage;
 
   const errorMessage = useMemo(() => {
     if (!error) {
@@ -150,13 +160,12 @@ const LibraryScreen = () => {
   const handleItemPress = useCallback(
     (item: ArticleListItem) => {
       navigation.navigate('AudioPlayerScreen' as never, { item } as never);
-      console.log('Item pressed:', item?.title ?? item?.fileName ?? 'Untitled');
     },
     [navigation],
   );
 
   const handleMenuPress = useCallback((item: ArticleListItem) => {
-    console.log('Menu pressed for:', item?.title ?? item?.fileName ?? 'Untitled');
+    // Menu press logic placeholder
   }, []);
 
   const handleSortPress = useCallback(
@@ -174,16 +183,16 @@ const LibraryScreen = () => {
     }
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const handleRefresh = useCallback(() => {
-    refetch();
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshingLocal(true);
+    await refetch();
+    setIsRefreshingLocal(false);
   }, [refetch]);
 
   const keyExtractor = (item: ArticleListItem, index: number) =>
     item?.uuid ?? item?.fileName ?? `article-${index}`;
 
   const renderArticleItem = ({ item }: { item: ArticleListItem }) => {
-    console.log("item item data for testing" , item);
-    
     // Our backend object has:
     // uuid, fileName, createdAt, convertingStatus, audioFilePath, pdfFilePath, etc.
     const displayTitle = item?.fileName ?? 'Untitled File';
@@ -400,8 +409,8 @@ const LibraryScreen = () => {
           renderItem={renderArticleItem}
           showsVerticalScrollIndicator={false}
           onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.6}
-          refreshing={isRefreshing}
+          onEndReachedThreshold={0.4}
+          refreshing={isRefreshingLocal || isRefetching}
           onRefresh={handleRefresh}
           ListEmptyComponent={listEmptyComponent}
           ListFooterComponent={listFooterComponent}
