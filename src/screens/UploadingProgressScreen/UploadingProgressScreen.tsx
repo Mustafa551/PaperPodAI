@@ -37,7 +37,6 @@ const UploadingProgressScreen = () => {
     const { layout, colors } = useTheme();
     const navigation = useNavigation();
     const PAGE_SIZE = 10;
-    const [sortBy, setSortBy] = useState<SortOption['key']>('desc');
     const [isRefreshing, setIsRefreshing] = useState(false);
     // Api call 
     const {
@@ -50,10 +49,9 @@ const UploadingProgressScreen = () => {
         isRefetching,
         refetch,
     } = useInfiniteQuery({
-        queryKey: ['myArticles', sortBy],
+        queryKey: ['myArticles'],
         queryFn: async ({ pageParam = 0 }) => {
             return getMyArticles({
-                sort: sortBy,
                 limit: PAGE_SIZE,
                 offset: pageParam,
                 status: 'pending',
@@ -107,6 +105,8 @@ const UploadingProgressScreen = () => {
         await refetch();
         setIsRefreshing(false);
     }, [refetch]);
+    console.log('articles articles articles@@',articles);
+    
     return (
         <AppScreen
             backgroundColor={colors.black}

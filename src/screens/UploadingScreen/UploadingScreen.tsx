@@ -7,7 +7,7 @@ import { uploadArticle, type UploadArticleFile, type UploadArticlePayload } from
 import { uploadSchema } from '@/utils/schemas';
 import { pixelSizeX } from '@/utils/sizes';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import DocumentPicker, { isCancel, types as DocumentPickerTypes } from 'react-native-document-picker';
 import Toast from 'react-native-simple-toast';
@@ -48,19 +48,17 @@ const UploadingScreen: React.FC = () => {
   const {
     error: uploadError,
     isError: isUploadError,
-    isFetching: isUploading,
+    isPending: isUploading,
     isSuccess: isUploadSuccess,
-    refetch: triggerUpload,
-  } = useQuery({
-    enabled: false,
-    queryFn: async () => {
+    mutateAsync: mutateUpload,
+    reset: resetMutation,
+  } = useMutation({
+    mutationFn: async () => {
       if (!uploadPayloadRef.current) {
         throw new Error('Missing upload payload');
       }
       return uploadArticle(uploadPayloadRef.current);
     },
-    queryKey: ['uploadArticle'],
-    retry: 0,
   });
 
   const handlePickFile = useCallback(async () => {
@@ -107,9 +105,9 @@ const UploadingScreen: React.FC = () => {
         ? { file: selectedFile }
         : { link: trimmedLink };
 
-      await triggerUpload({ throwOnError: false });
+      await mutateUpload();
     },
-    [selectedFile, triggerUpload],
+    [selectedFile, mutateUpload],
   );
 
   const selectedFileName = useMemo(() => {
@@ -175,13 +173,15 @@ const UploadingScreen: React.FC = () => {
 
   React.useEffect(() => {
     if (isUploadSuccess) {
-      navigation.navigate('UploadingProgressScreen' as never)
-      uploadPayloadRef.current = null;
+      navigation.navigate('UploadingProgressScreen' as never);
+        uploadPayloadRef.current = null;
       setSelectedFile(null);
       queryClient.invalidateQueries({ queryKey: ['getPublicArticles'] });
+      queryClient.invalidateQueries({ queryKey: ['myArticles'] });
       reset({ link: '' });
+      resetMutation();
     }
-  }, [isUploadSuccess, queryClient, reset]);
+  }, [isUploadSuccess, navigation, queryClient, reset, resetMutation]);
 
   React.useEffect(() => {
     if (hasLinkSelection && selectedFile) {
@@ -213,7 +213,7 @@ const UploadingScreen: React.FC = () => {
       style={[layout.pH(pixelSizeX(10))]}
     >
       <View style={[layout.flex1, layout.itemsCenter, layout.justifyCenter]}>
-         {/* <Text onPress={()=>{
+        {/* <Text onPress={()=>{
           navigation.navigate('UploadingProgressScreen')
          }} >
           go to UploadingProgressScreen
@@ -309,7 +309,7 @@ const UploadingScreen: React.FC = () => {
                 backgroundColor: colors.primary,
                 borderRadius: 40,
                 paddingVertical: 14,
-                paddingHorizontal:22,
+                paddingHorizontal: 22,
                 alignItems: 'center',
                 justifyContent: 'center',
                 opacity: isUploading ? 0.6 : 1,
