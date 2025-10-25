@@ -50,6 +50,7 @@ export type MyArticleParams = {
   sort?: 'asc' | 'desc';
   limit?: number;
   offset?: number;
+  status:string
 };
 
 export type MyArticleResponse = {
@@ -61,52 +62,21 @@ export type MyArticleResponse = {
   [key: string]: unknown;
 };
 
-const normalizeArticles = (payload: unknown): ArticleListItem[] => {
-  if (!payload) {
-    return [];
-  }
-
-  if (Array.isArray(payload)) {
-    return payload as ArticleListItem[];
-  }
-
-  const fromPayload = payload as Record<string, any>;
-
-  if (Array.isArray(fromPayload.articles)) {
-    return fromPayload.articles as ArticleListItem[];
-  }
-
-  if (Array.isArray(fromPayload.data?.items)) {
-    return fromPayload.data.items as ArticleListItem[];
-  }
-
-  if (Array.isArray(fromPayload.data)) {
-    return fromPayload.data as ArticleListItem[];
-  }
-
-  if (Array.isArray(fromPayload.items)) {
-    return fromPayload.items as ArticleListItem[];
-  }
-
-  return [];
-};
 
 export const getMyArticles = async (
   params: MyArticleParams = {},
 ): Promise<MyArticleResponse> => {
-  const { sort = 'desc', limit = 10, offset = 0 } = params;
+  const { sort = 'desc', limit = 10, offset = 0 , status} = params;
 
   const { data } = await API.get('/v1/article/my-article', {
-    params: { sort, limit, offset },
+    params: { sort, limit, offset , status },
   });
+  console.log("data data",);
 
-  const articles = normalizeArticles(data);
+
 
   return {
-    ...data,
-    articles,
-    limit: data?.limit ?? limit,
-    offset: data?.offset ?? offset,
+    data
   };
 };
 

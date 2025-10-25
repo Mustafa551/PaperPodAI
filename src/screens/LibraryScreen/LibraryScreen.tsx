@@ -12,6 +12,19 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { ArticleListItem, getMyArticles } from '@/store/userSlice/userApiServices';
+import { log } from 'console';
+
+const formatDate = (iso?: string) => {
+  if (!iso) {
+    return '';
+  }
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+  });
+};
 
 type SortOption = {
   key: 'desc' | 'asc';
@@ -46,7 +59,7 @@ const LibraryScreen = () => {
   } = useInfiniteQuery({
     queryKey: ['myArticles', sortBy],
     queryFn: ({ pageParam = 0 }) =>
-      getMyArticles({ sort: sortBy, limit: PAGE_SIZE, offset: pageParam }),
+      getMyArticles({ sort: sortBy, limit: PAGE_SIZE, offset: pageParam , status:'completed' }),
     getNextPageParam: (lastPage, allPages) => {
       const lastItems = lastPage?.articles ?? [];
 
@@ -72,12 +85,34 @@ const LibraryScreen = () => {
     initialPageParam: 0,
     staleTime: 30_000,
   });
-  console.log("data data @#@" , data);
-  
-  const articles = useMemo(
-    () => data?.pages.flatMap(page => page?.articles ?? []) ?? [],
-    [data],
+  console.log(
+    'data data @#@@##data!!pageParamsarticles',
+    data?.pages?.[0]?.data?.articles,
   );
+  console.log(
+    'FINAL articles passed to FlatList >>>',
+    Array.isArray(data?.pages?.[0]?.data?.articles)
+      ? data?.pages?.[0]?.data?.articles?.length
+      : 0,
+    data?.pages?.[0]?.data?.articles,
+  );
+  const articles = useMemo(() => {
+    // Primary (new response shape)
+    const primary =
+      Array.isArray(data?.pages?.[0]?.data?.articles)
+        ? data?.pages?.[0]?.data?.articles
+        : [];
+    console.log("primary data for testing", primary);
+    if (primary.length > 0) {
+      return primary;
+    }
+
+    // Fallback (older response shape)
+    return (
+      data?.pages?.flatMap((page: any) => page?.articles ?? []) ?? []
+    );
+  }, [data]);
+  console.log("articles newonesaarticles", articles);
 
   const isInitialLoading = isLoading && articles.length === 0;
   const isRefreshing = isRefetching && !isFetchingNextPage;
@@ -147,12 +182,19 @@ const LibraryScreen = () => {
     item?.uuid ?? item?.fileName ?? `article-${index}`;
 
   const renderArticleItem = ({ item }: { item: ArticleListItem }) => {
-    const displayTitle = item?.title ?? item?.fileName ?? 'Untitled Article';
+    console.log("item item data for testing" , item);
+    
+    // Our backend object has:
+    // uuid, fileName, createdAt, convertingStatus, audioFilePath, pdfFilePath, etc.
+    const displayTitle = item?.fileName ?? 'Untitled File';
+    const created = formatDate(item?.createdAt);
+    const status = item?.convertingStatus ?? '';
 
     return (
       <View>
         <Space mB={5} />
         <View style={styless.libraryItem}>
+          {/* Left thumbnail */}
           <View>
             <AssetByVariant
               resizeMode="contain"
@@ -162,16 +204,57 @@ const LibraryScreen = () => {
             />
           </View>
 
+          {/* Middle content */}
           <View style={styless.itemContent}>
             <AppText
               title={displayTitle}
+              numberOfLines={2}
               fontSize={16}
               fontWeight={400}
               color={'#FFFFFF'}
               extraStyle={{ lineHeight: 22.5 }}
             />
+
+            {/* Meta row under title */}
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginTop: 6,
+              }}
+            >
+              {!!created && (
+                <AppText
+                  title={created}
+                  fontSize={12}
+                  fontWeight={400}
+                  color={'#9CA3AF'}
+                  extraStyle={{ marginRight: 8 }}
+                />
+              )}
+
+              {/* {!!status && (
+                <View
+                  style={{
+                    borderRadius: 999,
+                    borderWidth: 1,
+                    borderColor: status === 'completed' ? '#4ADE80' : '#FACC15',
+                    paddingHorizontal: 8,
+                    paddingVertical: 2,
+                  }}
+                >
+                  <AppText
+                    title={status === 'completed' ? 'Ready' : status}
+                    fontSize={11}
+                    fontWeight={400}
+                    color={status === 'completed' ? '#4ADE80' : '#FACC15'}
+                  />
+                </View>
+              )} */}
+            </View>
           </View>
 
+          {/* Right actions */}
           <View style={styless.itemRight}>
             <TouchableOpacity
               onPress={() => handleItemPress(item)}
@@ -309,7 +392,7 @@ const LibraryScreen = () => {
         </View>
       </View>
       <Space mB={30} />
-      <View style={styles.listContainer}>
+      {/* <View style={styles.listContainer}> */}
         <FlatList
           ref={flatListRef}
           data={articles}
@@ -327,7 +410,7 @@ const LibraryScreen = () => {
             articles.length === 0 ? styles.listContentCentered : null,
           ]}
         />
-      </View>
+      {/* </View> */}
       {/* Download Modal */}
       <Modal
         animationType="slide"
@@ -430,6 +513,7 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
     width: '100%',
+    backgroundColor:'coral'
   },
   listContent: {
     flexGrow: 1,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   FlatList,
   Share,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Buffer } from 'buffer';
 import Slider from '@react-native-community/slider';
@@ -16,7 +17,7 @@ import { AppScreen } from '@/components/templates';
 import { useTheme } from '@/theme';
 import { normalizeFont, normalizeHeight, normalizeWidth, pixelSizeX, pixelSizeY } from '@/utils/sizes';
 import { AppText, AssetByVariant, Space } from '@/components/atoms';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SVG } from '@/theme/assets/icons';
@@ -41,17 +42,23 @@ const AudioPlayerScreen = () => {
   console.log("item item@@@ new ones", item);
 
   const {
-    audioFilePath = '',
+    audioFilePath,
     fileName = '',
     uuid,
   } = item;
   console.log("fileName fileName", fileName);
 
-  console.log("audioFilePath audioFilePath", audioFilePath);
-  const { data: articles, error } = useQuery({
+  console.log("audioFilePath audioFilePath@@", audioFilePath);
+  const {
+    data: articles,
+    error,
+    isFetching,
+  } = useQuery({
     queryKey: ['getArticlesByUuid'],
     queryFn: () => getArticlesUuid(uuid),
   });
+  console.log("error error message", error);
+  
   console.log("articles articles by uuid", articles?.article);
   console.log("articles articles by uuid sentencesTimestamps", articles?.article?.sentencesTimestamps);
 
@@ -88,21 +95,92 @@ const AudioPlayerScreen = () => {
   const playbackTimerRef = useRef<NodeJS.Timeout | null>(null);
   const audioUrlRef = useRef<string>('');
 
-  // Initialize sound on component mount or when audioFilePath changes
-  useEffect(() => {
-    // Pick audio URL from params (fallback to previous demo URL if missing)
-    const url = audioFilePath || '';
-    audioUrlRef.current = url;
+  const cleanupAudio = useCallback(() => {
+    // stop timer
+    if (playbackTimerRef.current) {
+      clearInterval(playbackTimerRef.current);
+      playbackTimerRef.current = null;
+    }
 
-    // Clean any existing sound before creating a new one
+    // stop & release sound
     if (soundRef.current) {
+      try {
+        soundRef.current.stop();
+      } catch (e) {
+        // ignore stop error
+      }
       soundRef.current.release();
       soundRef.current = null;
     }
 
-    const sampleAudio = new Sound(url, undefined as any, (error) => {
+    // reset UI state
+    setIsPlaying(false);
+    setCurrentTime(0);
+  }, []);
+
+  // Initialize sound on component mount or when audioFilePath changes
+  useEffect(() => {
+    // Pick audio URL from params (fallback if missing)
+    // 1. Known good working demo audio (12s)
+    const workingFallbackUrl =
+      'https://res.cloudinary.com/dptcdlae6/video/upload/v1761238920/audios/Pretty_Little_Baby_Lyrics.mp3.mp3';
+
+    // 2. Original 24s URL that fails to load due to double-encoded spaces
+    const rawProvidedUrl =
+      typeof audioFilePath === 'string' ? audioFilePath.trim() : '';
+
+    // Try to "fix" double-encoding like `%2520` -> `%20`
+    const normalizedUrl = rawProvidedUrl
+      .replace(/%2520/gi, '%20')
+      .replace(/ /g, '%20');
+
+    // Reject clearly invalid values
+    const cleanedUrl =
+      normalizedUrl &&
+      normalizedUrl !== 'null' &&
+      normalizedUrl !== 'undefined'
+        ? normalizedUrl
+        : '';
+
+    // Final URL preference:
+    // - if cleanedUrl looks like an https url, use it
+    // - else use workingFallbackUrl
+    const finalUrl = cleanedUrl.startsWith('http')
+      ? cleanedUrl
+      : workingFallbackUrl;
+
+    console.log('About to init Sound with URL ===>', finalUrl);
+
+    console.log('AUDIO URL DECISION FLOW =>', {
+      audioFilePathFromProps: audioFilePath,
+      rawProvidedUrl,
+      normalizedUrl,
+      cleanedUrl,
+      finalUrl,
+    });
+
+    audioUrlRef.current = finalUrl;
+
+    // Clean any existing sound before creating a new one
+    cleanupAudio();
+
+    if (!finalUrl) {
+      return; // nothing to load
+    }
+
+    const isLikelyPlayable =
+      finalUrl.endsWith('.mp3') ||
+      finalUrl.endsWith('.m4a') ||
+      finalUrl.endsWith('.aac');
+
+    if (!isLikelyPlayable) {
+      console.log('Blocked non-audio or unsupported container for AVAudioPlayer =>', finalUrl);
+      return;
+    }
+
+    const sampleAudio = new Sound(finalUrl, undefined as any, (error) => {
       if (error) {
-        console.log('Failed to load sound', error);
+        console.log('Failed to load sound', { finalUrl, error });
         return;
       }
       soundRef.current = sampleAudio;
@@ -123,16 +201,20 @@ const AudioPlayerScreen = () => {
 
     // Cleanup on unmount or when URL changes
     return () => {
-      if (soundRef.current) {
-        soundRef.current.release();
-        soundRef.current = null;
-      }
-      if (playbackTimerRef.current) {
-        clearInterval(playbackTimerRef.current);
-        playbackTimerRef.current = null;
-      }
+      cleanupAudio();
     };
-  }, [audioFilePath]);
+  }, [audioFilePath, cleanupAudio]);
+
+  // Stop audio when screen loses focus (user navigates away)
+  useFocusEffect(
+    useCallback(() => {
+      // screen focused -> do nothing special
+      return () => {
+        // screen is blurring/unfocusing -> stop audio immediately
+        cleanupAudio();
+      };
+    }, [cleanupAudio])
+  );
 
   // Update progress timer
   useEffect(() => {
@@ -180,16 +262,20 @@ const AudioPlayerScreen = () => {
   }, [activeIndex]);
 
   const handlePlaybackComplete = () => {
-    setIsPlaying(false);
-    setCurrentTime(0);
     if (soundRef.current) {
-      soundRef.current.stop();
-      soundRef.current.setCurrentTime(0);
+      try {
+        soundRef.current.stop();
+        soundRef.current.setCurrentTime(0);
+      } catch (e) {
+        // ignore
+      }
     }
     if (playbackTimerRef.current) {
       clearInterval(playbackTimerRef.current);
       playbackTimerRef.current = null;
     }
+    setIsPlaying(false);
+    setCurrentTime(0);
   };
 
   const formatTime = (seconds: number) => {
@@ -288,13 +374,38 @@ const AudioPlayerScreen = () => {
     setCurrentTime(value);
   };
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
+
+  const renderLoadingOverlay = () => {
+    if (!isFetching) return null;
+    return (
+      <View
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.9)',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 999,
+        }}
+      >
+        <ActivityIndicator size="large" color={colors.white} />
+        <Space mB={16} />
+      </View>
+    );
+  };
+
   return (
-    <AppScreen
-      ScrollViewProps={{ showsVerticalScrollIndicator: false }}
-      backgroundColor={colors.black}
-      // preset="fixed"
-      style={{ paddingTop: useSafeAreaInsets().top + pixelSizeY(10), paddingHorizontal: pixelSizeX(20) }}
-    >
+    <View style={{ flex: 1 }}>
+      <AppScreen
+        ScrollViewProps={{ showsVerticalScrollIndicator: false }}
+        backgroundColor={colors.black}
+        // preset="fixed"
+        style={{ paddingTop: insets.top + pixelSizeY(10), paddingHorizontal: pixelSizeX(20) }}
+      >
       <TouchableOpacity
         style={{ paddingRight: pixelSizeX(12), width: normalizeWidth(50) }}
         onPress={() => {
@@ -306,29 +417,36 @@ const AudioPlayerScreen = () => {
       <AppText
         title={fileName || 'Audio'}
         fontSize={24}
+        numberOfLines={2}
         fontWeight={500}
         color={'#F5F5F5'}
       />
 
       <Space mB={30} />
 
-      <View style={{ height: '55%'}} >
+      <View style={{ height: normalizeHeight(440)}} >
         <LinearGradient
           colors={['#461D7A', '#8A2BE1']}
-          style={[layout.bgColor('#8A2BE1'), layout.borderRadius(12)]}
+          style={[layout.bgColor('#8A2BE1'), layout.borderRadius(12), {maxHeight: normalizeHeight(440)}]}
         >
           <View style={[layout.padding(pixelSizeX(30))]} >
             <FlatList
+            // scrollEnabled={false}
               ref={flatListRef}
               data={sentences}
               keyExtractor={(_, i) => `line-${i}`}
-              style={{ maxHeight: normalizeHeight(260) }}
+              style={{maxHeight: normalizeHeight(440)}}
               showsVerticalScrollIndicator={false}
               initialNumToRender={12}
+              ListFooterComponent={()=>{
+                return(
+                  <View style={{height:normalizeHeight(122)}} />
+                )
+              }}
               getItemLayout={(data, index) => ({ length: 34, offset: 34 * index, index })}
               renderItem={({ item, index }) => {
                 const isActive = index === activeIndex;
-                return (
+                  return (
                   <View style={{ paddingVertical: 6 }}>
                     <Text
                       style={{
@@ -424,7 +542,9 @@ const AudioPlayerScreen = () => {
         </View>
       </View>
       <Space mB={70} />
-    </AppScreen>
+      </AppScreen>
+      {renderLoadingOverlay()}
+    </View>
   );
 };
 
