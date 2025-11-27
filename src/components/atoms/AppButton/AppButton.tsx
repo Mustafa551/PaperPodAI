@@ -156,41 +156,43 @@ const AppButton: React.FC<IAppButtonProps> = memo((props) => {
     return colorArr;
   }, [variant]);
 
-  
+
   if (googleBtn) {
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      disabled={disabled}
-      style={[
-        {
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'white',
-          borderRadius: 100,
-          borderWidth: 1,
-          borderColor: '#ddd',
-      height: typeof height === 'number' ? height : 50,
-  width: typeof width === 'number' ? width : WIDTH * 0.9,
-          paddingHorizontal: 15,
-        },
-        shadow && layout.shadow,
-        contViewStyle,
-        layout.opacity(disabled ? 0.5 : 1),
-      ]}
-    >
-     
-      <AppText
-        title={title}
-        color="#000"
-        extraStyle={[extraStyle?.title]}
-        variant={fontVariant}
-        fontWeight={600}
-      />
-    </TouchableOpacity>
-  );
-}
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        disabled={disabled}
+        style={[
+          {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'white',
+            borderRadius: 100,
+            borderWidth: 1,
+            borderColor: '#ddd',
+            height: typeof height === 'number' ? height : 50,
+            width: typeof width === 'number' ? width : WIDTH * 0.9,
+            paddingHorizontal: 15,
+          },
+          shadow && layout.shadow,
+          contViewStyle,
+          layout.opacity(disabled ? 0.5 : 1),
+        ]}
+      >
+
+        <AppText
+          onPress={onPress}
+
+          title={title}
+          color="#000"
+          extraStyle={[extraStyle?.title]}
+          variant={fontVariant}
+          fontWeight={600}
+        />
+      </TouchableOpacity>
+    );
+  }
 
   return (
     <TouchableOpacity
@@ -206,9 +208,9 @@ const AppButton: React.FC<IAppButtonProps> = memo((props) => {
       <LinearGradient
         {...props}
         colors={bgColor ? [bgColor, bgColor] : color}
-          start={{ x: 0.5, y: 1 }}
-      end={{ x: 0.5, y: 0 }}
-      locations={[0.0001, 1]}
+        start={{ x: 0.5, y: 1 }}
+        end={{ x: 0.5, y: 0 }}
+        locations={[0.0001, 1]}
         style={[
           styles.button,
           layout.height(normalizeHeight(height as number)),
@@ -225,7 +227,7 @@ const AppButton: React.FC<IAppButtonProps> = memo((props) => {
             alignSelf="center"
             color={variant === 'outlined' ? outlinedColor : colors.white}
             extraStyle={[layout.mH(5), extraStyle?.title]}
-            onPress={!disabled ? onPress : () => {}}
+            onPress={!disabled ? onPress : () => { }}
             fontSize={14}
             title={title}
             variant={fontVariant}

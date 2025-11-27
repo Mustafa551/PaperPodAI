@@ -1,0 +1,64 @@
+diff --git a/node_modules/react-native-document-picker/android/src/main/java/com/reactnativedocumentpicker/GuardedResultAsyncTaskCompat.java b/node_modules/react-native-document-picker/android/src/main/java/com/reactnativedocumentpicker/GuardedResultAsyncTaskCompat.java
+new file mode 100644
+index 0000000..dcf0851
+--- /dev/null
++++ b/node_modules/react-native-document-picker/android/src/main/java/com/reactnativedocumentpicker/GuardedResultAsyncTaskCompat.java
+@@ -0,0 +1,42 @@
++package com.reactnativedocumentpicker;
++
++import android.os.AsyncTask;
++
++import com.facebook.react.bridge.JSExceptionHandler;
++import com.facebook.react.bridge.ReactContext;
++
++/**
++ * Minimal backport of the old GuardedResultAsyncTask that was removed from newer React Native
++ * versions. Some third-party libraries (like this one) still rely on it, so we implement the parts
++ * we need locally to keep the behavior consistent.
++ */
++abstract class GuardedResultAsyncTaskCompat<Result> extends AsyncTask<Void, Void, Result> {
++  private final JSExceptionHandler exceptionHandler;
++
++  protected GuardedResultAsyncTaskCompat(ReactContext reactContext) {
++    this.exceptionHandler = reactContext.getExceptionHandler();
++  }
++
++  @Override
++  protected final Result doInBackground(Void... params) {
++    try {
++      return doInBackgroundGuarded();
++    } catch (RuntimeException e) {
++      exceptionHandler.handleException(e);
++      return null;
++    }
++  }
++
++  @Override
++  protected final void onPostExecute(Result result) {
++    try {
++      onPostExecuteGuarded(result);
++    } catch (RuntimeException e) {
++      exceptionHandler.handleException(e);
++    }
++  }
++
++  protected abstract Result doInBackgroundGuarded();
++
++  protected void onPostExecuteGuarded(Result result) {}
++}
+diff --git a/node_modules/react-native-document-picker/android/src/main/java/com/reactnativedocumentpicker/RNDocumentPickerModule.java b/node_modules/react-native-document-picker/android/src/main/java/com/reactnativedocumentpicker/RNDocumentPickerModule.java
+index 14c1ec8..1c6448a 100644
+--- a/node_modules/react-native-document-picker/android/src/main/java/com/reactnativedocumentpicker/RNDocumentPickerModule.java
++++ b/node_modules/react-native-document-picker/android/src/main/java/com/reactnativedocumentpicker/RNDocumentPickerModule.java
+@@
+-import com.facebook.react.bridge.BaseActivityEventListener;
+-import com.facebook.react.bridge.GuardedResultAsyncTask;
++import com.facebook.react.bridge.BaseActivityEventListener;
+@@
+-  private static class ProcessDataTask extends GuardedResultAsyncTask<ReadableArray> {
++  private static class ProcessDataTask extends GuardedResultAsyncTaskCompat<ReadableArray> {
+@@
+-    protected ProcessDataTask(ReactContext reactContext, List<Uri> uris, String copyTo, Promise promise) {
+-      super(reactContext.getExceptionHandler());
++    protected ProcessDataTask(ReactContext reactContext, List<Uri> uris, String copyTo, Promise promise) {
++      super(reactContext);

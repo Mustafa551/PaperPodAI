@@ -4,10 +4,12 @@ import { SVG } from '@/theme/assets/icons'
 import React from 'react'
 import { View } from 'react-native'
 import { useStyle } from './style'
+import { useNavigation } from '@react-navigation/native'
 
 const NewUploadBanner = () => {
   const { colors, layout } = useTheme()
   const styles = useStyle()
+  const navigation = useNavigation()
   return (
     <View style={styles.cont}>
 
@@ -23,7 +25,9 @@ const NewUploadBanner = () => {
           width={'60%'}
           height={40}
           bgColor={colors.primary}
-          onPress={() => { }}
+          onPress={() => {
+            navigation.navigate('UploadingScreen' as never);
+          }}
           title={'Browse File'}
           variant="gradient"
           shadow={false}

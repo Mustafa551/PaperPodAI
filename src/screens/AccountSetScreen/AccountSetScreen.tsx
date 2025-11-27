@@ -15,6 +15,7 @@ import {
   AppInput,
   AppText,
   AssetByVariant,
+  ButtonPrimary,
   Space,
 } from '@/components/atoms';
 import { AppScreen } from '@/components/templates';
@@ -24,6 +25,8 @@ import { clearAuthData, getAccessToken, getRefreshToken, getUser, saveTokensFrom
 import { resetStack } from '@/navigation/navigationRef';
 import { useAppStore } from '@/store';
 import { signOut } from '@/store/authSlice/authApiService';
+import PaywallButton from '@/components/atoms/PaywallButton/PaywallButton';
+import { SubscriptionBanner } from '@/components/molecules';
 
 const BASE_URL = 'https://rude-vickie-3dotmedia-5ccb6d6e.koyeb.app';
 
@@ -50,8 +53,9 @@ const AccountSetScreen: React.FC<RootScreenProps<Paths.AccountSetScreen>> = () =
   const { t } = useTranslation();
   const styles = useStyles();
   const navigation = useNavigation<RootScreenProps<Paths.AccountSetScreen>['navigation']>();
-  const {userData} = useAppStore(state => state)
-  console.log("🚀 ~ AccountSetScreen ~ userData:", userData)
+  const { userData } = useAppStore(state => state)
+  console.log("🚀 ~ AccountSetScreen ~ userData:@@#@", userData?.subscriptionStatus !== "active"
+  )
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -71,18 +75,18 @@ const AccountSetScreen: React.FC<RootScreenProps<Paths.AccountSetScreen>> = () =
 
   useEffect(() => {
 
-      if (userData) {
-        reset({
-          name: userData?.name || '',
-          email: userData?.email || '',
-          subscriptionStatus: userData?.subscriptionStatus || '',
-        });
-      }
+    if (userData) {
+      reset({
+        name: userData?.name || '',
+        email: userData?.email || '',
+        subscriptionStatus: userData?.subscriptionStatus || '',
+      });
+    }
 
 
   }, [userData]);
 
-  
+
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
       console.log('Form Validation Errors:', errors);
@@ -96,7 +100,7 @@ const AccountSetScreen: React.FC<RootScreenProps<Paths.AccountSetScreen>> = () =
     //   const accessToken = await getAccessToken();
     //   const refreshToken = await getRefreshToken();
     //   const user = await getUser();
-  
+
     //   if (!accessToken || !refreshToken || !user?.email) {
     //     console.log('Missing auth data, clearing and redirecting');
     //     await clearAuthData();
@@ -104,9 +108,9 @@ const AccountSetScreen: React.FC<RootScreenProps<Paths.AccountSetScreen>> = () =
     //     resetStack('AuthStack', 'LoginScreen');
     //     return;
     //   }
-  
+
     //   const response = await attemptLogout(accessToken, refreshToken, user.email, user.googleId || 'none');
-  
+
     //   if (response?.data.success) {
     //     await clearAuthData();
     //     Alert.alert('Success', 'Logged out successfully!');
@@ -122,7 +126,7 @@ const AccountSetScreen: React.FC<RootScreenProps<Paths.AccountSetScreen>> = () =
     //     status: axiosError.response?.status,
     //     headers: axiosError.response?.headers,
     //   });
-  
+
     //   await clearAuthData();
     //   Alert.alert('Error', 'Session expired or invalid. Please log in again.');
     //   resetStack('AuthStack', 'LoginScreen');
@@ -138,7 +142,7 @@ const AccountSetScreen: React.FC<RootScreenProps<Paths.AccountSetScreen>> = () =
       resetStack('AuthStack', 'loginScreen')
     }
   };
-  
+
   const attemptLogout = async (
     accessToken: string | null,
     refreshToken: string,
@@ -149,7 +153,7 @@ const AccountSetScreen: React.FC<RootScreenProps<Paths.AccountSetScreen>> = () =
       console.log('No access token available for logout');
       return null;
     }
-  
+
     try {
       console.log('Making API call to:', `${BASE_URL}/v1/user/logout`);
       return await axios.post<LogoutResponse>(
@@ -172,12 +176,12 @@ const AccountSetScreen: React.FC<RootScreenProps<Paths.AccountSetScreen>> = () =
       const axiosError = error as AxiosError<{ message?: string }>;
       if (axiosError.response?.status === 401) {
         console.log('Access token expired, logging user out');
-        return null; 
+        return null;
       }
       throw error;
     }
   };
-  
+
 
   return (
     <AppScreen
@@ -186,7 +190,7 @@ const AccountSetScreen: React.FC<RootScreenProps<Paths.AccountSetScreen>> = () =
       preset="scroll"
       style={layout.pH(pixelSizeX(10))}
     >
-      <Space mT={80} />
+      <Space mT={50} />
 
       <AppText
         title={'Account Settings'}
@@ -251,7 +255,7 @@ const AccountSetScreen: React.FC<RootScreenProps<Paths.AccountSetScreen>> = () =
 
       <Space mB={14} />
 
-      <View style={{ marginHorizontal: -pixelSizeX(10), marginTop: 'auto' }}>
+      {/* <View style={{ marginHorizontal: -pixelSizeX(10), marginTop: 'auto' }}>
         <View
           style={[
             layout.bgColor('#201E23'),
@@ -269,8 +273,30 @@ const AccountSetScreen: React.FC<RootScreenProps<Paths.AccountSetScreen>> = () =
             textAlign="center"
             extraStyle={{ lineHeight: 22.5 }}
           />
+          <PaywallButton
+            // SVGLeft={}
+            bgColor={'#8A2BE1'}
+            onPress={onLogout}
+            title={'Logout'}
+            variant="gradient"
+            shadow={false}
+            loading={isLoading}
+            disabled={isLoading}
+          />
+          
         </View>
-      </View>
+      </View> */}
+      {
+        userData?.subscriptionStatus !== "active" && (
+          <View style={{ marginHorizontal: -pixelSizeX(10), marginTop: 'auto', paddingBottom: pixelSizeY(20) }}>
+            <SubscriptionBanner
+              description="Want to listen to your own research as a podcast?"
+              btnTitle="Upgrade to Upload Your Own Papers"
+            />
+          </View>
+        )
+      }
+
     </AppScreen>
   );
 };

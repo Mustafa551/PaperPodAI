@@ -8,37 +8,38 @@ import { ISubscriptionBannerProps } from './SubscriptionBannerTypes'
 import { useNavigation } from '@react-navigation/native'
 import { NavigationProps } from '@/navigation/types'
 
-const SubscriptionBanner: React.FC<ISubscriptionBannerProps> = ({description, btnTitle}) => {
-    const {colors} = useTheme()
-    const navigation = useNavigation<NavigationProps>()
+const SubscriptionBanner: React.FC<ISubscriptionBannerProps> = ({ description, btnTitle }) => {
+  const { colors } = useTheme()
+  const navigation = useNavigation<NavigationProps>()
   return (
-   <View
-        style={{
-          width: '100%',
-          backgroundColor: colors.darkShade,
-          paddingVertical: pixelSizeY(20),
-        }}
-      >
-        <AppText
-          title={description}
-          fontSize={16}
-          textAlign="center"
-          width="60%"
-          alignSelf="center"
-          fontWeight={500}
-          color={colors.white}
-          fontFamily="medium"
-        />
-        <Space mB={20} />
+    <View
+      style={{
+        width: '100%',
+        backgroundColor: colors.darkShade,
+        paddingVertical: pixelSizeY(20),
+      }}
+    >
+      <AppText
+        onPress={() => navigation.navigate('PaywallScreen')}
+        title={description}
+        fontSize={16}
+        textAlign="center"
+        width="60%"
+        alignSelf="center"
+        fontWeight={500}
+        color={colors.white}
+        fontFamily="medium"
+      />
+      <Space mB={20} />
 
-        <AppButton
-          onPress={() => navigation.navigate('PaywallScreen')}
-          title={btnTitle}
-          variant="gradient"
-          shadow={false}
-          SVGLeft={<SVG.Crown />}
-        />
-      </View>
+      <AppButton
+        onPress={() => navigation.navigate('PaywallScreen')}
+        title={btnTitle}
+        variant="gradient"
+        shadow={false}
+        SVGLeft={<SVG.Crown />}
+      />
+    </View>
   )
 }
 

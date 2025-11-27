@@ -420,7 +420,7 @@ const AudioPlayerScreen = () => {
         style={{ paddingTop: insets.top + pixelSizeY(10), paddingHorizontal: pixelSizeX(20) }}
       >
         <TouchableOpacity
-          style={{ paddingRight: pixelSizeX(12), width: normalizeWidth(50) }}
+          style={{ paddingRight: pixelSizeX(12), width: normalizeWidth(50)  , paddingVertical:pixelSizeY(7)}}
           onPress={() => {
             navigation.goBack();
           }}>

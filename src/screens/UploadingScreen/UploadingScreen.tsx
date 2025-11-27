@@ -13,9 +13,10 @@ import DocumentPicker, { isCancel, types as DocumentPickerTypes } from 'react-na
 import Toast from 'react-native-simple-toast';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Modal, Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from './style';
 import { useNavigation } from '@react-navigation/native';
+import { useAppStore } from '@/store';
 
 type UploadFormValues = {
   link?: string;
@@ -28,9 +29,14 @@ const UploadingScreen: React.FC = () => {
   const queryClient = useQueryClient();
   const navigation = useNavigation()
   const [selectedFile, setSelectedFile] = useState<UploadArticleFile | null>(null);
-
+  const { userData } = useAppStore(state => state)
+  console.log("🚀 ~ AccountSetScreen ~ userData:@@#@", userData?.subscriptionStatus !== "active"
+  )
   const uploadPayloadRef = useRef<UploadArticlePayload | null>(null);
+  const isSubscribed = userData?.subscriptionStatus === 'active';
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
+  const btnTitle = 'Upgrade to Pro Plan';
   const {
     control,
     formState: { errors },
@@ -62,6 +68,11 @@ const UploadingScreen: React.FC = () => {
   });
 
   const handlePickFile = useCallback(async () => {
+    if (!isSubscribed) {
+      setShowUpgradeModal(true);
+      return;
+    }
+
     try {
       const response = await DocumentPicker.pickSingle({
         presentationStyle: 'fullScreen',
@@ -85,30 +96,33 @@ const UploadingScreen: React.FC = () => {
       console.log('🚀 ~ handlePickFile ~ err:', err);
       Toast.show('Unable to select file. Please try again.', Toast.SHORT);
     }
-  }, []);
+  }, [isSubscribed, setValue]);
 
-  const onSubmit = useCallback(
-    async ({ link }: UploadFormValues) => {
-      const trimmedLink = link?.trim();
+ const onSubmit = useCallback(
+  async ({ link }: UploadFormValues) => {
+    if (!isSubscribed) {
+      setShowUpgradeModal(true);
+      return;
+    }
 
-      if (selectedFile && trimmedLink) {
-        Toast.show('Choose either a PDF file or paste a PDF link, not both.', Toast.SHORT);
-        return;
-      }
+    const trimmedLink = link?.trim();
 
-      if (!selectedFile && !trimmedLink) {
-        Toast.show('Select a PDF or paste a link to continue.', Toast.SHORT);
-        return;
-      }
+    if (selectedFile && trimmedLink) {
+      Toast.show('Choose either a PDF file or paste a PDF link, not both.', Toast.SHORT);
+      return;
+    }
 
-      uploadPayloadRef.current = selectedFile
-        ? { file: selectedFile }
-        : { link: trimmedLink };
+    if (!selectedFile && !trimmedLink) {
+      Toast.show('Select a PDF or paste a link to continue.', Toast.SHORT);
+      return;
+    }
 
-      await mutateUpload();
-    },
-    [selectedFile, mutateUpload],
-  );
+    uploadPayloadRef.current = selectedFile ? { file: selectedFile } : { link: trimmedLink };
+
+    await mutateUpload();
+  },
+  [isSubscribed, selectedFile, mutateUpload],
+);
 
   const selectedFileName = useMemo(() => {
     if (!selectedFile) {
@@ -350,6 +364,73 @@ const UploadingScreen: React.FC = () => {
             />
           </>
         ) : null}
+         <Modal
+        visible={showUpgradeModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowUpgradeModal(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.7)',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <View
+            style={{
+              width: '90%',
+              borderRadius: 24,
+              paddingVertical: 24,
+              paddingHorizontal: 20,
+              backgroundColor: colors.darkShade,
+              
+            }}
+          >
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 16,
+              }}
+            >
+              <AppText
+                title="Upgrade To Pro Plan"
+                color={colors.white}
+                fontSize={20}
+                fontFamily="medium"
+              />
+              <TouchableOpacity onPress={() => setShowUpgradeModal(false)}>
+                <Text style={{ color: colors.white, fontSize: 20 }}>×</Text>
+              </TouchableOpacity>
+            </View>
+
+            <AppText
+              title={
+                'To upload your own research papers and turn them into personalized better audio, and faster processing, you’ll need a premium plan.'
+              }
+              color={colors.white}
+              fontSize={14}
+              fontFamily="regular"
+            />
+
+            <Space mB={24} />
+
+            <AppButton
+               width={'100%'}
+              onPress={() => {
+                setShowUpgradeModal(false);
+                navigation.navigate('PaywallScreen' as never);
+              }}
+              title={btnTitle}
+              variant="gradient"
+              shadow={false}
+            />
+          </View>
+        </View>
+      </Modal>
       </View>
     </AppScreen>
   );

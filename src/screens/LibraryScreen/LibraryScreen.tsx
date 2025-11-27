@@ -4,7 +4,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
 import useStyles from './style';
 import { normalizeFont, normalizeHeight, normalizeWidth, pixelSizeX, pixelSizeY } from '@/utils/sizes';
-import { AppText, AssetByVariant, Space } from '@/components/atoms';
+import { AppButton, AppText, AssetByVariant, Space } from '@/components/atoms';
 import { Modal, Pressable } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { SVG } from '@/theme/assets/icons';
@@ -12,6 +12,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { ArticleListItem, getMyArticles } from '@/store/userSlice/userApiServices';
+import { SubscriptionBanner } from '@/components/molecules';
+import { useAppStore } from '@/store';
 
 const formatDate = (iso?: string) => {
   if (!iso) {
@@ -55,6 +57,8 @@ const LibraryScreen = () => {
   const [sortBy, setSortBy] = useState<SortOption['key']>('desc');
   const [showDetail, setShowDetail] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
+  const { userData } = useAppStore(state => state)
+  const isSubscribed = userData?.subscriptionStatus === 'active';
   const [sortBtnWidth, setSortBtnWidth] = useState(0);
   const [isRefreshingLocal, setIsRefreshingLocal] = useState(false);
   const navigation = useNavigation();
@@ -299,15 +303,19 @@ const LibraryScreen = () => {
       {isInitialLoading ? (
         <ActivityIndicator color={colors.primary} />
       ) : (
-        <AppText
-          title={
-            errorMessage ?? 'No articles found yet. Upload to see them here.'
-          }
-          color={colors.grey}
-          fontSize={14}
-          fontFamily="regular"
-          textAlign="center"
-        />
+        <>
+          <AppText
+            title={
+              errorMessage ?? 'No articles found yet. Upload to see them here.'
+            }
+            color={colors.grey}
+            fontSize={14}
+            fontFamily="regular"
+            textAlign="center"
+          />
+
+        </>
+
       )}
     </View>
   );
@@ -319,12 +327,25 @@ const LibraryScreen = () => {
       </View>
     ) : !hasNextPage && articles.length > 0 ? (
       <View style={styles.footer}>
-        <AppText
+        {/* <AppText
           title="You've reached the end."
           color={colors.grey}
           fontSize={12}
           fontFamily="regular"
-        />
+        /> */}
+        {
+          !isSubscribed && (
+            <AppButton
+              onPress={() => navigation.navigate('PaywallScreen')}
+              title={'Upgrade to Upload Your Own Papers'}
+              variant="gradient"
+              shadow={false}
+              SVGLeft={<SVG.Crown />}
+            />
+          )
+        }
+
+        <Space mB={55} />
       </View>
     ) : null;
 
@@ -402,23 +423,25 @@ const LibraryScreen = () => {
       </View>
       <Space mB={30} />
       {/* <View style={styles.listContainer}> */}
-        <FlatList
-          ref={flatListRef}
-          data={articles}
-          keyExtractor={keyExtractor}
-          renderItem={renderArticleItem}
-          showsVerticalScrollIndicator={false}
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.4}
-          refreshing={isRefreshingLocal || isRefetching}
-          onRefresh={handleRefresh}
-          ListEmptyComponent={listEmptyComponent}
-          ListFooterComponent={listFooterComponent}
-          contentContainerStyle={[
-            styles.listContent,
-            articles.length === 0 ? styles.listContentCentered : null,
-          ]}
-        />
+      <FlatList
+        ref={flatListRef}
+        data={articles}
+        keyExtractor={keyExtractor}
+        renderItem={renderArticleItem}
+        showsVerticalScrollIndicator={false}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.4}
+        refreshing={isRefreshingLocal || isRefetching}
+        onRefresh={handleRefresh}
+        ListEmptyComponent={listEmptyComponent}
+        ListFooterComponent={listFooterComponent}
+        contentContainerStyle={[
+          styles.listContent,
+          articles.length === 0 ? styles.listContentCentered : null,
+        ]}
+      />
+
+
       {/* </View> */}
       {/* Download Modal */}
       <Modal

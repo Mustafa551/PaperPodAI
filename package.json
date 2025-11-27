@@ -7,6 +7,7 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
+    "postinstall": "./scripts/apply-patches.sh",
     "lint:rules": "eslint . --cache",
     "lint:code-format": "prettier --check \"{src,__mocks__}/**/*.{js,json,md,ts,tsx,yml,yaml}\"",
     "lint:type-check": "tsc",

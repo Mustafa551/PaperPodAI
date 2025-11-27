@@ -5,6 +5,7 @@ import { useStyle } from "./style";
 import { SVG } from "@/theme/assets/icons";
 import { AppText, Header, Space } from "@/components/atoms";
 import { useTheme } from "@/theme";
+import { normalizeWidth, pixelSizeX, pixelSizeY } from "@/utils/sizes";
 // import { PaywallScreen } from "..";
 // import { Icon } from "react-native-vector-icons/Ionicons"; // Example if you use icons
 
@@ -44,18 +45,27 @@ const PaywallScreen = () => {
     };
 
     const currentPlan = plans[activeTab];
-
+    const handleContinue = () => {
+        // Handle continue action based on the selected plan
+        if (activeTab === "Free") {
+            navigation.goBack();
+        } else {
+            // Logic for upgrading to Creator plan
+        }
+    };
     return (
         <View style={styles.container}>
             {/* Header */}
-            {/* <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          {/* Replace with your Icon */}
-            {/* <Text style={styles.backArrow}>←</Text> */}
-            {/* </TouchableOpacity> */}
-            {/* <Text style={styles.title}>Plans</Text> */}
-            {/* </View> */}
-            <Header title="Plans" />
+
+            <Header renderLeftFunc={() => {
+                return <TouchableOpacity
+                    style={{ paddingRight: pixelSizeX(12), width: normalizeWidth(50), paddingVertical: pixelSizeY(7) }}
+                    onPress={() => {
+                        navigation.goBack();
+                    }}>
+                    <SVG.ArrowLeft />
+                </TouchableOpacity>
+            }} title="Plans" />
 
             {/* Tabs */}
             <View style={styles.tabs}>
@@ -120,15 +130,19 @@ const PaywallScreen = () => {
                     ))}
                 </View>
 
-            {/* Action Buttons */}
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.continueButton}>
-                    <Text style={styles.continueButtonText}>Continue with Free Plan</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.upgradeButton}>
-                    <Text style={styles.upgradeButtonText}>Upgrade to Creator</Text>
-                </TouchableOpacity>
-            </View>
+                {/* Action Buttons */}
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity onPress={() => {
+                        navigation.goBack();
+                    }} style={styles.continueButton}>
+                        <Text style={styles.continueButtonText}>Continue with Free Plan</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                        handleContinue();
+                    }} style={styles.upgradeButton}>
+                        <Text style={styles.upgradeButtonText}>Upgrade to Creator</Text>
+                    </TouchableOpacity>
+                </View>
             </ScrollView>
         </View>
     );
