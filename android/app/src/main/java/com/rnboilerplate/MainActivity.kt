@@ -1,4 +1,4 @@
-package com.rnboilerplate
+package com.paperpodai
 
 import android.os.Bundle;
 import com.facebook.react.ReactActivity
