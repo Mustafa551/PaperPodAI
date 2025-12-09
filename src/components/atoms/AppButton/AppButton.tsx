@@ -108,16 +108,11 @@
 
 
 /* eslint-disable react/react-in-jsx-scope */
-
 import type { IAppButtonProps } from './AppButtonTypes';
-
 import React, { memo, useMemo } from 'react';
 import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-
 import { useTheme } from '@/theme';
-import { FONTS_FAMILY } from '@/theme/fonts';
-
 import { isIphoneX, platformiOS } from '@/utils/native';
 import { normalizeHeight, WIDTH } from '@/utils/sizes';
 
@@ -221,7 +216,9 @@ const AppButton: React.FC<IAppButtonProps> = memo((props) => {
       >
         {SVGLeft}
         {loading ? (
-          <ActivityIndicator color={'white'} size="small" />
+          <View style={{paddingVertical:12}} >
+            <ActivityIndicator color={'white'} size="small" />
+          </View>
         ) : (
           <AppText
             alignSelf="center"

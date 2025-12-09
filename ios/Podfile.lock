@@ -9,7 +9,7 @@ PODS:
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - PromisesObjC (~> 2.4)
-  - BlastedImage (1.1.2):
+  - BlastedImage (1.1.5):
     - React-Core
     - SDWebImage
     - SDWebImageAVIFCoder
@@ -45,6 +45,11 @@ PODS:
   - hermes-engine/Pre-built (0.78.2)
   - libavif/core (0.11.1)
   - PromisesObjC (2.4.0)
+  - PurchasesHybridCommon (17.21.2):
+    - RevenueCat (= 5.49.2)
+  - PurchasesHybridCommonUI (17.21.2):
+    - PurchasesHybridCommon (= 17.21.2)
+    - RevenueCatUI (= 5.49.2)
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -1317,7 +1322,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-mmkv (3.3.0):
+  - react-native-mmkv (3.3.3):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1340,7 +1345,7 @@ PODS:
     - Yoga
   - react-native-netinfo (11.4.1):
     - React-Core
-  - react-native-safe-area-context (5.4.1):
+  - react-native-safe-area-context (5.6.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1353,8 +1358,8 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
-    - react-native-safe-area-context/common (= 5.4.1)
-    - react-native-safe-area-context/fabric (= 5.4.1)
+    - react-native-safe-area-context/common (= 5.6.2)
+    - react-native-safe-area-context/fabric (= 5.6.2)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -1363,7 +1368,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-safe-area-context/common (5.4.1):
+  - react-native-safe-area-context/common (5.6.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1384,7 +1389,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-safe-area-context/fabric (5.4.1):
+  - react-native-safe-area-context/fabric (5.6.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1758,6 +1763,9 @@ PODS:
     - React-logger (= 0.78.2)
     - React-perflogger (= 0.78.2)
     - React-utils (= 0.78.2)
+  - RevenueCat (5.49.2)
+  - RevenueCatUI (5.49.2):
+    - RevenueCat (= 5.49.2)
   - RNCAsyncStorage (2.2.0):
     - DoubleConversion
     - glog
@@ -1802,7 +1810,7 @@ PODS:
     - Yoga
   - RNFS (2.20.0):
     - React-Core
-  - RNGestureHandler (2.26.0):
+  - RNGestureHandler (2.29.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1845,7 +1853,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNPermissions (5.4.1):
+  - RNPaywalls (9.6.9):
+    - PurchasesHybridCommonUI (= 17.21.2)
+    - React-Core
+  - RNPermissions (5.4.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1866,32 +1877,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated (3.18.0):
-    - DoubleConversion
-    - glog
-    - hermes-engine
-    - RCT-Folly (= 2024.11.18.00)
-    - RCTRequired
-    - RCTTypeSafety
+  - RNPurchases (9.6.9):
+    - PurchasesHybridCommon (= 17.21.2)
     - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-hermes
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 3.18.0)
-    - RNReanimated/worklets (= 3.18.0)
-    - Yoga
-  - RNReanimated/reanimated (3.18.0):
+  - RNReanimated (3.19.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1913,9 +1902,34 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated/apple (= 3.18.0)
+    - RNReanimated/reanimated (= 3.19.4)
+    - RNReanimated/worklets (= 3.19.4)
     - Yoga
-  - RNReanimated/reanimated/apple (3.18.0):
+  - RNReanimated/reanimated (3.19.4):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNReanimated/reanimated/apple (= 3.19.4)
+    - Yoga
+  - RNReanimated/reanimated/apple (3.19.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1938,7 +1952,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated/worklets (3.18.0):
+  - RNReanimated/worklets (3.19.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1960,9 +1974,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/worklets/apple (= 3.18.0)
+    - RNReanimated/worklets/apple (= 3.19.4)
     - Yoga
-  - RNReanimated/worklets/apple (3.18.0):
+  - RNReanimated/worklets/apple (3.19.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2035,7 +2049,7 @@ PODS:
     - RNSound/Core (= 0.11.2)
   - RNSound/Core (0.11.2):
     - React-Core
-  - RNSVG (15.12.0):
+  - RNSVG (15.15.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2055,9 +2069,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNSVG/common (= 15.12.0)
+    - RNSVG/common (= 15.15.1)
     - Yoga
-  - RNSVG/common (15.12.0):
+  - RNSVG/common (15.15.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2078,10 +2092,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - SDWebImage (5.21.0):
-    - SDWebImage/Core (= 5.21.0)
-  - SDWebImage/Core (5.21.0)
-  - SDWebImageAVIFCoder (0.11.0):
+  - SDWebImage (5.21.5):
+    - SDWebImage/Core (= 5.21.5)
+  - SDWebImage/Core (5.21.5)
+  - SDWebImageAVIFCoder (0.11.1):
     - libavif/core (>= 0.11.0)
     - SDWebImage (~> 5.10)
   - SDWebImageSVGCoder (1.8.0):
@@ -2174,7 +2188,9 @@ DEPENDENCIES:
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
+  - RNPaywalls (from `../node_modules/react-native-purchases-ui`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
+  - RNPurchases (from `../node_modules/react-native-purchases`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSound (from `../node_modules/react-native-sound`)
@@ -2192,6 +2208,10 @@ SPEC REPOS:
     - GTMSessionFetcher
     - libavif
     - PromisesObjC
+    - PurchasesHybridCommon
+    - PurchasesHybridCommonUI
+    - RevenueCat
+    - RevenueCatUI
     - SDWebImage
     - SDWebImageAVIFCoder
     - SDWebImageSVGCoder
@@ -2358,8 +2378,12 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNGoogleSignin:
     :path: "../node_modules/@react-native-google-signin/google-signin"
+  RNPaywalls:
+    :path: "../node_modules/react-native-purchases-ui"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
+  RNPurchases:
+    :path: "../node_modules/react-native-purchases"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -2376,7 +2400,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
-  BlastedImage: 37d0f99e9488257d8c621e5060ca92f9d72ab23d
+  BlastedImage: 2f923353659617f6c30f9d73e47ab2766816f49a
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   BVLinearGradient: cb006ba232a1f3e4f341bb62c42d1098c284da70
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
@@ -2391,6 +2415,8 @@ SPEC CHECKSUMS:
   hermes-engine: 2771b98fb813fdc6f92edd7c9c0035ecabf9fee7
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
+  PurchasesHybridCommon: 71c94158ff8985657d37d5f3be05602881227619
+  PurchasesHybridCommonUI: c490142361da500ea8fe2f75cd6d56df0f7e3152
   RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
   RCTDeprecation: be794de7dc6ed8f9f7fbf525f86e7651b8b68746
   RCTRequired: a83787b092ec554c2eb6019ff3f5b8d125472b3b
@@ -2423,9 +2449,9 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: 6a39463c32ce831c4c2aa8469273114d894b6be9
   react-native-document-picker: bfe9c7d72908d2faba56a4765373c6367090ae2e
   react-native-image-picker: 84b261e109faa7312bca59f1f65c8f2b22865496
-  react-native-mmkv: c969437e688f281c34d90310d5e05bbd5f8732a1
+  react-native-mmkv: 2c554a003c78a27f92d6794f1658bbeea37a364a
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
-  react-native-safe-area-context: 9d7528d2e8fce82d20cb0b643c8be34a4ad57464
+  react-native-safe-area-context: 90db9cb1243ba193ef6d05b26ff0600e69112214
   react-native-simple-toast: 5e6be69d0badbd6f262cf74c63984d1e3439920f
   react-native-slider: 310d3f89edd6ca8344a974bfe83a29a3fbb60e5a
   React-NativeModulesApple: fd0545efbb7f936f78edd15a6564a72d2c34bb32
@@ -2456,18 +2482,22 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 4893bde33952f997a323eb1a1ee87a72764018ff
   ReactCodegen: 99ea3536c05be3c18d0c517acb56b5a6d726fc7b
   ReactCommon: 865ebe76504a95e115b6229dd00a31e56d2d4bfe
+  RevenueCat: d185cbff8be9425b5835042afd6889389bb756c8
+  RevenueCatUI: 3d17f9f0bf7ed299c1671552378086ceeff308fd
   RNCAsyncStorage: 79cfba789fca205b204f3ce7948b874500129eb4
   RNCMaskedView: 308c763227e237d4d260bd8841870e099572bb3e
   RNFS: 89de7d7f4c0f6bafa05343c578f61118c8282ed8
-  RNGestureHandler: f548d618f6f08e41d8f85f5de8a8e7dfd6c7a673
+  RNGestureHandler: 6268a11b236d8229890690d043f386dae9a3cacc
   RNGoogleSignin: a6fda355562bea2ec97f678fe7879fd1b10902f7
-  RNPermissions: cf274625da2c813b8614faa1702aa1779c36057e
-  RNReanimated: 6d25b4dcb540228c6ec8b7d1dae54c464b90a2f6
+  RNPaywalls: fd144a33362accc76fd650ce5aab4a1d197a0b8c
+  RNPermissions: c54b43739c184ef81b221e6e3ece3e757d552cee
+  RNPurchases: 34da99c0e14ee484ed57e77dc06dcfe8e7cb1cee
+  RNReanimated: 880d6b1d020a880d35d81d54560e04282a5f6934
   RNScreens: 790123c4a28783d80a342ce42e8c7381bed62db1
   RNSound: 314cc5226453ef4a3314a196c65e8a65e5106a7b
-  RNSVG: 4aaeac3fdc7c5bc88ca801e228f62fb469be37e9
-  SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
-  SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
+  RNSVG: dfe0c8e3cc0a6f6e8bcee696cf11baf69f2c394d
+  SDWebImage: e9c98383c7572d713c1a0d7dd2783b10599b9838
+  SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 8e10c8f6cc879c7dfb317b284e13dd589379f01c
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   SRSRadialGradient: f93406612258ab93e454aa08b9f82d3bb7adf6c1

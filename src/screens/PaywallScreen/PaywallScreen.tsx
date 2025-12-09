@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useStyle } from "./style";
@@ -6,8 +6,7 @@ import { SVG } from "@/theme/assets/icons";
 import { AppText, Header, Space } from "@/components/atoms";
 import { useTheme } from "@/theme";
 import { normalizeWidth, pixelSizeX, pixelSizeY } from "@/utils/sizes";
-// import { PaywallScreen } from "..";
-// import { Icon } from "react-native-vector-icons/Ionicons"; // Example if you use icons
+import Purchases from 'react-native-purchases';
 
 const PaywallScreen = () => {
     const { colors } = useTheme();
@@ -15,7 +14,12 @@ const PaywallScreen = () => {
     const navigation = useNavigation();
     const [activeTab, setActiveTab] = useState<"Free" | "Creator">("Free");
     const styles = useStyle()
-
+    const [packages, setPackages] = useState<any[]>([]);
+    console.log('🚀 ~ PaywallScreen ~ packages:', packages);
+    const [compPackages, setCompPackages] = useState<any[]>([]);
+    const [packageLoading, setPackageLoading] = useState(false);
+    const [paymentLoading, setPaymentLoading] = useState(false);
+    const [restorePurchasedLoading, setRestorePurchasedLoading] = useState(false);
     const plans = {
         Free: {
             price: "$0/month",
@@ -43,7 +47,9 @@ const PaywallScreen = () => {
             ],
         },
     };
-
+    useEffect(() => {
+        getPackages();
+    }, []);
     const currentPlan = plans[activeTab];
     const handleContinue = () => {
         // Handle continue action based on the selected plan
@@ -51,6 +57,28 @@ const PaywallScreen = () => {
             navigation.goBack();
         } else {
             // Logic for upgrading to Creator plan
+        }
+    };
+    const getPackages = async () => {
+        try {
+            setPackageLoading(true);
+            const offerings = await Purchases.getOfferings();
+            console.log('🚀 ~ getPackages ~ offerings:', offerings);
+            console.debug('🚀 ~ file: Subscription.js:92 ~ getPackages ~ offerings:!!!', offerings.current);
+            if (offerings.current !== null && offerings.current.availablePackages.length !== 0) {
+                const getPackagesData = offerings.current.availablePackages.map(val => ({
+                    price: val.product.priceString,
+                    identifier: val.identifier,
+                }));
+                setPackages(getPackagesData);
+                setCompPackages(offerings.current.availablePackages);
+            }
+            setPackageLoading(false);
+        } catch (error) {
+            setPackageLoading(false);
+            // Alert.alert('Error', `Something went wrong try again later${error.message}`);
+            console.debug('🚀 ~ getPackages ~ error:', error);
+            //  crashLog(error, 'get', 'Subscription.js');
         }
     };
     return (
