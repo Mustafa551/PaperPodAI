@@ -7,11 +7,20 @@ module.exports = {
         alias: {
           '@': './src',
         },
-        extensions: ['.js', '.json'],
+        extensions: ['.js', '.ts', '.jsx', '.tsx', '.json'],
         root: ['./src'],
       },
     ],
     'inline-dotenv',
+    [
+      'module:react-native-dotenv',
+      {
+        moduleName: '@env',
+        path: '.env',
+        safe: false,
+        allowUndefined: true,
+      },
+    ],
     'react-native-reanimated/plugin', // needs to be last
   ],
   presets: ['module:@react-native/babel-preset'],

@@ -26,8 +26,23 @@ import { useAppStore } from '@/store';
 import { useEffect, useState } from 'react';
 import { fetchUserDataLocal } from '@/store/authSlice/authApiService';
 import { ActivityIndicator, Platform, View } from 'react-native';
-import Purchases from 'react-native-purchases';
 import { PUBLIC_RC_ANDROID, PUBLIC_RC_IOS } from '@env';
+
+type PurchasesModule = typeof import('react-native-purchases').default;
+
+const purchasesModule: PurchasesModule | null = (() => {
+  try {
+    return require('react-native-purchases').default;
+  } catch (error) {
+    if (__DEV__) {
+      console.warn(
+        'RevenueCat SDK is not available. Skipping in-app purchase setup.',
+        error,
+      );
+    }
+    return null;
+  }
+})();
 const Stack = createStackNavigator<RootStackParamList>();
 
 const AuthStack = () => {
@@ -84,57 +99,36 @@ function ApplicationNavigator() {
   }, []);
   useEffect(() => {
     const configureRevenueCat = async () => {
+      if (!userData?.email || !purchasesModule) {
+        return;
+      }
+
+      const userEmail = String(userData.email);
+
       try {
-        if (userData?.email) {
-          if (Platform.OS === 'ios') {
-            console.log('🚀 ~ RevenueCat configured for IOS!@!123', PUBLIC_RC_IOS);
-            if (!process.env.PUBLIC_RC_IOS) {
-              console.debug('Env Not Found For IOS Cat Revenue!!!');
-            } else {
-              await Purchases.configure({
-                apiKey: process.env.PUBLIC_RC_IOS,
-                appUserID: String(userData?.email),
-              });
-              console.debug('🚀 ~ RevenueCat configured for iOS');
-            }
-            const customerInfo = await Purchases.getCustomerInfo();
-            console.log(
-              '🚀 ~ RootNavigator ~ customerInfo activeSubscriptions:',
-              customerInfo?.activeSubscriptions?.[0],
-            );
-            // if (customerInfo?.activeSubscriptions?.[0]) {
-            //   saveBoolean('SUBSCRIPTION_STATUS', true);
-            //   saveStringStorage('SUBSCRIPTION_PLAN', customerInfo?.activeSubscriptions?.[0]);
-            // } else {
-            //   saveBoolean('SUBSCRIPTION_STATUS', false);
-            //   saveStringStorage('SUBSCRIPTION_PLAN', '');
-            // }
-          } else if (Platform.OS === 'android') {
-            if (!PUBLIC_RC_ANDROID) {
-              console.debug('Env Not Found For Android Cat Revenue');
-            } else {
-              await Purchases.configure({
-                apiKey: process.env.PUBLIC_RC_ANDROID,
-                appUserID: String(userData?.email),
-              });
-            }
-            const customerInfo = await Purchases.getCustomerInfo();
-            console.log(
-              '🚀 ~ RootNavigator ~ customerInfo activeSubscriptions:',
-              customerInfo?.activeSubscriptions?.[0],
-            );
-            // if (customerInfo?.activeSubscriptions?.[0]) {
-            //   saveBoolean('SUBSCRIPTION_STATUS', true);
-            //   saveStringStorage('SUBSCRIPTION_PLAN', customerInfo?.activeSubscriptions?.[0]);
-            // } else {
-            //   saveBoolean('SUBSCRIPTION_STATUS', false);
-            //   saveStringStorage('SUBSCRIPTION_PLAN', '');
-            // }
-          }
-          Purchases.setLogHandler((logLevel, message) => {
-            console.log(`[RevenueCat] ${message}`);
+        if (Platform.OS === 'ios') {
+          
+          await purchasesModule.configure({
+            apiKey: "appl_KeFoybfiJCgdBQzsrgAHEzFCVMU",
+            appUserID: userEmail,
+          });
+        } else if (Platform.OS === 'android') {
+          
+          await purchasesModule.configure({
+            apiKey: "goog_oLcWeyQfooPSFBTWsgtsOtzGxuD",
+            appUserID: userEmail,
           });
         }
+
+        const customerInfo = await purchasesModule.getCustomerInfo();
+        console.log(
+          '🚀 ~ RootNavigator ~ customerInfo activeSubscriptions:',
+          customerInfo?.activeSubscriptions?.[0],
+        );
+
+        purchasesModule.setLogHandler((logLevel, message) => {
+          console.log(`[RevenueCat] ${message}`);
+        });
       } catch (error) {
         console.log('🚀 ~ configureRevenueCat error:', error);
       }
