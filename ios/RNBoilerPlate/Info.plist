@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>RNBoilerPlate</string>
+	<string>Paper Pod Ai</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -43,8 +43,22 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>App needs Camera to update user Profile Picture</string>
+	<key>NSFileProviderDomainUsageDescription</key>
+	<string>App needs access to user files to download and manage audio files.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
+	<string></string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>App needs Photo Library to update user Profile Picture</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Poppins-Bold.ttf</string>
+		<string>Poppins-Light.ttf</string>
+		<string>Poppins-Medium.ttf</string>
+		<string>Poppins-Regular.ttf</string>
+		<string>Poppins-SemiBold.ttf</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen.storyboard</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -63,19 +77,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSCameraUsageDescription</key>
-	<string>App needs Camera to update user Profile Picture</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>App needs Photo Library to update user Profile Picture</string>
-	<key>NSFileProviderDomainUsageDescription</key>
-	<string>App needs access to user files to download and manage audio files.</string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Poppins-Bold.ttf</string>
-		<string>Poppins-Light.ttf</string>
-		<string>Poppins-Medium.ttf</string>
-		<string>Poppins-Regular.ttf</string>
-		<string>Poppins-SemiBold.ttf</string>
-	</array>
 </dict>
 </plist>

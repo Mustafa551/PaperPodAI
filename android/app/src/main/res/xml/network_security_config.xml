@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- You can use true or false, but the attribute MUST be present -->
+        <domain includeSubdomains="false">3.95.228.97</domain>
+    </domain-config>
+</network-security-config>
