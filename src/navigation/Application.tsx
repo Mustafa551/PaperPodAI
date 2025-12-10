@@ -28,9 +28,7 @@ import { fetchUserDataLocal } from '@/store/authSlice/authApiService';
 import { ActivityIndicator, Platform, View } from 'react-native';
 import { PUBLIC_RC_ANDROID, PUBLIC_RC_IOS } from '@env';
 import Purchases from 'react-native-purchases';
-import { getPurchasesModule } from '@/utils/purchases';
-
-const purchasesModule = getPurchasesModule();
+ 
 const Stack = createStackNavigator<RootStackParamList>();
 
 const AuthStack = () => {
@@ -90,12 +88,12 @@ function ApplicationNavigator() {
       try {
         if (userData?.email) {
           if (Platform.OS === 'ios') {
-            console.log('🚀 ~ RevenueCat configured for IOS!@!123', process.env.PUBLIC_RC_IOS);
+            console.log('🚀 ~ RevenueCat configured for IOS!@!123!!', process.env.PUBLIC_RC_IOS);
             if (!process.env.PUBLIC_RC_IOS) {
               console.debug('Env Not Found For IOS Cat Revenue!!!');
             } else {
               await Purchases.configure({
-                apiKey: process.env.PUBLIC_RC_IOS,
+                apiKey:  "appl_KeFoybfiJCgdBQzsrgAHEzFCVMU",
                 appUserID: String(userData?.email),
               });
               console.debug('🚀 ~ RevenueCat configured for iOS');
@@ -117,7 +115,7 @@ function ApplicationNavigator() {
               console.debug('Env Not Found For Android Cat Revenue');
             } else {
               await Purchases.configure({
-                apiKey: process.env.PUBLIC_RC_ANDROID,
+                apiKey: "goog_oLcWeyQfooPSFBTWsgtsOtzGxuD",
                 appUserID: String(userData?.email),
               });
             }

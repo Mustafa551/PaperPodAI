@@ -29,7 +29,7 @@ export const useStyle = () => {
     flexDirection: "row",
     backgroundColor: colors.primary,
     borderRadius: 30,
-    marginVertical: 16,
+    marginTop:16,
     paddingVertical: 5,
     paddingHorizontal: 10
   },

@@ -97,8 +97,6 @@ const Header: React.FC<IHeaderProps> = memo((props) => {
 
   return (
     <View style={[marginH && layout.mH(HORIZON_SPACE), extraStyle]}>
-      <SafeAreaView style={layout.bgColor(bar)} />
-
       {!empty && (
         <View style={styles.container}>
           {renderLeftFunc ? renderLeftFunc() : renderLeft()}
