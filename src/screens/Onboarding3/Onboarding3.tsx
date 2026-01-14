@@ -49,12 +49,12 @@ const Onboarding3: React.FC<RootScreenProps<Paths.Onboarding3>> = ({
     <AppScreen
       ScrollViewProps={{ showsVerticalScrollIndicator: false }}
       preset="scroll"
-backgroundColor={colors.black}
-isGradientLeft
+      backgroundColor={colors.black}
+      isGradientLeft
 
-      // style={layout.bgColor("black")}
+    // style={layout.bgColor("black")}
     >
-{/* <Image
+      {/* <Image
   source={require('../../theme/assets/images/Ellipse15.png')}
   style={{
     position: 'absolute',
@@ -82,49 +82,49 @@ isGradientLeft
         />
       </View>
       <Space mB={50} />
+      <View style={{paddingHorizontal:22 , alignSelf:'center'}} >
+        <AppText
+          title={"Want to Upload Your Own Papers?"}
+          textAlign='center'
+          fontSize={24}
+          fontWeight={500}
+          color={"#FFFFFF"}
+        />
+        <Space mB={8} />
+        <AppText
+          title={"Subscribe and convert your favorite papers into personal podcasts."}
+          fontSize={14}
+          fontWeight={400}
+          color={"#F5F5F5"}
+          marginHorizontal={42}
+          textAlign='center'
+        />
+      </View>
 
-      <AppText
-        title={"Want to Upload Your Own Papers?"}
-        alignSelf="center"
-        fontSize={24}
-        fontWeight={500}
-        color={"#FFFFFF"}
-      />
-      <Space mB={8} />
-    <AppText
-        title={"Subscribe and convert your favorite papers into personal podcasts."}
-        fontSize={14}
-        fontWeight={400}
-        color={"#F5F5F5"}
-        marginHorizontal={42}
-        textAlign='center'
-      />
-    
-  
 
       <Space mB={5} />
 
-    
 
-<View style={{marginTop: "auto"}}>
-      <AppButton
-        bgColor={"#8A2BE1"}
-        // onPress={handleSubmit(onSignin)}
-        onPress={() =>
-          // openModal('forgotPassword', {
-          //   email: 'user@example.com',
-          //   type: 'phoneNum',
-          // })
-          navigation.navigate(Paths.LoginScreen)
-        }
-        title={'Next'}
-        variant="gradient"
-        shadow={false}
-      />
 
-     </View>
+      <View style={{ marginTop: "auto" }}>
+        <AppButton
+          bgColor={"#8A2BE1"}
+          // onPress={handleSubmit(onSignin)}
+          onPress={() =>
+            // openModal('forgotPassword', {
+            //   email: 'user@example.com',
+            //   type: 'phoneNum',
+            // })
+            navigation.navigate(Paths.LoginScreen)
+          }
+          title={'Next'}
+          variant="gradient"
+          shadow={false}
+        />
 
-   
+      </View>
+
+
       <Space mB={56} />
 
     </AppScreen>

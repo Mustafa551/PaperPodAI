@@ -178,7 +178,6 @@ const AppButton: React.FC<IAppButtonProps> = memo((props) => {
 
         <AppText
           onPress={onPress}
-
           title={title}
           color="#000"
           extraStyle={[extraStyle?.title]}

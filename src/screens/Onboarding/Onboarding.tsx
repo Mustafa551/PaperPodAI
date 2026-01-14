@@ -14,15 +14,11 @@ import {
   Space,
 } from '@/components/atoms';
 import { AppScreen } from '@/components/templates';
-
 import { signInSchema } from '@/utils/schemas';
 import { SignInForm } from '@/utils/schemasTypes';
 import { normalizeHeight, normalizeWidth } from '@/utils/sizes';
-
-
 import { useModal } from '@/context/ModalProvider';
 import { useTranslation } from 'react-i18next';
-import LinearGradient from 'react-native-linear-gradient';
 import useStyles from '../LoginScreen/style';
 
 
@@ -48,12 +44,12 @@ const Onboarding: React.FC<RootScreenProps<Paths.Onboarding>> = ({
     <AppScreen
       ScrollViewProps={{ showsVerticalScrollIndicator: false }}
       preset="scroll"
-backgroundColor={colors.black}
-isGradientLeft
-      // style={layout.bgColor("black")}
+      backgroundColor={colors.black}
+      isGradientLeft
+    // style={layout.bgColor("black")}
     >
-   
-{/* <Image
+
+      {/* <Image
   source={require('../../theme/assets/images/Ellipse15.png')}
   style={{
     position: 'absolute',
@@ -87,7 +83,7 @@ isGradientLeft
         color={"#FFFFFF"}
       />
       <Space mB={8} />
-    <AppText
+      <AppText
         title={"Turn complex research papers into easy-to-listen podcasts."}
         fontSize={14}
         fontWeight={400}
@@ -95,28 +91,28 @@ isGradientLeft
         marginHorizontal={42}
         textAlign='center'
       />
-  
+
 
       <Space mB={5} />
 
-      
-<View style={{marginTop: "auto"}}>
-      <AppButton
-        bgColor={"#8A2BE1"}
-        // onPress={handleSubmit(onSignin)}
-        onPress={() =>
-          // openModal('forgotPassword', {
-          //   email: 'user@example.com',
-          //   type: 'phoneNum',
-          // })
-          navigation.navigate(Paths.Onboarding2)
-        }
-        title={'Next'}
-        variant="gradient"
-        shadow={false}
-      />
-     </View>
-   
+
+      <View style={{ marginTop: "auto" }}>
+        <AppButton
+          bgColor={"#8A2BE1"}
+          // onPress={handleSubmit(onSignin)}
+          onPress={() =>
+            // openModal('forgotPassword', {
+            //   email: 'user@example.com',
+            //   type: 'phoneNum',
+            // })
+            navigation.navigate(Paths.Onboarding2)
+          }
+          title={'Next'}
+          variant="gradient"
+          shadow={false}
+        />
+      </View>
+
 
       <Space mB={56} />
 

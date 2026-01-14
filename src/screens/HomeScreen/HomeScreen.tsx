@@ -18,6 +18,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getPublicArticles } from '@/store/userSlice/userApiServices';
 import { useNavigation } from '@react-navigation/native';
 import { IMAGES } from '@/theme/assets/images';
+import LinearGradient from 'react-native-linear-gradient';
 
 
 
@@ -133,7 +134,7 @@ const HomeScreen = () => {
             <Carousel
               testID={'xxx'}
               loop={true}
-              width={WIDTH * 0.95}
+              width={WIDTH - pixelSizeX(10) * 2}
               autoPlay
               height={200}
               snapEnabled={true}
@@ -162,34 +163,76 @@ const HomeScreen = () => {
               onProgressChange={progress}
               // onSnapToItem={(index: number) => console.log('current index:', index)}
               renderItem={({ item }) => (
-                <Image
-                  source={require('../../theme/assets/images/Frame.png')}
-                  // source={{ uri: item }}
-                  style={styles.crouselImage}
-                  resizeMode="cover"
-                />
+                <View style={styles.carouselItemContainer}>
+                  <LinearGradient
+                    colors={['#090311', '#8A2BE1']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.gradientCard}
+                  >
+                    <View style={styles.gradientContent}>
+                      <View style={styles.gradientTextContainer}>
+                        <AppText
+                          title="Powered by Advanced AI"
+                          fontSize={24}
+                          lineHeight={22}
+                          fontWeight={500}
+                          color={colors.white}
+                          fontFamily="medium"
+                         extraStyle={{ lineHeight:33  }}
+                        />
+                        <Space mB={8} />
+                        <AppText
+                          title="Turn papers into podcasts in seconds."
+                          fontSize={13}
+                          fontWeight={400}
+                          color={'rgba(255,255,255,0.9)'}
+                          fontFamily="regular"
+
+                        />
+                        <TouchableOpacity style={styles.exploreButton}>
+                          <AppText
+                            title="Explore Features"
+                            fontSize={14}
+                            fontWeight={400}
+                            color={'#ffff'}
+                            fontFamily='regular'
+                          />
+                        </TouchableOpacity>
+                        <Pagination.Basic
+                          progress={progress}
+                          data={[
+                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1zwhySGCEBxRRFYIcQgvOLOpRGqrT3d7Qng&s',
+                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUPIfiGgUML8G3ZqsNLHfaCnZK3I5g4tJabQ&s',
+                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1zwhySGCEBxRRFYIcQgvOLOpRGqrT3d7Qng&s',
+                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUPIfiGgUML8G3ZqsNLHfaCnZK3I5g4tJabQ&s',
+                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1zwhySGCEBxRRFYIcQgvOLOpRGqrT3d7Qng&s',
+
+                          ]}
+                          dotStyle={{
+                            backgroundColor: colors.grey,
+                            height: 10,
+                            width: 10,
+                            borderRadius: 5,
+                          }}
+                          activeDotStyle={{ backgroundColor: colors.white }}
+                          containerStyle={styles.dotContainer}
+                        />
+                      </View>
+                      <Image
+                        source={IMAGES.megaphone}
+                        style={styles.megaphoneImage}
+                        resizeMode="contain"
+                      />
+                    </View>
+
+
+                  </LinearGradient>
+                </View>
               )}
             />
 
-            <Pagination.Basic
-              progress={progress}
-              data={[
-                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1zwhySGCEBxRRFYIcQgvOLOpRGqrT3d7Qng&s',
-                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUPIfiGgUML8G3ZqsNLHfaCnZK3I5g4tJabQ&s',
-                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1zwhySGCEBxRRFYIcQgvOLOpRGqrT3d7Qng&s',
-                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUPIfiGgUML8G3ZqsNLHfaCnZK3I5g4tJabQ&s',
-                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1zwhySGCEBxRRFYIcQgvOLOpRGqrT3d7Qng&s',
 
-              ]}
-              dotStyle={{
-                backgroundColor: colors.grey,
-                height: 10,
-                width: 10,
-                borderRadius: 5,
-              }}
-              activeDotStyle={{ backgroundColor: colors.white }}
-              containerStyle={styles.dotContainer}
-            />
           </View> :
             <Image
               source={IMAGES.homeBanner}
@@ -317,11 +360,11 @@ const HomeScreen = () => {
         <Space mB={40} />
       </View>
       {
-        isSubscribed ? <NewUploadBanner /> : 
-        <SubscriptionBanner
-          description="Want to listen to your own research as a podcast?"
-          btnTitle="Upgrade to Upload Your Own Papers"
-        />
+        isSubscribed ? <NewUploadBanner /> :
+          <SubscriptionBanner
+            description="Want to listen to your own research as a podcast?"
+            btnTitle="Upgrade to Upload Your Own Papers"
+          />
       }
 
 
