@@ -201,8 +201,8 @@ const LibraryScreen = () => {
     // uuid, fileName, createdAt, convertingStatus, audioFilePath, pdfFilePath, etc.
     const displayTitle = item?.fileName ?? 'Untitled File';
     const created = formatDate(item?.createdAt);
-    const status = item?.convertingStatus ?? '';
-    console.log("item item Lo", item);
+    // const status = item?.convertingStatus ?? '';
+    // console.log("item item Lo", item);
 
     return (
       <View>
@@ -211,10 +211,12 @@ const LibraryScreen = () => {
           {/* Left thumbnail */}
           <View>
             <AssetByVariant
-              resizeMode="contain"
-              path={'docimg'}
+              resizeMode="cover"
+              uri={item.thumbnailFilePath}
+              path="docimg"
               width={normalizeWidth(70)}
               height={normalizeHeight(70)}
+              style={{ borderRadius: normalizeWidth(4), overflow: 'hidden' }}
             />
           </View>
 

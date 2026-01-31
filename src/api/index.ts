@@ -62,38 +62,39 @@ API.interceptors.request.use(
 API.interceptors.response.use(
   (response: any) => response,
   async (error: any) => {
+    const originalRequest = error.config;
     /*
      ** Checking if token gets expire
      */
 
-    if (error.response && error.response.status === 401) {
-      // Access token has expired, attempt to refresh
-      // const {refreshToken} = useAppStore.getState().tokens;
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+      const { refreshToken } = useAppStore.getState().tokens;
 
-      // try {
-      //   const response = await axios.post(`${API_URL}/auth/token`, {
-      //     refreshToken,
-      //   });
-      //   console.log('response refresh token', response);
+      if (refreshToken) {
+        try {
+          // Import here to avoid circular dependency
+          const {
+            refreshTokenService,
+          } = require('../store/authSlice/authApiService');
+          const newTokens = await refreshTokenService(refreshToken);
 
-      //   if (response?.status === 200 && response?.data?.tokens) {
-      //     const newTokens = response.data?.tokens as tokenType;
-
-      //     // Save new tokens
-      //     useAppStore.getState().updateToken(newTokens);
-
-      //     // Update the original request with the new token
-      //     originalRequest.headers.Authorization = `Bearer ${newTokens?.accessToken}`;
-
-      //     // Retry the original request with the new token
-      //     return API(originalRequest);
-      //   }
-      // } catch (refreshError: unknown | any) {
-      //   console.log('🚀 ~ refreshError:', refreshError);
-      //   Toast.show('Session expired. Please log in again.', Toast.LONG);
-      //   return Promise.reject(refreshError);
-      // }
-      resetAllSlices()
+          if (newTokens && newTokens.accessToken) {
+            originalRequest.headers.Authorization = `Bearer ${newTokens.accessToken}`;
+            return API(originalRequest);
+          }
+        } catch (refreshError) {
+          console.log('🚀 ~ refreshError:', refreshError);
+          resetAllSlices();
+          return Promise.reject(refreshError);
+        }
+      } else {
+        resetAllSlices();
+      }
     }
     return Promise.reject(error);
   },

@@ -279,6 +279,35 @@ export const deleteUser = async (userId: string) => {
   }
 };
 
+export const refreshTokenService = async (refreshToken: string) => {
+  try {
+    const response = await AUTH_API.post(
+      '/v1/user/refresh', // Assuming this endpoint for token refresh
+      {},
+      {
+        headers: {
+          'x-refresh-token': refreshToken,
+          'x-device-id': 'test-device-id',
+          'x-user-agent': 'android',
+        },
+      }
+    );
+    console.log('🚀 ~ refreshTokenService ~ response:', response);
+    const tokens = {
+      accessToken: response.data?.accessToken,
+      refreshToken: response.data?.refreshToken || refreshToken, // fallback to old refresh token if not provided
+    };
+    if (tokens.accessToken) {
+      useAppStore.getState().updateToken(tokens);
+      return tokens;
+    }
+    throw new Error('Refresh failed - no access token in response');
+  } catch (error) {
+    console.log('🚀 ~ refreshTokenService ~ error:', error);
+    throw error;
+  }
+};
+
 export const fetchUserDataLocal = async () => {
   try {
     let user = loadStorage(ASYNC_USER_DATA_KEY) as userDataType;

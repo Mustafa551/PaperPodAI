@@ -44,13 +44,14 @@ export type ArticleListItem = {
   convertingStatus?: string;
   type?: string;
   createdAt?: string;
+  thumbnailFilePath?: string;
 };
 
 export type MyArticleParams = {
   sort?: 'asc' | 'desc';
   limit?: number;
   offset?: number;
-  status:string
+  status?: string;
 };
 
 export type MyArticleResponse = {
@@ -66,10 +67,10 @@ export type MyArticleResponse = {
 export const getMyArticles = async (
   params: MyArticleParams = {},
 ): Promise<MyArticleResponse> => {
-  const { sort = 'desc', limit = 10, offset = 0 , status} = params;
+  const { sort = 'desc', limit = 10, offset = 0, status } = params;
 
   const { data } = await API.get('/v1/article/my-article', {
-    params: { sort, limit, offset , status },
+    params: { sort, limit, offset, status },
   });
   console.log("data data",);
 
