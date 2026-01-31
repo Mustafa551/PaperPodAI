@@ -1,13 +1,12 @@
 // authApiService.ts
-import {API, AUTH_API} from '../../api';
-import {loadStorage} from '../../utils/storage/storage';
-import {resetAllSlices} from '../utils';
+import { API, AUTH_API } from '../../api';
+import { loadStorage } from '../../utils/storage/storage';
+import { resetAllSlices } from '../utils';
 import Toast from 'react-native-simple-toast';
-import {tokenType, userDataType} from '../../@types';
-import {emailPassType, SignUpParams} from './types';
+import { tokenType, userDataType } from '../../@types';
+import { emailPassType, SignUpParams } from './types';
 import { ASYNC_TOKEN_KEY, ASYNC_USER_DATA_KEY } from '@/constant';
 import { navigate } from '@/navigation/navigationRef';
-import { Alert } from 'react-native';
 import { useAppStore } from '../index';
 
 // export const signIn = async (params: emailPassType) => {
@@ -60,15 +59,51 @@ export const signIn = async (params: emailPassType) => {
     const user = response?.data;
     console.log("🚀 ~ signIn ~ user:", user)
     if (user?.user) {
-      useAppStore.getState().updateUserDataToken(user?.user, {refreshToken: user?.refreshToken, accessToken: user?.accessToken});
+      useAppStore.getState().updateUserDataToken(user?.user, { refreshToken: user?.refreshToken, accessToken: user?.accessToken });
     }
     Toast.show('Login successful!', Toast.LONG);
   } catch (error: any) {
     console.log("error");
-    
+
     console.log('🚀 ~ signIn: ~ error new ones:', error?.response?.data || error);
     handleAuthContextError('signIn', error);
     throw new Error(error?.response?.data?.message || error.message || 'Login failed');
+  }
+};
+
+export const googleSignIn = async (idToken: string) => {
+  try {
+    const response = await AUTH_API.post(
+      '/v1/user/auth/google',
+      {
+        idToken,
+      },
+      {
+        headers: {
+          'x-device-id': 'test-device-id',
+          'x-user-agent': 'android',
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    console.log('🚀 ~ googleSignIn: ~ response:', response);
+    const user = response?.data;
+    if (user?.user) {
+      useAppStore
+        .getState()
+        .updateUserDataToken(user?.user, {
+          refreshToken: user?.refreshToken,
+          accessToken: user?.accessToken,
+        });
+    }
+    Toast.show('Login successful!', Toast.LONG);
+    return user;
+  } catch (error: any) {
+    console.log('🚀 ~ googleSignIn: ~ error:', error?.response?.data || error);
+    handleAuthContextError('googleSignIn', error);
+    throw new Error(
+      error?.response?.data?.message || error.message || 'Google login failed',
+    );
   }
 };
 
@@ -197,10 +232,10 @@ export const updatePassword = async (password: string, accessToken: string) => {
 
 export const confirmSignup = async (emailAddress: string, confirmationCode: string, password: string) => {
   try {
-    const response = await AUTH_API.post('/auth/confirm', {emailAddress, confirmationCode});
+    const response = await AUTH_API.post('/auth/confirm', { emailAddress, confirmationCode });
     console.log('🚀 ~ confirmSignup: ~ response:', response);
     Toast.show('Account confirmed successfully', Toast.LONG);
-    signIn({email: emailAddress, password});
+    signIn({ email: emailAddress, password });
   } catch (error: any) {
     console.log('🚀 ~ confirmSignup: ~ error:', error);
     handleAuthContextError('confirmSignup', error);
@@ -209,7 +244,7 @@ export const confirmSignup = async (emailAddress: string, confirmationCode: stri
 
 export const resendConfirmationCode = async (emailAddress: string) => {
   try {
-    const response = await AUTH_API.post('/auth/code', {emailAddress});
+    const response = await AUTH_API.post('/auth/code', { emailAddress });
     console.log('🚀 ~ resendCode: ~ response:', response);
     Toast.show('Code sent successfully', Toast.LONG);
   } catch (error: any) {
@@ -224,12 +259,12 @@ export const signOut = async () => {
     console.log('🚀 ~ signOut: ~ response:', response);
 
     resetAllSlices();
-    
+
   } catch (error: any) {
     console.log('🚀 ~ signOut: ~ error:', error);
     resetAllSlices();
     handleAuthContextError('signOut', error);
-     throw new Error(error?.response?.data?.message || error.message || 'signout failed');
+    throw new Error(error?.response?.data?.message || error.message || 'signout failed');
   }
 };
 
@@ -254,7 +289,7 @@ export const fetchUserDataLocal = async () => {
     if (user && 'accessToken' in userToken) {
       console.log('User is logged in');
 
-      useAppStore.setState({userData: user, tokens: userToken});
+      useAppStore.setState({ userData: user, tokens: userToken });
       const response = await API.get(`/v1/user/details`);
       console.log('🚀 ~ fetchUserDataLocal: ~ response:', response);
       user = response?.data?.user;

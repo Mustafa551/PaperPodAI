@@ -1,8 +1,6 @@
-import axios from 'axios';
-import Toast from 'react-native-simple-toast';
-import {useAppStore} from '../store';
+import axios, { InternalAxiosRequestConfig } from 'axios';
+import { useAppStore } from '../store';
 import { API_URL } from '@env';
-import { tokenType } from '@/@types';
 import { resetAllSlices } from '@/store/utils';
 
 // local storage
@@ -14,9 +12,9 @@ export const API = axios.create({
 });
 
 export const AUTH_API = axios.create({
-   baseURL: "http://3.95.228.97",
+  baseURL: API_URL,
 });
- 
+
 /*
  ** Before every api request following be taken
  1 - we are getting accessToken as well as refresh token from the api
@@ -29,35 +27,32 @@ export const AUTH_API = axios.create({
  ** This mechnism every time when request gets
  */
 API.interceptors.request.use(
-  async function (config) {
+  async (config: InternalAxiosRequestConfig) => {
     // getting access token
-    const {accessToken, refreshToken} = useAppStore.getState().tokens;
+    const { accessToken, refreshToken } = useAppStore.getState().tokens;
     console.log('accessToken accessToken', accessToken);
     console.log('refreshToken refreshToken', refreshToken);
 
-    const headers = {
-      ...config.headers,
-      'x-device-id': 'test-device-id',
-      'x-user-agent': 'android',
-    } as Record<string, string>;
+    config.headers = config.headers || {}; // Ensure headers object exists
 
     if (accessToken) {
-      headers.Authorization = `Bearer ${accessToken}`;
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
     if (refreshToken) {
-      headers['x-refresh-token'] = refreshToken;
+      config.headers['x-refresh-token'] = refreshToken;
     }
 
-    if (!headers['Content-Type'] && !headers['content-type']) {
-      headers['Content-Type'] = 'application/json';
-    }
+    config.headers['x-device-id'] = 'test-device-id';
+    config.headers['x-user-agent'] = 'android';
 
-    config.headers = headers;
+    if (!config.headers['Content-Type'] && !config.headers['content-type']) {
+      config.headers['Content-Type'] = 'application/json';
+    }
 
     return config;
   },
-  function (error) {
+  (error: any) => {
     return Promise.reject(error);
   },
 );
@@ -65,16 +60,12 @@ API.interceptors.request.use(
  ** When axios returns something
  */
 API.interceptors.response.use(
-  response => response,
-  async error => {
-    /*
-     ** Original api that gets failed
-     */
-    const originalRequest = error.config;
+  (response: any) => response,
+  async (error: any) => {
     /*
      ** Checking if token gets expire
-     */     
-      
+     */
+
     if (error.response && error.response.status === 401) {
       // Access token has expired, attempt to refresh
       // const {refreshToken} = useAppStore.getState().tokens;
@@ -112,8 +103,8 @@ API.interceptors.response.use(
  */
 
 AUTH_API.interceptors.response.use(
-  request => request,
-  error => {
+  (request: any) => request,
+  (error: any) => {
     return Promise.reject(error);
   },
 );

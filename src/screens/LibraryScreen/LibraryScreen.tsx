@@ -202,6 +202,7 @@ const LibraryScreen = () => {
     const displayTitle = item?.fileName ?? 'Untitled File';
     const created = formatDate(item?.createdAt);
     const status = item?.convertingStatus ?? '';
+    console.log("item item Lo", item);
 
     return (
       <View>

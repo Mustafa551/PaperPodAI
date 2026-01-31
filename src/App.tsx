@@ -1,4 +1,6 @@
 import 'react-native-gesture-handler';
+import React, { useEffect } from 'react';
+import { configureGoogleSignIn } from './config/googleAuth';
 
 // Disable console logs
 // if (__DEV__ === true) {
@@ -35,6 +37,10 @@ export const queryClient = new QueryClient({
 export const storage = new MMKV();
 
 function App() {
+  useEffect(() => {
+    configureGoogleSignIn();
+  }, []);
+
   return (
     <ThemeProvider storage={storage}>
       <GestureHandlerRootView>
