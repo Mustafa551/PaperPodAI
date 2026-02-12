@@ -25,7 +25,15 @@ export function configureGoogleSignIn(): void {
 }
 
 export type GoogleAuthResult =
-    | { ok: true; idToken: string; accessToken?: string | null }
+    | {
+        ok: true;
+        idToken: string;
+        accessToken?: string | null;
+        email: string;
+        googleId: string;
+        name?: string | null;
+        photo?: string | null;
+    }
     | { ok: false; code: string; message: string };
 
 export async function googleSignInGetIdToken(): Promise<GoogleAuthResult> {
@@ -35,7 +43,8 @@ export async function googleSignInGetIdToken(): Promise<GoogleAuthResult> {
         // Ensure fresh session
         // (optional) await GoogleSignin.signOut();
 
-        await GoogleSignin.signIn();
+        // Sign in and get user info
+        const userInfo = await GoogleSignin.signIn();
 
         // getTokens() gives you idToken + accessToken
         const tokens = await GoogleSignin.getTokens();
@@ -49,7 +58,29 @@ export async function googleSignInGetIdToken(): Promise<GoogleAuthResult> {
             };
         }
 
-        return { ok: true, idToken: tokens.idToken, accessToken: tokens.accessToken };
+        // Extract user information
+        const email = userInfo.data?.user?.email;
+        const googleId = userInfo.data?.user?.id;
+        const name = userInfo.data?.user?.name;
+        const photo = userInfo.data?.user?.photo;
+
+        if (!email || !googleId) {
+            return {
+                ok: false,
+                code: 'MISSING_USER_DATA',
+                message: 'Google did not return user email or ID.',
+            };
+        }
+
+        return {
+            ok: true,
+            idToken: tokens.idToken,
+            accessToken: tokens.accessToken,
+            email,
+            googleId,
+            name,
+            photo,
+        };
     } catch (e: any) {
         // Normalize common errors
         if (e?.code === statusCodes.SIGN_IN_CANCELLED) {

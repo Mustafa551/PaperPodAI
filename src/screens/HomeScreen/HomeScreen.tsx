@@ -28,6 +28,8 @@ const HomeScreen = () => {
   const scrollOffsetValue = useSharedValue<number>(0);
   const progress = useSharedValue<number>(0);
   const { userData } = useAppStore(state => state)
+  console.log("🚀 ~ HomeScreen ~ userData:new onws!!@@@", userData)
+
   const navigation = useNavigation()
   const isSubscribed = userData?.subscriptionStatus === 'active';
 
@@ -128,7 +130,7 @@ const HomeScreen = () => {
                           fontWeight={500}
                           color={colors.white}
                           fontFamily="medium"
-                         extraStyle={{ lineHeight:33  }}
+                          extraStyle={{ lineHeight: 33 }}
                         />
                         <Space mB={8} />
                         <AppText
@@ -183,12 +185,15 @@ const HomeScreen = () => {
 
 
           </View> :
-            <Image
-              source={IMAGES.homeBanner}
-              style={{ width: '100%', height: normalizeHeight(112) }}
-              resizeMode="cover"
-            />
-
+            <TouchableOpacity onPress={() => {
+              navigation.navigate('PaywallScreen')
+            }} >
+              <Image
+                source={IMAGES.homeBanner}
+                style={{ width: '100%', height: normalizeHeight(112) }}
+                resizeMode="cover"
+              />
+            </TouchableOpacity>
         }
 
 

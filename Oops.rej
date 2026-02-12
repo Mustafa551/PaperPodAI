@@ -1,9 +1,0 @@
-@@ -228,7 +227,7 @@
-       sendError(E_UNEXPECTED_EXCEPTION, e.getLocalizedMessage(), e);
-     }
-   }
- 
--  private static class ProcessDataTask extends GuardedResultAsyncTask<ReadableArray> {
-+  private static class ProcessDataTask extends GuardedResultAsyncTaskCompat<ReadableArray> {
-     private final WeakReference<Context> weakContext;
-     private final List<Uri> uris;

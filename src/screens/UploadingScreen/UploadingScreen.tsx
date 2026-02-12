@@ -9,7 +9,7 @@ import { pixelSizeX } from '@/utils/sizes';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import DocumentPicker, { isCancel, types as DocumentPickerTypes } from 'react-native-document-picker';
+import { errorCodes, isErrorWithCode, pick, types as DocumentPickerTypes } from '@react-native-documents/picker';
 import Toast from 'react-native-simple-toast';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -74,10 +74,11 @@ const UploadingScreen: React.FC = () => {
     }
 
     try {
-      const response = await DocumentPicker.pickSingle({
+      const result = await pick({
         presentationStyle: 'fullScreen',
         type: [DocumentPickerTypes.pdf],
       });
+      const response = Array.isArray(result) ? result[0] : result;
 
       const file: UploadArticleFile = {
         name: response.name ?? 'document.pdf',
@@ -89,7 +90,7 @@ const UploadingScreen: React.FC = () => {
       setSelectedFile(file);
       setValue('link', '');
     } catch (err) {
-      if (isCancel(err)) {
+      if (isErrorWithCode(err) && err.code === errorCodes.OPERATION_CANCELED) {
         return;
       }
 

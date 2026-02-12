@@ -13,6 +13,10 @@ const config = {
   resolver: {
     assetExts: assetExts.filter((extension) => extension !== 'svg'),
     sourceExts: [...sourceExts, 'svg'],
+    // Ensure Metro honors the React Native export condition (axios, etc.)
+    unstable_conditionNames: ['react-native', 'browser', 'require', 'default'],
+    unstable_enablePackageExports: true,
+    mainFields: ['react-native', 'browser', 'main'],
   },
   transformer: {
     babelTransformerPath: require.resolve('react-native-svg-transformer'),

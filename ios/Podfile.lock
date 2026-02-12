@@ -1,9 +1,9 @@
 PODS:
-  - AppAuth (1.7.6):
-    - AppAuth/Core (= 1.7.6)
-    - AppAuth/ExternalUserAgent (= 1.7.6)
-  - AppAuth/Core (1.7.6)
-  - AppAuth/ExternalUserAgent (1.7.6):
+  - AppAuth (2.0.0):
+    - AppAuth/Core (= 2.0.0)
+    - AppAuth/ExternalUserAgent (= 2.0.0)
+  - AppAuth/Core (2.0.0)
+  - AppAuth/ExternalUserAgent (2.0.0):
     - AppAuth/Core
   - AppCheckCore (11.2.0):
     - GoogleUtilities/Environment (~> 8.0)
@@ -22,10 +22,10 @@ PODS:
   - FBLazyVector (0.78.2)
   - fmt (11.0.2)
   - glog (0.3.5)
-  - GoogleSignIn (8.0.0):
-    - AppAuth (< 2.0, >= 1.7.3)
+  - GoogleSignIn (9.1.0):
+    - AppAuth (~> 2.0)
     - AppCheckCore (~> 11.0)
-    - GTMAppAuth (< 5.0, >= 4.1.1)
+    - GTMAppAuth (~> 5.0)
     - GTMSessionFetcher/Core (~> 3.3)
   - GoogleUtilities/Environment (8.1.0):
     - GoogleUtilities/Privacy
@@ -36,20 +36,20 @@ PODS:
   - GoogleUtilities/UserDefaults (8.1.0):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
-  - GTMAppAuth (4.1.1):
-    - AppAuth/Core (~> 1.7)
+  - GTMAppAuth (5.0.0):
+    - AppAuth/Core (~> 2.0)
     - GTMSessionFetcher/Core (< 4.0, >= 3.3)
   - GTMSessionFetcher/Core (3.5.0)
   - hermes-engine (0.78.2):
     - hermes-engine/Pre-built (= 0.78.2)
   - hermes-engine/Pre-built (0.78.2)
-  - libavif/core (0.11.1)
+  - libavif/core (1.0.0)
   - PromisesObjC (2.4.0)
-  - PurchasesHybridCommon (17.21.2):
-    - RevenueCat (= 5.49.2)
-  - PurchasesHybridCommonUI (17.21.2):
-    - PurchasesHybridCommon (= 17.21.2)
-    - RevenueCatUI (= 5.49.2)
+  - PurchasesHybridCommon (17.31.0):
+    - RevenueCat (= 5.57.0)
+  - PurchasesHybridCommonUI (17.31.0):
+    - PurchasesHybridCommon (= 17.31.0)
+    - RevenueCatUI (= 5.57.0)
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -1280,7 +1280,7 @@ PODS:
     - React-jsiexecutor
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
-  - react-native-document-picker (9.3.1):
+  - react-native-document-picker (10.1.7):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1343,8 +1343,27 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-netinfo (11.4.1):
+  - react-native-netinfo (11.5.2):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-safe-area-context (5.6.2):
     - DoubleConversion
     - glog
@@ -1763,9 +1782,9 @@ PODS:
     - React-logger (= 0.78.2)
     - React-perflogger (= 0.78.2)
     - React-utils (= 0.78.2)
-  - RevenueCat (5.49.2)
-  - RevenueCatUI (5.49.2):
-    - RevenueCat (= 5.49.2)
+  - RevenueCat (5.57.0)
+  - RevenueCatUI (5.57.0):
+    - RevenueCat (= 5.57.0)
   - RNCAsyncStorage (2.2.0):
     - DoubleConversion
     - glog
@@ -1810,7 +1829,7 @@ PODS:
     - Yoga
   - RNFS (2.20.0):
     - React-Core
-  - RNGestureHandler (2.29.1):
+  - RNGestureHandler (2.30.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1831,10 +1850,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNGoogleSignin (15.0.0):
+  - RNGoogleSignin (16.1.1):
     - DoubleConversion
     - glog
-    - GoogleSignIn (~> 8.0)
+    - GoogleSignIn (~> 9.0)
     - hermes-engine
     - RCT-Folly (= 2024.11.18.00)
     - RCTRequired
@@ -1853,8 +1872,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNPaywalls (9.6.9):
-    - PurchasesHybridCommonUI (= 17.21.2)
+  - RNPaywalls (9.7.6):
+    - PurchasesHybridCommonUI (= 17.31.0)
     - React-Core
   - RNPermissions (5.4.4):
     - DoubleConversion
@@ -1877,10 +1896,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNPurchases (9.6.9):
-    - PurchasesHybridCommon (= 17.21.2)
+  - RNPurchases (9.7.6):
+    - PurchasesHybridCommon (= 17.31.0)
     - React-Core
-  - RNReanimated (3.19.4):
+  - RNReanimated (3.19.5):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1902,10 +1921,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 3.19.4)
-    - RNReanimated/worklets (= 3.19.4)
+    - RNReanimated/reanimated (= 3.19.5)
+    - RNReanimated/worklets (= 3.19.5)
     - Yoga
-  - RNReanimated/reanimated (3.19.4):
+  - RNReanimated/reanimated (3.19.5):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1927,9 +1946,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated/apple (= 3.19.4)
+    - RNReanimated/reanimated/apple (= 3.19.5)
     - Yoga
-  - RNReanimated/reanimated/apple (3.19.4):
+  - RNReanimated/reanimated/apple (3.19.5):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1952,7 +1971,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated/worklets (3.19.4):
+  - RNReanimated/worklets (3.19.5):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1974,9 +1993,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/worklets/apple (= 3.19.4)
+    - RNReanimated/worklets/apple (= 3.19.5)
     - Yoga
-  - RNReanimated/worklets/apple (3.19.4):
+  - RNReanimated/worklets/apple (3.19.5):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2049,7 +2068,7 @@ PODS:
     - RNSound/Core (= 0.11.2)
   - RNSound/Core (0.11.2):
     - React-Core
-  - RNSVG (15.15.1):
+  - RNSVG (15.15.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2069,9 +2088,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNSVG/common (= 15.15.1)
+    - RNSVG/common (= 15.15.2)
     - Yoga
-  - RNSVG/common (15.15.1):
+  - RNSVG/common (15.15.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2092,11 +2111,11 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - SDWebImage (5.21.5):
-    - SDWebImage/Core (= 5.21.5)
-  - SDWebImage/Core (5.21.5)
-  - SDWebImageAVIFCoder (0.11.1):
-    - libavif/core (>= 0.11.0)
+  - SDWebImage (5.21.6):
+    - SDWebImage/Core (= 5.21.6)
+  - SDWebImage/Core (5.21.6)
+  - SDWebImageAVIFCoder (0.12.0):
+    - libavif/core (>= 1.0.0)
     - SDWebImage (~> 5.10)
   - SDWebImageSVGCoder (1.8.0):
     - SDWebImage/Core (~> 5.6)
@@ -2148,7 +2167,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
-  - react-native-document-picker (from `../node_modules/react-native-document-picker`)
+  - "react-native-document-picker (from `../node_modules/@react-native-documents/picker`)"
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-mmkv (from `../node_modules/react-native-mmkv`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
@@ -2299,7 +2318,7 @@ EXTERNAL SOURCES:
   React-microtasksnativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
   react-native-document-picker:
-    :path: "../node_modules/react-native-document-picker"
+    :path: "../node_modules/@react-native-documents/picker"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
   react-native-mmkv:
@@ -2398,7 +2417,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
+  AppAuth: 1c1a8afa7e12f2ec3a294d9882dfa5ab7d3cb063
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
   BlastedImage: 2f923353659617f6c30f9d73e47ab2766816f49a
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
@@ -2408,15 +2427,15 @@ SPEC CHECKSUMS:
   FBLazyVector: e32d34492c519a2194ec9d7f5e7a79d11b73f91c
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
-  GoogleSignIn: ce8c89bb9b37fb624b92e7514cc67335d1e277e4
+  GoogleSignIn: fcee2257188d5eda57a5e2b6a715550ffff9206d
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
+  GTMAppAuth: 217a876b249c3c585a54fd6f73e6b58c4f5c4238
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   hermes-engine: 2771b98fb813fdc6f92edd7c9c0035ecabf9fee7
-  libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
+  libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
-  PurchasesHybridCommon: 71c94158ff8985657d37d5f3be05602881227619
-  PurchasesHybridCommonUI: c490142361da500ea8fe2f75cd6d56df0f7e3152
+  PurchasesHybridCommon: 21a11c5d66c8a52cf9aede45cecc2efe1551b98b
+  PurchasesHybridCommonUI: 60fbb660ebbf224df733c90849c4f3b8f6819f4b
   RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
   RCTDeprecation: be794de7dc6ed8f9f7fbf525f86e7651b8b68746
   RCTRequired: a83787b092ec554c2eb6019ff3f5b8d125472b3b
@@ -2447,10 +2466,10 @@ SPEC CHECKSUMS:
   React-logger: 763728cf4eebc9c5dc9bfc3649e22295784f69f3
   React-Mapbuffer: 63278529b5cf531a7eaf8fc71244fabb062ca90c
   React-microtasksnativemodule: 6a39463c32ce831c4c2aa8469273114d894b6be9
-  react-native-document-picker: bfe9c7d72908d2faba56a4765373c6367090ae2e
+  react-native-document-picker: 4eea571bafacde686393413d5e3faaf96493ac6f
   react-native-image-picker: 84b261e109faa7312bca59f1f65c8f2b22865496
   react-native-mmkv: 2c554a003c78a27f92d6794f1658bbeea37a364a
-  react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
+  react-native-netinfo: dba12aca306f7081f3c1ef597f4840073b1b1647
   react-native-safe-area-context: 90db9cb1243ba193ef6d05b26ff0600e69112214
   react-native-simple-toast: 5e6be69d0badbd6f262cf74c63984d1e3439920f
   react-native-slider: 310d3f89edd6ca8344a974bfe83a29a3fbb60e5a
@@ -2482,22 +2501,22 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 4893bde33952f997a323eb1a1ee87a72764018ff
   ReactCodegen: 99ea3536c05be3c18d0c517acb56b5a6d726fc7b
   ReactCommon: 865ebe76504a95e115b6229dd00a31e56d2d4bfe
-  RevenueCat: d185cbff8be9425b5835042afd6889389bb756c8
-  RevenueCatUI: 3d17f9f0bf7ed299c1671552378086ceeff308fd
+  RevenueCat: 2d8aa56c68fa8e92c0d669e5e797c4a93e284f20
+  RevenueCatUI: 25c86cf10c6cb9e3e9f308c48df55b31bf7fdba5
   RNCAsyncStorage: 79cfba789fca205b204f3ce7948b874500129eb4
   RNCMaskedView: 308c763227e237d4d260bd8841870e099572bb3e
   RNFS: 89de7d7f4c0f6bafa05343c578f61118c8282ed8
-  RNGestureHandler: 6268a11b236d8229890690d043f386dae9a3cacc
-  RNGoogleSignin: a6fda355562bea2ec97f678fe7879fd1b10902f7
-  RNPaywalls: fd144a33362accc76fd650ce5aab4a1d197a0b8c
+  RNGestureHandler: 5913e16d98e2e8cd6b577a6d2f163af002eb031b
+  RNGoogleSignin: ae48790eb1f5e027e9ddfd0a779c8155f609d788
+  RNPaywalls: d8ebe418a058fdc7c7b6dd1b3ecb07058d4f1d89
   RNPermissions: c54b43739c184ef81b221e6e3ece3e757d552cee
-  RNPurchases: 34da99c0e14ee484ed57e77dc06dcfe8e7cb1cee
-  RNReanimated: 880d6b1d020a880d35d81d54560e04282a5f6934
+  RNPurchases: 462fb7edb0304dba1db46e3d38368a271ebe4cc2
+  RNReanimated: 8a4395d43e799425e72de66c78dd0f068c36948f
   RNScreens: 790123c4a28783d80a342ce42e8c7381bed62db1
   RNSound: 314cc5226453ef4a3314a196c65e8a65e5106a7b
-  RNSVG: dfe0c8e3cc0a6f6e8bcee696cf11baf69f2c394d
-  SDWebImage: e9c98383c7572d713c1a0d7dd2783b10599b9838
-  SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
+  RNSVG: a659b141a3a09d0a83c87a650001fae01713dfa0
+  SDWebImage: 1bb6a1b84b6fe87b972a102bdc77dd589df33477
+  SDWebImageAVIFCoder: 0b8994d77649a160d31fed0130b275b17119fa9b
   SDWebImageSVGCoder: 8e10c8f6cc879c7dfb317b284e13dd589379f01c
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   SRSRadialGradient: f93406612258ab93e454aa08b9f82d3bb7adf6c1

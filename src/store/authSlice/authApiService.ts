@@ -71,12 +71,22 @@ export const signIn = async (params: emailPassType) => {
   }
 };
 
-export const googleSignIn = async (idToken: string) => {
+export const googleSignIn = async (googleAuthData: {
+  idToken: string;
+  email: string;
+  googleId: string;
+  name?: string | null;
+  photo?: string | null;
+}) => {
   try {
     const response = await AUTH_API.post(
       '/v1/user/auth/google',
       {
-        idToken,
+        email: googleAuthData.email,
+        googleId: googleAuthData.googleId,
+        idToken: googleAuthData.idToken,
+        name: googleAuthData.name,
+        photo: googleAuthData.photo,
       },
       {
         headers: {

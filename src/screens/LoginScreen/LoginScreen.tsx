@@ -84,7 +84,13 @@ const LoginScreen: React.FC<RootScreenProps<Paths.LoginScreen>> = () => {
         return;
       }
 
-      await googleSignIn(result.idToken);
+      await googleSignIn({
+        idToken: result.idToken,
+        email: result.email,
+        googleId: result.googleId,
+        name: result.name,
+        photo: result.photo,
+      });
 
       Alert.alert('Success', 'Logged in with Google successfully!');
       reset();
