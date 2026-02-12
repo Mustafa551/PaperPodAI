@@ -230,14 +230,14 @@ const AccountSetScreen: React.FC<RootScreenProps<Paths.AccountSetScreen>> = () =
         placeholder={'Upgrade to convert your research papers'}
         label="Subscription Status"
         editable={false}
-        SVGLeft={
-          <AssetByVariant
-            resizeMode="contain"
-            path={'freestat'}
-            width={normalizeWidth(65)}
-            height={normalizeHeight(24)}
-          />
-        }
+        // SVGLeft={
+        //   <AssetByVariant
+        //     resizeMode="contain"
+        //     path={'freestat'}
+        //     width={normalizeWidth(65)}
+        //     height={normalizeHeight(24)}
+        //   />
+        // }
       />
       <Space mB={50} />
 

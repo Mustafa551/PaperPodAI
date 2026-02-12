@@ -7,15 +7,18 @@ import { AppText, Header, Space } from "@/components/atoms";
 import { useTheme } from "@/theme";
 import { normalizeWidth, pixelSizeX, pixelSizeY } from "@/utils/sizes";
 import Purchases from 'react-native-purchases';
+import { fetchUserDataLocal } from "@/store/authSlice/authApiService";
+import { useQueryClient } from "@tanstack/react-query";
 
 const PRODUCT_ID = "paper_pod_monthly"; // RevenueCat product identifier for the monthly subscription
 
 // TODO: Replace these URLs with your actual live pages
-const PRIVACY_POLICY_URL = "https://example.com/privacy";
-const TERMS_OF_USE_URL = "https://example.com/terms";
+const PRIVACY_POLICY_URL = "https://paperpod.bycloud.ai/privacy.html";
+const TERMS_OF_USE_URL = "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/";
 
 const PaywallScreen = () => {
     const { colors } = useTheme();
+    const queryClient = useQueryClient();
 
     const navigation = useNavigation();
     const [activeTab, setActiveTab] = useState<"Free" | "Creator">("Free");
@@ -89,6 +92,18 @@ const PaywallScreen = () => {
         setPackageLoading(false);
       }
     };
+  const refreshPostSubscriptionData = async () => {
+    try {
+      await fetchUserDataLocal();
+      await Promise.allSettled([
+        queryClient.invalidateQueries({ queryKey: ['getPublicArticles'] }),
+        queryClient.invalidateQueries({ queryKey: ['myArticles'] }),
+      ]);
+    } catch (error) {
+      console.debug("🚀 ~ refreshPostSubscriptionData ~ error:", error);
+    }
+  };
+
      const makePurchase = async (item: string) => {
     const sub = compPackages.find((obj: any) => obj.identifier === item);
     console.debug("🚀 ~ makePurchase ~ sub:", sub);
@@ -107,6 +122,7 @@ const PaywallScreen = () => {
       console.debug("🚀 ~ makePurchase ~ hasActiveSubscription:", hasActiveSubscription);
 
       if (hasActiveSubscription) {
+        await refreshPostSubscriptionData();
         Alert.alert("Success", "Your subscription is now active.");
         navigation.goBack();
       } else {
@@ -139,6 +155,7 @@ const PaywallScreen = () => {
       const hasActiveSubscription = customerInfo.activeSubscriptions?.includes(PRODUCT_ID);
 
       if (hasActiveSubscription) {
+        await refreshPostSubscriptionData();
         Alert.alert("Success", "Subscription restored successfully.");
         navigation.goBack();
       } else {

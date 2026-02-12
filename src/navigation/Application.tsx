@@ -86,7 +86,7 @@ function ApplicationNavigator() {
    useEffect(() => {
     const configureRevenueCat = async () => {
       try {
-        if (userData?.email) {
+        if (userData?.uuid) {
           if (Platform.OS === 'ios') {
             console.log('🚀 ~ RevenueCat configured for IOS!@!123!!', process.env.PUBLIC_RC_IOS);
             if (!process.env.PUBLIC_RC_IOS) {
@@ -94,7 +94,7 @@ function ApplicationNavigator() {
             } else {
               await Purchases.configure({
                 apiKey:  "appl_KeFoybfiJCgdBQzsrgAHEzFCVMU",
-                appUserID: String(userData?.email),
+                appUserID: String(userData?.uuid),
               });
               console.debug('🚀 ~ RevenueCat configured for iOS');
             }
@@ -116,7 +116,7 @@ function ApplicationNavigator() {
             } else {
               await Purchases.configure({
                 apiKey: "goog_oLcWeyQfooPSFBTWsgtsOtzGxuD",
-                appUserID: String(userData?.email),
+                appUserID: String(userData?.uuid),
               });
             }
             const customerInfo = await Purchases.getCustomerInfo();

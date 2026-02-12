@@ -141,7 +141,11 @@ const HomeScreen = () => {
                           fontFamily="regular"
 
                         />
-                        <TouchableOpacity style={styles.exploreButton}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            navigation.navigate('UploadingScreen')
+                          }}
+                          style={styles.exploreButton}>
                           <AppText
                             title="Explore Features"
                             fontSize={14}
