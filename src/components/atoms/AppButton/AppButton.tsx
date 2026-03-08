@@ -230,7 +230,7 @@ const AppButton: React.FC<IAppButtonProps> = memo((props) => {
             fontWeight={800}
           />
         )}
-        <View>{SVGRight}</View>
+        <View style={{ marginLeft: 2,  marginRight:7}} >{SVGRight}</View>
       </LinearGradient>
     </TouchableOpacity>
   );

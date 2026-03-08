@@ -8,12 +8,13 @@ import { AppButton, AppText, AssetByVariant, Space } from '@/components/atoms';
 import { Modal, Pressable } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { SVG } from '@/theme/assets/icons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { ArticleListItem, getMyArticles } from '@/store/userSlice/userApiServices';
 import { SubscriptionBanner } from '@/components/molecules';
 import { useAppStore } from '@/store';
+import { shareArticleFile } from '@/utils/shareArticle';
 
 const formatDate = (iso?: string) => {
   if (!iso) {
@@ -57,6 +58,7 @@ const LibraryScreen = () => {
   const [sortBy, setSortBy] = useState<SortOption['key']>('desc');
   const [showDetail, setShowDetail] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
+  const [navigatingItemId, setNavigatingItemId] = useState<string | null>(null);
   const { userData } = useAppStore(state => state)
   const isSubscribed = userData?.subscriptionStatus === 'active';
   const [sortBtnWidth, setSortBtnWidth] = useState(0);
@@ -147,6 +149,14 @@ const LibraryScreen = () => {
     return apiMessage ?? 'Failed to load articles.';
   }, [error]);
 
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setNavigatingItemId(null);
+      };
+    }, []),
+  );
+
 
   const detailData = {
     title: 'AI And Climate Modeling',
@@ -163,13 +173,21 @@ const LibraryScreen = () => {
   };
   const handleItemPress = useCallback(
     (item: ArticleListItem) => {
-      navigation.navigate('AudioPlayerScreen' as never, { item } as never);
+      const itemId = item?.uuid ?? item?.fileName ?? '';
+      if (!itemId || navigatingItemId === itemId) {
+        return;
+      }
+
+      setNavigatingItemId(itemId);
+      requestAnimationFrame(() => {
+        navigation.navigate('AudioPlayerScreen' as never, { item } as never);
+      });
     },
-    [navigation],
+    [navigation, navigatingItemId],
   );
 
   const handleMenuPress = useCallback((item: ArticleListItem) => {
-    // Menu press logic placeholder
+    shareArticleFile(item);
   }, []);
 
   const handleSortPress = useCallback(
@@ -201,6 +219,7 @@ const LibraryScreen = () => {
     // uuid, fileName, createdAt, convertingStatus, audioFilePath, pdfFilePath, etc.
     const displayTitle = item?.fileName ?? 'Untitled File';
     const created = formatDate(item?.createdAt);
+    const isNavigating = navigatingItemId === (item?.uuid ?? item?.fileName ?? '');
     // const status = item?.convertingStatus ?? '';
     // console.log("item item Lo", item);
 
@@ -273,15 +292,20 @@ const LibraryScreen = () => {
           {/* Right actions */}
           <View style={styless.itemRight}>
             <TouchableOpacity
+              disabled={isNavigating}
               onPress={() => handleItemPress(item)}
               style={styless.avatarPlaceholder}
             >
-              <AssetByVariant
-                resizeMode="contain"
-                path={'play'}
-                width={normalizeWidth(16)}
-                height={normalizeHeight(16)}
-              />
+              {isNavigating ? (
+                <ActivityIndicator color={colors.primary} size="small" />
+              ) : (
+                <AssetByVariant
+                  resizeMode="contain"
+                  path={'play'}
+                  width={normalizeWidth(16)}
+                  height={normalizeHeight(16)}
+                />
+              )}
             </TouchableOpacity>
 
             <TouchableOpacity

@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Image, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, TouchableOpacity, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import Carousel, { Pagination } from 'react-native-reanimated-carousel';
 import useStyles from './style';
@@ -16,12 +16,14 @@ import { AppCard, NewUploadBanner, SubscriptionBanner } from '@/components/molec
 import { useAppStore } from '@/store';
 import { useQuery } from '@tanstack/react-query';
 import { getPublicArticles } from '@/store/userSlice/userApiServices';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { IMAGES } from '@/theme/assets/images';
 import LinearGradient from 'react-native-linear-gradient';
+import { shareArticleFile } from '@/utils/shareArticle';
 
 
 const HomeScreen = () => {
+  const [navigatingItemId, setNavigatingItemId] = useState<string | number | null>(null);
   const { layout, colors } = useTheme();
   const { t } = useTranslation();
   const styles = useStyles();
@@ -45,14 +47,30 @@ const HomeScreen = () => {
   });
   console.log("🚀 ~ HomeScreen ~ error:", error)
   console.log("🚀 ~ HomeScreen ~ publicArticles:new onws!!@@@", publicArticles?.articles)
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        setNavigatingItemId(null);
+      };
+    }, []),
+  );
+
   const handleItemPress = (item: any) => {
+    const itemId = item?.uuid ?? item?.id ?? item?.fileName;
+    if (navigatingItemId === itemId) {
+      return;
+    }
+
+    setNavigatingItemId(itemId);
     console.log("item?.audioFilePath", item?.audioFilePath);
-    // setShowDetail(true)
-    navigation.navigate('AudioPlayerScreen' as never, { item } as never);
+    requestAnimationFrame(() => {
+      navigation.navigate('AudioPlayerScreen' as never, { item } as never);
+    });
     console.log('Item pressed:', item.title);
   };
   const handleMenuPress = (item: any) => {
-    console.log('Menu pressed for:', item.title);
+    shareArticleFile(item);
   };
   return (
     <AppScreen
@@ -276,21 +294,25 @@ const HomeScreen = () => {
                 flexDirection: 'row',
                 alignItems: 'center',
               }}>
-                <TouchableOpacity onPress={() => handleItemPress(item)} style={{
+                <TouchableOpacity
+                  disabled={navigatingItemId === (item?.uuid ?? item?.id ?? item?.fileName)}
+                  onPress={() => handleItemPress(item)}
+                  style={{
                   backgroundColor: '#ffffff',
                   borderRadius: 20,
                   padding: 10,
                   marginHorizontal: pixelSizeX(8),
                 }}>
-                  {/* <SVG.DownloadArtical
+                  {navigatingItemId === (item?.uuid ?? item?.id ?? item?.fileName) ? (
+                    <ActivityIndicator color={colors.primary} size="small" />
+                  ) : (
+                    <AssetByVariant
+                      resizeMode="contain"
+                      path={'play'}
                       width={normalizeWidth(16)}
-                      height={normalizeHeight(16)} /> */}
-                  <AssetByVariant
-                    resizeMode="contain"
-                    path={'play'}
-                    width={normalizeWidth(16)}
-                    height={normalizeHeight(16)}
-                  />
+                      height={normalizeHeight(16)}
+                    />
+                  )}
                 </TouchableOpacity>
 
                 <TouchableOpacity style={layout.padding(5)} onPress={() => handleMenuPress(item)}>
