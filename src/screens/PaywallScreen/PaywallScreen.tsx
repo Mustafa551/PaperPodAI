@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Linking, ActivityIndicator, Alert } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Linking, ActivityIndicator, Alert, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useStyle } from "./style";
 import { SVG } from "@/theme/assets/icons";
@@ -9,8 +9,12 @@ import { normalizeWidth, pixelSizeX, pixelSizeY } from "@/utils/sizes";
 import Purchases from 'react-native-purchases';
 import { fetchUserDataLocal } from "@/store/authSlice/authApiService";
 import { useQueryClient } from "@tanstack/react-query";
+import { ensureRevenueCatConfigured, isRevenueCatReady } from "@/utils/purchases";
 
-const PRODUCT_ID = "paper_pod_monthly"; // RevenueCat product identifier for the monthly subscription
+const IOS_PRODUCT_ID = "paper_pod_monthly";
+const ANDROID_PRODUCT_ID = "paper_pod_monthly:monthly";
+const PRODUCT_ID = Platform.OS === "android" ? ANDROID_PRODUCT_ID : IOS_PRODUCT_ID;
+const OFFERING_IDENTIFIERS = ["Monthly", "monthly", "default"];
 
 // TODO: Replace these URLs with your actual live pages
 const PRIVACY_POLICY_URL = "https://paperpod.bycloud.ai/privacy.html";
@@ -23,12 +27,11 @@ const PaywallScreen = () => {
     const navigation = useNavigation();
     const [activeTab, setActiveTab] = useState<"Free" | "Creator">("Free");
     const styles = useStyle()
-    const [packages, setPackages] = useState<any[]>([]);
-    console.log('🚀 ~ PaywallScreen ~ packages:', packages);
     const [compPackages, setCompPackages] = useState<any[]>([]);
     const [packageLoading, setPackageLoading] = useState(false);
     const [paymentLoading, setPaymentLoading] = useState(false);
     const [restorePurchasedLoading, setRestorePurchasedLoading] = useState(false);
+    const [revenueCatReady, setRevenueCatReady] = useState(isRevenueCatReady());
     const plans = {
         Free: {
             price: "$0/month",
@@ -57,37 +60,62 @@ const PaywallScreen = () => {
         },
     };
     useEffect(() => {
-        getPackages();
+        void initializePaywall();
     }, []);
+    const initializePaywall = async () => {
+      const configured = await ensureRevenueCatConfigured();
+      setRevenueCatReady(configured);
+
+      if (!configured) {
+        Alert.alert(
+          "Error",
+          "Subscriptions are temporarily unavailable. Please try again later.",
+        );
+        return;
+      }
+
+      await getPackages();
+    };
     const getPackages = async () => {
       try {
         setPackageLoading(true);
+        console.log("[RevenueCat] offerings fetch start");
         const offerings = await Purchases.getOfferings();
-        console.log("🚀 ~ getPackages ~ offerings:", offerings);
+        console.log("🚀 ~ getPackages ~ offerings.current:", offerings?.current);
+        console.log("🚀 ~ getPackages ~ offerings.all keys:", Object.keys(offerings?.all ?? {}));
 
-        // Prefer the current offering; if null, fall back to the Monthly offering in `all`
-        const currentOffering =
-          offerings.current ??
-          (offerings.all && (offerings.all as any).Monthly) ??
-          null;
+        const fallbackOffering = OFFERING_IDENTIFIERS
+          .map((key) => offerings?.all?.[key])
+          .find(Boolean);
 
-        if (currentOffering && currentOffering.availablePackages.length !== 0) {
-          const getPackagesData = currentOffering.availablePackages.map((val: any) => ({
-            price: val.product.priceString,
-            identifier: val.identifier,
-            title: val.product.title,
-            description: val.product.description,
-            productId: val.product.identifier,
-            raw: val,
-          }));
-          setPackages(getPackagesData);
+        const currentOffering = offerings?.current ?? fallbackOffering ?? null;
+
+        if (currentOffering?.availablePackages?.length) {
+          console.log(
+            "🚀 ~ getPackages ~ available packages:",
+            currentOffering.availablePackages.map((pkg: any) => ({
+              identifier: pkg.identifier,
+              productIdentifier: pkg.product.identifier,
+              price: pkg.product.priceString,
+            })),
+          );
+
           setCompPackages(currentOffering.availablePackages);
         } else {
-          console.debug("No available packages found in current or Monthly offering");
+          console.debug("No available packages found in current or fallback offerings");
+          Alert.alert(
+            "Subscription Unavailable",
+            "No subscription package is available right now. Please verify your RevenueCat offering and store product setup.",
+          );
         }
       } catch (error: any) {
-        console.debug("🚀 ~ getPackages ~ error:", error);
-        Alert.alert("Error", "Unable to load subscription packages. Please try again later.");
+        console.log("[RevenueCat] offerings fetch failure", error);
+        console.debug("🚀 ~ getPackages ~ full error:", JSON.stringify(error, null, 2));
+        console.debug("🚀 ~ getPackages ~ readable error:", error?.message);
+        Alert.alert(
+          "Error",
+          error?.message ?? "Unable to load subscription packages. Please try again later.",
+        );
       } finally {
         setPackageLoading(false);
       }
@@ -105,6 +133,11 @@ const PaywallScreen = () => {
   };
 
      const makePurchase = async (item: string) => {
+    if (!revenueCatReady) {
+      Alert.alert("Error", "Subscriptions are not ready yet. Please try again.");
+      return;
+    }
+
     const sub = compPackages.find((obj: any) => obj.identifier === item);
     console.debug("🚀 ~ makePurchase ~ sub:", sub);
 
@@ -118,7 +151,12 @@ const PaywallScreen = () => {
       const { customerInfo } = await Purchases.purchasePackage(sub);
       console.debug("🚀 ~ makePurchase ~ customerInfo:", customerInfo);
 
-      const hasActiveSubscription = customerInfo.activeSubscriptions?.includes(PRODUCT_ID);
+      const activeSubscriptions = customerInfo.activeSubscriptions ?? [];
+      const hasActiveSubscription =
+        activeSubscriptions.includes(PRODUCT_ID) ||
+        activeSubscriptions.includes(IOS_PRODUCT_ID) ||
+        activeSubscriptions.includes(ANDROID_PRODUCT_ID);
+
       console.debug("🚀 ~ makePurchase ~ hasActiveSubscription:", hasActiveSubscription);
 
       if (hasActiveSubscription) {
@@ -141,6 +179,11 @@ const PaywallScreen = () => {
   };
 
   const onPressRestorePurchased = async () => {
+    if (!revenueCatReady) {
+      Alert.alert("Error", "Subscriptions are not ready yet. Please try again.");
+      return;
+    }
+
     setRestorePurchasedLoading(true);
     try {
       const resotre = await Purchases.restorePurchases();
@@ -152,7 +195,11 @@ const PaywallScreen = () => {
         customerInfo?.activeSubscriptions,
       );
 
-      const hasActiveSubscription = customerInfo.activeSubscriptions?.includes(PRODUCT_ID);
+      const activeSubscriptions = customerInfo.activeSubscriptions ?? [];
+      const hasActiveSubscription =
+        activeSubscriptions.includes(PRODUCT_ID) ||
+        activeSubscriptions.includes(IOS_PRODUCT_ID) ||
+        activeSubscriptions.includes(ANDROID_PRODUCT_ID);
 
       if (hasActiveSubscription) {
         await refreshPostSubscriptionData();
@@ -174,14 +221,6 @@ const PaywallScreen = () => {
     const currentPlan = plans[activeTab];
     const creatorPackage = compPackages[0] as any | undefined;
     const creatorPriceFromStore = creatorPackage?.product?.priceString ?? plans.Creator.price;
-    const handleContinue = () => {
-        // Handle continue action based on the selected plan
-        if (activeTab === "Free") {
-            setActiveTab("Creator")
-        } else {
-            // Logic for upgrading to Creator plan
-        }
-    };
     return (
         <View style={styles.container}>
             {/* Header */}
@@ -269,14 +308,26 @@ const PaywallScreen = () => {
                         <Text style={styles.continueButtonText}>Continue with Free Plan</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      disabled={paymentLoading || packageLoading}
+                      disabled={!revenueCatReady || paymentLoading || packageLoading}
                       onPress={() => {
                         if (activeTab === "Free") {
                           setActiveTab("Creator");
                           return;
                         }
-                        // We only have one package ($rc_monthly) in your current RevenueCat setup
-                        makePurchase("$rc_monthly");
+
+                        const creatorPackageIdentifier =
+                          compPackages.find((pkg: any) => pkg.identifier === "$rc_monthly")?.identifier ??
+                          compPackages[0]?.identifier;
+
+                        if (!creatorPackageIdentifier) {
+                          Alert.alert(
+                            "Subscription Unavailable",
+                            "No subscription package is loaded yet. Please try again in a moment.",
+                          );
+                          return;
+                        }
+
+                        makePurchase(creatorPackageIdentifier);
                       }}
                       style={styles.upgradeButton}
                     >
@@ -293,7 +344,7 @@ const PaywallScreen = () => {
                 <Space mB={4} />
 
                 <TouchableOpacity
-                  disabled={restorePurchasedLoading}
+                  disabled={!revenueCatReady || restorePurchasedLoading}
                   onPress={onPressRestorePurchased}
                   style={{ alignSelf: "center", paddingVertical: pixelSizeY(8) }}
                 >

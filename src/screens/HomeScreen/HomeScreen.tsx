@@ -255,8 +255,8 @@ const HomeScreen = () => {
         </View>
         <Space mB={20} />
 
-        {publicArticles?.articles?.map((item) => (
-          <View key={item.id}>
+        {publicArticles?.articles?.map((item, index) => (
+          <View key={item?.uuid ?? item?.id ?? item?.fileName ?? `public-article-${index}`}>
             <Space mB={5} />
             <View style={{
               flexDirection: 'row',
